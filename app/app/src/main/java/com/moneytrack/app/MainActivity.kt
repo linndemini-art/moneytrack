@@ -48,7 +48,6 @@ class MainActivity : Activity() {
     }
 
     private fun buildInterface() {
-
         val root = ScrollView(this)
 
         val main = LinearLayout(this).apply {
@@ -87,7 +86,6 @@ class MainActivity : Activity() {
 
         val saveIncomeButton = Button(this).apply {
             text = "Save Income"
-
             setOnClickListener {
                 val value = incomeInput.text.toString().toDoubleOrNull()
 
@@ -144,7 +142,6 @@ class MainActivity : Activity() {
         )
 
         categorySpinner.adapter = adapter
-
         main.addView(categorySpinner, fieldParams())
 
         amountInput = EditText(this).apply {
@@ -158,7 +155,6 @@ class MainActivity : Activity() {
 
         val addButton = Button(this).apply {
             text = "+ Add Expense"
-
             setOnClickListener {
                 addExpense()
             }
@@ -179,26 +175,17 @@ class MainActivity : Activity() {
     }
 
     private fun addExpense() {
-
         val description = descriptionInput.text.toString().trim()
         val category = categorySpinner.selectedItem.toString()
         val amount = amountInput.text.toString().toDoubleOrNull()
 
         if (description.isEmpty()) {
-            Toast.makeText(
-                this,
-                "Enter a description",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(this, "Enter a description", Toast.LENGTH_SHORT).show()
             return
         }
 
         if (amount == null || amount <= 0) {
-            Toast.makeText(
-                this,
-                "Enter a valid amount",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(this, "Enter a valid amount", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -216,19 +203,13 @@ class MainActivity : Activity() {
         updateTotals()
         refreshExpenses()
 
-        Toast.makeText(
-            this,
-            "Expense added",
-            Toast.LENGTH_SHORT
-        ).show()
+        Toast.makeText(this, "Expense added", Toast.LENGTH_SHORT).show()
     }
 
     private fun refreshExpenses() {
-
         expensesContainer.removeAllViews()
 
         for (index in expenses.indices.reversed()) {
-
             val expense = expenses[index]
 
             val row = LinearLayout(this).apply {
@@ -253,7 +234,6 @@ class MainActivity : Activity() {
 
             val delete = Button(this).apply {
                 text = "Delete"
-
                 setOnClickListener {
                     expenses.removeAt(index)
                     updateTotals()
@@ -283,7 +263,6 @@ class MainActivity : Activity() {
     }
 
     private fun updateTotals() {
-
         val total = expenses.sumOf { it.amount }
         val remaining = income - total
 
