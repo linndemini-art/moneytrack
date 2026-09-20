@@ -54,7 +54,6 @@ class MainActivity : Activity() {
                 "MMMM yyyy",
                 Locale.ENGLISH
             ).format(Date())
-
             textSize = 20f
             setTextColor(Color.DKGRAY)
         }
@@ -78,35 +77,21 @@ class MainActivity : Activity() {
 
         val addIncome = Button(this).apply {
             text = "+ Add Income"
-
             setOnClickListener {
                 addIncome()
             }
         }
 
-        root.addView(
-            addIncome,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        )
+        root.addView(addIncome)
 
         val addExpense = Button(this).apply {
             text = "+ Add Expense"
-
             setOnClickListener {
                 addExpense()
             }
         }
 
-        root.addView(
-            addExpense,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        )
+        root.addView(addExpense)
 
         setContentView(root)
     }
