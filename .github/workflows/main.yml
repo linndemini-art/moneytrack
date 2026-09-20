@@ -1,4 +1,4 @@
-concurrency: name: Build MoneyTrack APK
+name: Build MoneyTrack APK
 
 on:
   workflow_dispatch:
