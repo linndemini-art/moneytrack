@@ -11,7 +11,7 @@ import org.json.JSONObject
 import java.text.NumberFormat
 import java.util.Locale
 
-class MainActivity : Activity {
+class MainActivity : Activity() {
 
     private lateinit var incomeInput: EditText
     private lateinit var descriptionInput: EditText
@@ -68,7 +68,6 @@ class MainActivity : Activity {
             setBackgroundColor(Color.rgb(247, 248, 250))
         }
 
-        // Header
         val title = TextView(this).apply {
             text = "Smart Money Management"
             textSize = 26f
@@ -86,7 +85,6 @@ class MainActivity : Activity {
         main.addView(title)
         main.addView(subtitle)
 
-        // Income
         main.addView(sectionTitle("Monthly Income"))
 
         incomeInput = EditText(this).apply {
@@ -126,7 +124,6 @@ class MainActivity : Activity {
 
         main.addView(saveIncomeButton)
 
-        // Statistics
         main.addView(sectionTitle("Overview"))
 
         val stats = LinearLayout(this).apply {
@@ -141,7 +138,6 @@ class MainActivity : Activity {
 
         main.addView(stats)
 
-        // Add expense
         main.addView(sectionTitle("Add Expense"))
 
         descriptionInput = EditText(this).apply {
@@ -182,7 +178,6 @@ class MainActivity : Activity {
 
         main.addView(addButton)
 
-        // Expense list
         main.addView(sectionTitle("Recent Expenses"))
 
         expensesContainer = LinearLayout(this).apply {
@@ -308,6 +303,10 @@ class MainActivity : Activity {
 
         monthlyText.text = "Monthly\n${money(total)}"
         remainingText.text = "Remaining\n${money(remaining)}"
+
+        incomeInput.setText(
+            if (income > 0) income.toString() else ""
+        )
     }
 
     private fun saveData() {
@@ -326,14 +325,18 @@ class MainActivity : Activity {
         }
 
         prefs.edit()
-            .putFloat("income", income.toFloat())
+            .putString("income", income.toString())
             .putString("expenses", jsonArray.toString())
             .apply()
     }
 
     private fun loadData() {
 
-        income = prefs.getFloat("income", 0f).toDouble()
+        val savedIncome = prefs.getString("income", null)
+
+        if (!savedIncome.isNullOrEmpty()) {
+            income = savedIncome.toDoubleOrNull() ?: 0.0
+        }
 
         val savedExpenses = prefs.getString("expenses", null)
 
