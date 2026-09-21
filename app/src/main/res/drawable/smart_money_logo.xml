@@ -1,0 +1,46 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Brain outline -->
+    <path
+        android:fillColor="#1565C0"
+        android:pathData="M54,18
+            C43,10 29,16 29,29
+            C18,30 13,40 17,49
+            C10,59 16,72 27,74
+            C29,87 42,93 52,87
+            C54,90 56,90 58,87
+            C68,93 81,87 82,74
+            C93,72 98,59 91,49
+            C95,40 90,30 79,29
+            C79,16 65,10 54,18Z" />
+
+    <!-- Brain center -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,22
+            C49,28 48,36 51,43
+            C45,48 45,57 51,62
+            C46,68 47,77 54,84
+            C61,77 62,68 57,62
+            C63,57 63,48 57,43
+            C60,36 59,28 54,22Z" />
+
+    <!-- Financial graph -->
+    <path
+        android:strokeColor="#43A047"
+        android:strokeWidth="5"
+        android:strokeLineCap="ROUND"
+        android:strokeLineJoin="ROUND"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M30,67 L41,57 L49,63 L61,48 L70,53 L81,37" />
+
+    <!-- Arrow head -->
+    <path
+        android:fillColor="#43A047"
+        android:pathData="M75,37 L81,37 L81,43 Z" />
+
+</vector>
