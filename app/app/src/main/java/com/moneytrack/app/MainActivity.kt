@@ -4,7 +4,6 @@ import android.app.Activity
 import android.os.Bundle
 import android.graphics.Color
 import android.view.Gravity
-import android.view.View
 import android.widget.*
 import java.text.NumberFormat
 import java.util.Locale
@@ -45,12 +44,10 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         buildInterface()
     }
 
     private fun buildInterface() {
-
         val root = ScrollView(this)
 
         val main = LinearLayout(this).apply {
@@ -59,7 +56,6 @@ class MainActivity : Activity() {
             setBackgroundColor(Color.rgb(247, 248, 250))
         }
 
-        // Header
         val title = TextView(this).apply {
             text = "Smart Money Management"
             textSize = 26f
@@ -77,7 +73,6 @@ class MainActivity : Activity() {
         main.addView(title)
         main.addView(subtitle)
 
-        // Income
         main.addView(sectionTitle("Monthly Income"))
 
         incomeInput = EditText(this).apply {
@@ -97,6 +92,7 @@ class MainActivity : Activity() {
                 if (value != null && value >= 0) {
                     income = value
                     updateTotals()
+
                     Toast.makeText(
                         this@MainActivity,
                         "Income saved",
@@ -114,7 +110,6 @@ class MainActivity : Activity() {
 
         main.addView(saveIncomeButton)
 
-        // Statistics
         main.addView(sectionTitle("Overview"))
 
         val stats = LinearLayout(this).apply {
@@ -129,7 +124,6 @@ class MainActivity : Activity() {
 
         main.addView(stats)
 
-        // Add expense
         main.addView(sectionTitle("Add Expense"))
 
         descriptionInput = EditText(this).apply {
@@ -170,7 +164,6 @@ class MainActivity : Activity() {
 
         main.addView(addButton)
 
-        // Expense list
         main.addView(sectionTitle("Recent Expenses"))
 
         expensesContainer = LinearLayout(this).apply {
@@ -184,7 +177,6 @@ class MainActivity : Activity() {
     }
 
     private fun addExpense() {
-
         val description = descriptionInput.text.toString().trim()
         val category = categorySpinner.selectedItem.toString()
         val amount = amountInput.text.toString().toDoubleOrNull()
@@ -229,11 +221,9 @@ class MainActivity : Activity() {
     }
 
     private fun refreshExpenses() {
-
         expensesContainer.removeAllViews()
 
         for (index in expenses.indices.reversed()) {
-
             val expense = expenses[index]
 
             val row = LinearLayout(this).apply {
@@ -276,7 +266,6 @@ class MainActivity : Activity() {
             )
 
             row.addView(price)
-
             row.addView(delete)
 
             val separator = Space(this).apply {
@@ -289,7 +278,6 @@ class MainActivity : Activity() {
     }
 
     private fun updateTotals() {
-
         val total = expenses.sumOf { it.amount }
         val remaining = income - total
 
