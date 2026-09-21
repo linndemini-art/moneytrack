@@ -5,10 +5,13 @@ import android.os.Bundle
 import android.graphics.Color
 import android.view.Gravity
 import android.widget.*
+import android.content.Context
+import org.json.JSONArray
+import org.json.JSONObject
 import java.text.NumberFormat
 import java.util.Locale
 
-class MainActivity : Activity() {
+class MainActivity : Activity {
 
     private lateinit var incomeInput: EditText
     private lateinit var descriptionInput: EditText
@@ -42,12 +45,21 @@ class MainActivity : Activity() {
         val amount: Double
     )
 
+    private val prefs by lazy {
+        getSharedPreferences("moneytrack_data", Context.MODE_PRIVATE)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         buildInterface()
+        loadData()
+        updateTotals()
+        refreshExpenses()
     }
 
     private fun buildInterface() {
+
         val root = ScrollView(this)
 
         val main = LinearLayout(this).apply {
@@ -56,6 +68,7 @@ class MainActivity : Activity() {
             setBackgroundColor(Color.rgb(247, 248, 250))
         }
 
+        // Header
         val title = TextView(this).apply {
             text = "Smart Money Management"
             textSize = 26f
@@ -73,6 +86,7 @@ class MainActivity : Activity() {
         main.addView(title)
         main.addView(subtitle)
 
+        // Income
         main.addView(sectionTitle("Monthly Income"))
 
         incomeInput = EditText(this).apply {
@@ -86,11 +100,13 @@ class MainActivity : Activity() {
 
         val saveIncomeButton = Button(this).apply {
             text = "Save Income"
+
             setOnClickListener {
                 val value = incomeInput.text.toString().toDoubleOrNull()
 
                 if (value != null && value >= 0) {
                     income = value
+                    saveData()
                     updateTotals()
 
                     Toast.makeText(
@@ -110,6 +126,7 @@ class MainActivity : Activity() {
 
         main.addView(saveIncomeButton)
 
+        // Statistics
         main.addView(sectionTitle("Overview"))
 
         val stats = LinearLayout(this).apply {
@@ -124,6 +141,7 @@ class MainActivity : Activity() {
 
         main.addView(stats)
 
+        // Add expense
         main.addView(sectionTitle("Add Expense"))
 
         descriptionInput = EditText(this).apply {
@@ -164,6 +182,7 @@ class MainActivity : Activity() {
 
         main.addView(addButton)
 
+        // Expense list
         main.addView(sectionTitle("Recent Expenses"))
 
         expensesContainer = LinearLayout(this).apply {
@@ -177,6 +196,7 @@ class MainActivity : Activity() {
     }
 
     private fun addExpense() {
+
         val description = descriptionInput.text.toString().trim()
         val category = categorySpinner.selectedItem.toString()
         val amount = amountInput.text.toString().toDoubleOrNull()
@@ -210,6 +230,7 @@ class MainActivity : Activity() {
         descriptionInput.text.clear()
         amountInput.text.clear()
 
+        saveData()
         updateTotals()
         refreshExpenses()
 
@@ -221,9 +242,11 @@ class MainActivity : Activity() {
     }
 
     private fun refreshExpenses() {
+
         expensesContainer.removeAllViews()
 
         for (index in expenses.indices.reversed()) {
+
             val expense = expenses[index]
 
             val row = LinearLayout(this).apply {
@@ -251,6 +274,7 @@ class MainActivity : Activity() {
 
                 setOnClickListener {
                     expenses.removeAt(index)
+                    saveData()
                     updateTotals()
                     refreshExpenses()
                 }
@@ -278,11 +302,77 @@ class MainActivity : Activity() {
     }
 
     private fun updateTotals() {
+
         val total = expenses.sumOf { it.amount }
         val remaining = income - total
 
         monthlyText.text = "Monthly\n${money(total)}"
         remainingText.text = "Remaining\n${money(remaining)}"
+    }
+
+    private fun saveData() {
+
+        val jsonArray = JSONArray()
+
+        for (expense in expenses) {
+
+            val jsonObject = JSONObject()
+
+            jsonObject.put("description", expense.description)
+            jsonObject.put("category", expense.category)
+            jsonObject.put("amount", expense.amount)
+
+            jsonArray.put(jsonObject)
+        }
+
+        prefs.edit()
+            .putFloat("income", income.toFloat())
+            .putString("expenses", jsonArray.toString())
+            .apply()
+    }
+
+    private fun loadData() {
+
+        income = prefs.getFloat("income", 0f).toDouble()
+
+        val savedExpenses = prefs.getString("expenses", null)
+
+        if (savedExpenses.isNullOrEmpty()) {
+            return
+        }
+
+        try {
+
+            val jsonArray = JSONArray(savedExpenses)
+
+            expenses.clear()
+
+            for (i in 0 until jsonArray.length()) {
+
+                val jsonObject = jsonArray.getJSONObject(i)
+
+                val description =
+                    jsonObject.getString("description")
+
+                val category =
+                    jsonObject.getString("category")
+
+                val amount =
+                    jsonObject.getDouble("amount")
+
+                expenses.add(
+                    Expense(
+                        description,
+                        category,
+                        amount
+                    )
+                )
+            }
+
+        } catch (e: Exception) {
+
+            expenses.clear()
+        }
     }
 
     private fun money(value: Double): String {
