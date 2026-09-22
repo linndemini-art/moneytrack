@@ -7,7 +7,15 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.View
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.Space
+import android.widget.Spinner
+import android.widget.TextView
+import android.widget.Toast
 import android.content.Context
 import android.text.InputType
 import org.json.JSONArray
@@ -58,37 +66,33 @@ class MainActivity : Activity() {
         )
     }
 
-    // DARK PREMIUM COLORS
+    // ---------------------------------------------------------
+    // COLORS
+    // ---------------------------------------------------------
 
-    private val backgroundColor =
-        Color.rgb(8, 13, 20)
+    private val backgroundColor = Color.rgb(8, 13, 20)
 
-    private val cardColor =
-        Color.rgb(17, 25, 36)
+    private val cardColor = Color.rgb(17, 25, 36)
 
-    private val inputColor =
-        Color.rgb(23, 33, 47)
+    private val inputColor = Color.rgb(23, 33, 47)
 
-    private val blue =
-        Color.rgb(59, 130, 246)
+    private val blue = Color.rgb(59, 130, 246)
 
-    private val blueLight =
-        Color.rgb(96, 165, 250)
+    private val blueLight = Color.rgb(96, 165, 250)
 
-    private val green =
-        Color.rgb(34, 197, 94)
+    private val green = Color.rgb(34, 197, 94)
 
-    private val red =
-        Color.rgb(248, 113, 113)
+    private val red = Color.rgb(248, 113, 113)
 
-    private val white =
-        Color.rgb(248, 250, 252)
+    private val white = Color.rgb(248, 250, 252)
 
-    private val secondary =
-        Color.rgb(148, 163, 184)
+    private val secondary = Color.rgb(148, 163, 184)
 
-    private val border =
-        Color.rgb(35, 48, 65)
+    private val border = Color.rgb(35, 48, 65)
+
+    // ---------------------------------------------------------
+    // ACTIVITY
+    // ---------------------------------------------------------
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,6 +102,10 @@ class MainActivity : Activity() {
         updateTotals()
         refreshExpenses()
     }
+
+    // ---------------------------------------------------------
+    // MAIN INTERFACE
+    // ---------------------------------------------------------
 
     private fun buildInterface() {
 
@@ -148,6 +156,10 @@ class MainActivity : Activity() {
         setContentView(root)
     }
 
+    // ---------------------------------------------------------
+    // HEADER
+    // ---------------------------------------------------------
+
     private fun createHeader(): View {
 
         val container = LinearLayout(this).apply {
@@ -160,8 +172,7 @@ class MainActivity : Activity() {
             setImageResource(
                 com.moneytrack.app.R.drawable.smart_money_logo
             )
-            scaleType =
-                ImageView.ScaleType.CENTER_INSIDE
+            scaleType = ImageView.ScaleType.CENTER_INSIDE
         }
 
         container.addView(
@@ -172,12 +183,10 @@ class MainActivity : Activity() {
             )
         )
 
-        val textContainer =
-            LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.VERTICAL
-                setPadding(14, 0, 0, 0)
-            }
+        val textContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(14, 0, 0, 0)
+        }
 
         val title = TextView(this).apply {
             text = "Smart Money"
@@ -210,6 +219,10 @@ class MainActivity : Activity() {
 
         return container
     }
+
+    // ---------------------------------------------------------
+    // MONTH CARD
+    // ---------------------------------------------------------
 
     private fun createMonthCard(): View {
 
@@ -273,18 +286,22 @@ class MainActivity : Activity() {
         return card
     }
 
+    // ---------------------------------------------------------
+    // STATISTICS
+    // ---------------------------------------------------------
+
     private fun createStats(): View {
 
         val row = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
         }
 
-        val monthlyCard = statCard(
+        val expensesCard = statCard(
             "Expenses",
             blueLight
         )
 
-        monthlyText = monthlyCard
+        monthlyText = expensesCard
 
         val remainingCard = statCard(
             "Remaining",
@@ -294,7 +311,7 @@ class MainActivity : Activity() {
         remainingText = remainingCard
 
         row.addView(
-            monthlyCard,
+            expensesCard,
             weightParams()
         )
 
@@ -342,33 +359,31 @@ class MainActivity : Activity() {
         }
     }
 
+    // ---------------------------------------------------------
+    // INCOME
+    // ---------------------------------------------------------
+
     private fun createIncomeCard(): View {
 
-        val container =
-            LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.VERTICAL
-                setPadding(
-                    20,
-                    20,
-                    20,
-                    20
-                )
-                background =
-                    roundedBackground(
-                        cardColor,
-                        18,
-                        border
-                    )
-            }
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(
+                20,
+                20,
+                20,
+                20
+            )
+            background = roundedBackground(
+                cardColor,
+                18,
+                border
+            )
+        }
 
-        val top =
-            LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.HORIZONTAL
-                gravity =
-                    Gravity.CENTER_VERTICAL
-            }
+        val top = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
 
         val label = TextView(this).apply {
             text = "Monthly income"
@@ -385,46 +400,39 @@ class MainActivity : Activity() {
             )
         )
 
-        incomeDisplay =
-            TextView(this).apply {
-                text = "€0.00"
-                textSize = 24f
-                setTextColor(white)
-                setTypeface(
-                    null,
-                    Typeface.BOLD
-                )
-            }
+        incomeDisplay = TextView(this).apply {
+            text = "€0.00"
+            textSize = 24f
+            setTextColor(white)
+            setTypeface(
+                null,
+                Typeface.BOLD
+            )
+        }
 
         top.addView(incomeDisplay)
 
         container.addView(top)
 
-        incomeInput =
-            createInput("Enter income (€)")
+        incomeInput = createInput("Enter income (€)")
 
         container.addView(
             incomeInput,
             inputParams()
         )
 
-        val button =
-            createButton(
-                "Save Income",
-                blue
-            )
+        val button = createButton(
+            "Save Income",
+            blue
+        )
 
         button.setOnClickListener {
 
-            val value =
-                incomeInput.text
-                    .toString()
-                    .toDoubleOrNull()
+            val value = incomeInput.text
+                .toString()
+                .toDoubleOrNull()
 
-            if (
-                value != null &&
-                value >= 0
-            ) {
+            if (value != null && value >= 0) {
 
                 income = value
 
@@ -455,72 +463,66 @@ class MainActivity : Activity() {
         return container
     }
 
+    // ---------------------------------------------------------
+    // EXPENSE FORM
+    // ---------------------------------------------------------
+
     private fun createExpenseCard(): View {
 
-        val container =
-            LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.VERTICAL
-                setPadding(
-                    20,
-                    20,
-                    20,
-                    20
-                )
-                background =
-                    roundedBackground(
-                        cardColor,
-                        18,
-                        border
-                    )
-            }
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(
+                20,
+                20,
+                20,
+                20
+            )
+            background = roundedBackground(
+                cardColor,
+                18,
+                border
+            )
+        }
 
-        descriptionInput =
-            createInput("Description")
+        descriptionInput = createInput("Description")
 
         container.addView(
             descriptionInput,
             inputParams()
         )
 
-        categorySpinner =
-            Spinner(this).apply {
-                background =
-                    roundedBackground(
-                        inputColor,
-                        12,
-                        border
-                    )
-            }
-
-        val adapter =
-            ArrayAdapter(
-                this,
-                android.R.layout.simple_spinner_dropdown_item,
-                categories
+        categorySpinner = Spinner(this).apply {
+            background = roundedBackground(
+                inputColor,
+                12,
+                border
             )
+        }
 
-        categorySpinner.adapter =
-            adapter
+        val adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            categories
+        )
+
+        categorySpinner.adapter = adapter
 
         container.addView(
             categorySpinner,
             spinnerParams()
         )
 
-        amountInput =
-            createInput("Amount (€)")
+        amountInput = createInput("Amount (€)")
 
         container.addView(
             amountInput,
             inputParams()
         )
 
-        val button =
-            createButton(
-                "+  Add Expense",
-                blue
-            )
+        val button = createButton(
+            "+  Add Expense",
+            blue
+        )
 
         button.setOnClickListener {
             addExpense()
@@ -534,22 +536,23 @@ class MainActivity : Activity() {
         return container
     }
 
+    // ---------------------------------------------------------
+    // ADD EXPENSE
+    // ---------------------------------------------------------
+
     private fun addExpense() {
 
-        val description =
-            descriptionInput.text
-                .toString()
-                .trim()
+        val description = descriptionInput.text
+            .toString()
+            .trim()
 
-        val category =
-            categorySpinner
-                .selectedItem
-                .toString()
+        val category = categorySpinner
+            .selectedItem
+            .toString()
 
-        val amount =
-            amountInput.text
-                .toString()
-                .toDoubleOrNull()
+        val amount = amountInput.text
+            .toString()
+            .toDoubleOrNull()
 
         if (description.isEmpty()) {
 
@@ -562,10 +565,7 @@ class MainActivity : Activity() {
             return
         }
 
-        if (
-            amount == null ||
-            amount <= 0
-        ) {
+        if (amount == null || amount <= 0) {
 
             Toast.makeText(
                 this,
@@ -578,9 +578,9 @@ class MainActivity : Activity() {
 
         expenses.add(
             Expense(
-                description,
-                category,
-                amount
+                description = description,
+                category = category,
+                amount = amount
             )
         )
 
@@ -598,87 +598,78 @@ class MainActivity : Activity() {
         ).show()
     }
 
+    // ---------------------------------------------------------
+    // EXPENSE LIST
+    // ---------------------------------------------------------
+
     private fun refreshExpenses() {
 
         expensesContainer.removeAllViews()
 
         if (expenses.isEmpty()) {
 
-            val empty =
-                TextView(this).apply {
-                    text =
-                        "No expenses yet\n\nAdd your first expense above."
-                    textSize = 14f
-                    setTextColor(secondary)
-                    gravity = Gravity.CENTER
-                    setPadding(
-                        20,
-                        30,
-                        20,
-                        30
-                    )
-                    background =
-                        roundedBackground(
-                            cardColor,
-                            18,
-                            border
-                        )
-                }
+            val empty = TextView(this).apply {
+                text = "No expenses yet\n\nAdd your first expense above."
+                textSize = 14f
+                setTextColor(secondary)
+                gravity = Gravity.CENTER
+                setPadding(
+                    20,
+                    30,
+                    20,
+                    30
+                )
+                background = roundedBackground(
+                    cardColor,
+                    18,
+                    border
+                )
+            }
 
             expensesContainer.addView(empty)
 
             return
         }
 
-        for (
-            index in
-            expenses.indices.reversed()
-        ) {
+        for (index in expenses.indices.reversed()) {
 
-            val expense =
-                expenses[index]
+            val expense = expenses[index]
 
-            val row =
-                LinearLayout(this).apply {
-                    orientation =
-                        LinearLayout.HORIZONTAL
-                    gravity =
-                        Gravity.CENTER_VERTICAL
-                    setPadding(
-                        14,
-                        14,
-                        12,
-                        14
-                    )
-                    background =
-                        roundedBackground(
-                            cardColor,
-                            16,
-                            border
-                        )
-                }
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(
+                    14,
+                    14,
+                    12,
+                    14
+                )
+                background = roundedBackground(
+                    cardColor,
+                    16,
+                    border
+                )
+            }
 
-            val icon =
-                TextView(this).apply {
-                    text = "€"
-                    textSize = 17f
-                    gravity = Gravity.CENTER
-                    setTextColor(blueLight)
-                    setTypeface(
-                        null,
-                        Typeface.BOLD
-                    )
-                    background =
-                        roundedBackground(
-                            Color.rgb(
-                                20,
-                                45,
-                                78
-                            ),
-                            12,
-                            Color.TRANSPARENT
-                        )
-                }
+            val icon = TextView(this).apply {
+                text = "€"
+                textSize = 17f
+                gravity = Gravity.CENTER
+                setTextColor(blueLight)
+                setTypeface(
+                    null,
+                    Typeface.BOLD
+                )
+                background = roundedBackground(
+                    Color.rgb(
+                        20,
+                        45,
+                        78
+                    ),
+                    12,
+                    Color.TRANSPARENT
+                )
+            }
 
             row.addView(
                 icon,
@@ -688,53 +679,40 @@ class MainActivity : Activity() {
                 )
             )
 
-            val information =
-                LinearLayout(this).apply {
-                    orientation =
-                        LinearLayout.VERTICAL
-                    setPadding(
-                        12,
-                        0,
-                        8,
-                        0
-                    )
-                }
+            val information = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(
+                    12,
+                    0,
+                    8,
+                    0
+                )
+            }
 
-            val description =
-                TextView(this).apply {
-                    text =
-                        expense.description
-                    textSize = 15f
-                    setTextColor(white)
-                    setTypeface(
-                        null,
-                        Typeface.BOLD
-                    )
-                }
+            val description = TextView(this).apply {
+                text = expense.description
+                textSize = 15f
+                setTextColor(white)
+                setTypeface(
+                    null,
+                    Typeface.BOLD
+                )
+            }
 
-            val category =
-                TextView(this).apply {
-                    text =
-                        expense.category
-                    textSize = 12f
-                    setTextColor(
-                        secondary
-                    )
-                    setPadding(
-                        0,
-                        3,
-                        0,
-                        0
-                    )
-                }
+            val category = TextView(this).apply {
+                text = expense.category
+                textSize = 12f
+                setTextColor(secondary)
+                setPadding(
+                    0,
+                    3,
+                    0,
+                    0
+                )
+            }
 
-            information.addView(
-                description
-            )
-
-            information.addView(
-                category
-            )
+            information.addView(description)
+            information.addView(category)
 
             row.addView(
                 information,
@@ -745,53 +723,42 @@ class MainActivity : Activity() {
                 )
             )
 
-            val right =
-                LinearLayout(this).apply {
-                    orientation =
-                        LinearLayout.VERTICAL
-                    gravity = Gravity.END
+            val right = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.END
+            }
+
+            val price = TextView(this).apply {
+                text = money(expense.amount)
+                textSize = 15f
+                setTextColor(red)
+                setTypeface(
+                    null,
+                    Typeface.BOLD
+                )
+                gravity = Gravity.END
+            }
+
+            val delete = TextView(this).apply {
+                text = "Delete"
+                textSize = 11f
+                setTextColor(secondary)
+                setPadding(
+                    0,
+                    5,
+                    0,
+                    0
+                )
+
+                setOnClickListener {
+
+                    expenses.removeAt(index)
+
+                    saveData()
+                    updateTotals()
+                    refreshExpenses()
                 }
-
-            val price =
-                TextView(this).apply {
-                    text =
-                        money(
-                            expense.amount
-                        )
-                    textSize = 15f
-                    setTextColor(red)
-                    setTypeface(
-                        null,
-                        Typeface.BOLD
-                    )
-                    gravity = Gravity.END
-                }
-
-            val delete =
-                TextView(this).apply {
-                    text = "Delete"
-                    textSize = 11f
-                    setTextColor(
-                        secondary
-                    )
-                    setPadding(
-                        0,
-                        5,
-                        0,
-                        0
-                    )
-
-                    setOnClickListener {
-
-                        expenses.removeAt(
-                            index
-                        )
-
-                        saveData()
-                        updateTotals()
-                        refreshExpenses()
-                    }
-                }
+            }
 
             right.addView(price)
             right.addView(delete)
@@ -802,8 +769,7 @@ class MainActivity : Activity() {
 
             if (index != 0) {
 
-                val separator =
-                    Space(this)
+                val separator = Space(this)
 
                 expensesContainer.addView(
                     separator,
@@ -816,6 +782,10 @@ class MainActivity : Activity() {
         }
     }
 
+    // ---------------------------------------------------------
+    // TOTALS
+    // ---------------------------------------------------------
+
     private fun updateTotals() {
 
         var total = 0.0
@@ -824,8 +794,7 @@ class MainActivity : Activity() {
             total += expense.amount
         }
 
-        val remaining =
-            income - total
+        val remaining = income - total
 
         monthlyText.text =
             "Expenses\n${money(total)}"
@@ -839,22 +808,338 @@ class MainActivity : Activity() {
             remainingText.setTextColor(green)
         }
 
-        incomeDisplay.text =
-            money(income)
+        incomeDisplay.text = money(income)
 
         incomeInput.setText(
-            if (income > 0)
+            if (income > 0) {
                 income.toString()
-            else
+            } else {
                 ""
+            }
         )
     }
 
+    // ---------------------------------------------------------
+    // SAVE DATA
+    // ---------------------------------------------------------
+
     private fun saveData() {
 
-        val jsonArray =
-            JSONArray()
+        val jsonArray = JSONArray()
 
         for (expense in expenses) {
 
-            val jsonObje
+            val jsonObject = JSONObject()
+
+            jsonObject.put(
+                "description",
+                expense.description
+            )
+
+            jsonObject.put(
+                "category",
+                expense.category
+            )
+
+            jsonObject.put(
+                "amount",
+                expense.amount
+            )
+
+            jsonArray.put(jsonObject)
+        }
+
+        prefs.edit()
+            .putString(
+                "income",
+                income.toString()
+            )
+            .putString(
+                "expenses",
+                jsonArray.toString()
+            )
+            .apply()
+    }
+
+    // ---------------------------------------------------------
+    // LOAD DATA
+    // ---------------------------------------------------------
+
+    private fun loadData() {
+
+        val savedIncome = prefs.getString(
+            "income",
+            null
+        )
+
+        if (!savedIncome.isNullOrEmpty()) {
+
+            income = savedIncome.toDoubleOrNull()
+                ?: 0.0
+        }
+
+        val savedExpenses = prefs.getString(
+            "expenses",
+            null
+        )
+
+        if (savedExpenses.isNullOrEmpty()) {
+            return
+        }
+
+        try {
+
+            val jsonArray = JSONArray(
+                savedExpenses
+            )
+
+            expenses.clear()
+
+            for (i in 0 until jsonArray.length()) {
+
+                val jsonObject =
+                    jsonArray.getJSONObject(i)
+
+                val description =
+                    jsonObject.getString(
+                        "description"
+                    )
+
+                val category =
+                    jsonObject.getString(
+                        "category"
+                    )
+
+                val amount =
+                    jsonObject.getDouble(
+                        "amount"
+                    )
+
+                expenses.add(
+                    Expense(
+                        description = description,
+                        category = category,
+                        amount = amount
+                    )
+                )
+            }
+
+        } catch (e: Exception) {
+
+            expenses.clear()
+        }
+    }
+
+    // ---------------------------------------------------------
+    // INPUT
+    // ---------------------------------------------------------
+
+    private fun createInput(
+        hintText: String
+    ): EditText {
+
+        val input = EditText(this)
+
+        input.hint = hintText
+
+        input.setHintTextColor(
+            Color.rgb(
+                100,
+                116,
+                139
+            )
+        )
+
+        input.setTextColor(white)
+
+        input.textSize = 15f
+
+        input.setSingleLine(true)
+
+        input.setPadding(
+            16,
+            0,
+            16,
+            0
+        )
+
+        input.background = roundedBackground(
+            inputColor,
+            12,
+            border
+        )
+
+        if (
+            hintText.contains(
+                "income",
+                true
+            ) ||
+            hintText.contains(
+                "amount",
+                true
+            )
+        ) {
+
+            input.inputType =
+                InputType.TYPE_CLASS_NUMBER or
+                InputType.TYPE_NUMBER_FLAG_DECIMAL
+        }
+
+        return input
+    }
+
+    // ---------------------------------------------------------
+    // BUTTON
+    // ---------------------------------------------------------
+
+    private fun createButton(
+        textValue: String,
+        color: Int
+    ): TextView {
+
+        val button = TextView(this)
+
+        button.text = textValue
+
+        button.textSize = 15f
+
+        button.gravity = Gravity.CENTER
+
+        button.setTextColor(Color.WHITE)
+
+        button.setTypeface(
+            null,
+            Typeface.BOLD
+        )
+
+        button.background = roundedBackground(
+            color,
+            13,
+            Color.TRANSPARENT
+        )
+
+        button.isClickable = true
+
+        return button
+    }
+
+    // ---------------------------------------------------------
+    // BACKGROUNDS
+    // ---------------------------------------------------------
+
+    private fun roundedBackground(
+        color: Int,
+        radius: Int,
+        strokeColor: Int
+    ): GradientDrawable {
+
+        val drawable = GradientDrawable()
+
+        drawable.setColor(color)
+
+        drawable.cornerRadius = radius.toFloat()
+
+        if (strokeColor != Color.TRANSPARENT) {
+
+            drawable.setStroke(
+                1,
+                strokeColor
+            )
+        }
+
+        return drawable
+    }
+
+    // ---------------------------------------------------------
+    // SECTION TITLES
+    // ---------------------------------------------------------
+
+    private fun sectionTitle(
+        text: String
+    ): TextView {
+
+        val title = TextView(this)
+
+        title.text = text
+
+        title.textSize = 18f
+
+        title.setTextColor(white)
+
+        title.setTypeface(
+            null,
+            Typeface.BOLD
+        )
+
+        title.setPadding(
+            2,
+            26,
+            2,
+            11
+        )
+
+        return title
+    }
+
+    // ---------------------------------------------------------
+    // LAYOUT PARAMETERS
+    // ---------------------------------------------------------
+
+    private fun inputParams():
+            LinearLayout.LayoutParams {
+
+        return LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            55
+        ).apply {
+            bottomMargin = 10
+        }
+    }
+
+    private fun spinnerParams():
+            LinearLayout.LayoutParams {
+
+        return LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            55
+        ).apply {
+            bottomMargin = 10
+        }
+    }
+
+    private fun buttonParams():
+            LinearLayout.LayoutParams {
+
+        return LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            54
+        ).apply {
+            topMargin = 2
+        }
+    }
+
+    private fun weightParams():
+            LinearLayout.LayoutParams {
+
+        return LinearLayout.LayoutParams(
+            0,
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            1f
+        )
+    }
+
+    // ---------------------------------------------------------
+    // MONEY FORMAT
+    // ---------------------------------------------------------
+
+    private fun money(
+        value: Double
+    ): String {
+
+        return NumberFormat
+            .getCurrencyInstance(
+                Locale.GERMANY
+            )
+            .format(value)
+    }
+}
