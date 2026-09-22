@@ -363,7 +363,76 @@ class MainActivity : Activity() {
         )
 
         content.addView(overviewRow)
-                val addTitle = sectionTitle(
+
+        val incomeTitle = sectionTitle(
+            "Monthly Income",
+            white
+        )
+
+        val incomeTitleParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        incomeTitleParams.setMargins(0, 26, 0, 12)
+
+        content.addView(
+            incomeTitle,
+            incomeTitleParams
+        )
+
+        val incomeCard = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(16, 16, 16, 16)
+            this.background = roundedBackground(
+                cardColor,
+                16f
+            )
+        }
+
+        incomeDisplay = TextView(this).apply {
+            text = "€0.00"
+            textSize = 22f
+            setTextColor(white)
+            typeface = Typeface.DEFAULT_BOLD
+        }
+
+        incomeCard.addView(
+            incomeDisplay,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        incomeInput = createInput(
+            "Enter monthly income",
+            InputType.TYPE_CLASS_NUMBER or
+                InputType.TYPE_NUMBER_FLAG_DECIMAL
+        )
+
+        incomeCard.addView(
+            incomeInput,
+            inputParams()
+        )
+
+        val saveIncomeButton = createButton(
+            "Save Income",
+            blue
+        )
+
+        saveIncomeButton.setOnClickListener {
+            saveIncome()
+        }
+
+        incomeCard.addView(
+            saveIncomeButton,
+            buttonParams()
+        )
+
+        content.addView(incomeCard)
+
+        val addTitle = sectionTitle(
             "Add Expense",
             white
         )
@@ -444,8 +513,7 @@ class MainActivity : Activity() {
         )
 
         content.addView(addCard)
-
-        val recentTitle = sectionTitle(
+                val recentTitle = sectionTitle(
             "Recent Expenses",
             white
         )
@@ -664,7 +732,8 @@ class MainActivity : Activity() {
         descriptionInput.text.clear()
         amountInput.text.clear()
     }
-        private fun saveData() {
+
+    private fun saveData() {
 
         val monthKey = currentMonthKey()
         val expensesArray = JSONArray()
