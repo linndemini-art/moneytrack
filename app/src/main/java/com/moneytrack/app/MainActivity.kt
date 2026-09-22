@@ -363,8 +363,7 @@ class MainActivity : Activity() {
         )
 
         content.addView(overviewRow)
-
-        val incomeTitle = sectionTitle(
+                val incomeTitle = sectionTitle(
             "Monthly Income",
             white
         )
@@ -513,7 +512,8 @@ class MainActivity : Activity() {
         )
 
         content.addView(addCard)
-                val recentTitle = sectionTitle(
+
+        val recentTitle = sectionTitle(
             "Recent Expenses",
             white
         )
@@ -732,8 +732,7 @@ class MainActivity : Activity() {
         descriptionInput.text.clear()
         amountInput.text.clear()
     }
-
-    private fun saveData() {
+        private fun saveData() {
 
         val monthKey = currentMonthKey()
         val expensesArray = JSONArray()
@@ -1223,3 +1222,4 @@ class MainActivity : Activity() {
             .format(value)
     }
 }
+        
