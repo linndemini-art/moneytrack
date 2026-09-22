@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="moneytrack_background">#080808</color>
+    <color name="moneytrack_card">#151515</color>
+    <color name="moneytrack_surface">#1D1D1D</color>
+
+    <color name="moneytrack_amber_dark">#B86B00</color>
+    <color name="moneytrack_amber">#FF9D00</color>
+    <color name="moneytrack_amber_bright">#FFB52E</color>
+
+    <color name="moneytrack_text_primary">#FFFFFF</color>
+    <color name="moneytrack_text_secondary">#A8A8A8</color>
+
+</resources>
