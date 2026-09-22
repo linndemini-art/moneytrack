@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.MoneyTrack" parent="android:style/Theme.Material.Light.NoActionBar">
+    <style name="Theme.MoneyTrack" parent="android:style/Theme.Material.NoActionBar">
         <item name="android:fontFamily">sans</item>
         <item name="android:windowActionModeOverlay">true</item>
-        <item name="android:colorAccent">#6750A4</item>
+        <item name="android:colorAccent">@color/moneytrack_amber</item>
+        <item name="android:windowBackground">@color/moneytrack_background</item>
+        <item name="android:navigationBarColor">@color/moneytrack_background</item>
+        <item name="android:statusBarColor">@color/moneytrack_background</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
 </resources>
