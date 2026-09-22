@@ -1,16 +1,17 @@
 package com.moneytrack.app
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.os.Bundle
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
-import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.NumberPicker
 import android.widget.ScrollView
 import android.widget.Space
 import android.widget.Spinner
@@ -182,11 +183,12 @@ class MainActivity : Activity() {
         }
 
         val previousButton = TextView(this).apply {
-            text = "‹"
-            textSize = 34f
+            text = "←"
+            textSize = 28f
             setTextColor(white)
             gravity = Gravity.CENTER
             setPadding(8, 0, 8, 0)
+
             setOnClickListener {
                 changeMonth(-1)
             }
@@ -205,6 +207,11 @@ class MainActivity : Activity() {
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER
+            setPadding(8, 0, 8, 0)
+
+            setOnClickListener {
+                showMonthPicker()
+            }
         }
 
         monthNavigation.addView(
@@ -217,11 +224,12 @@ class MainActivity : Activity() {
         )
 
         val nextButton = TextView(this).apply {
-            text = "›"
-            textSize = 34f
+            text = "→"
+            textSize = 28f
             setTextColor(white)
             gravity = Gravity.CENTER
             setPadding(8, 0, 8, 0)
+
             setOnClickListener {
                 changeMonth(1)
             }
@@ -363,7 +371,8 @@ class MainActivity : Activity() {
         )
 
         content.addView(overviewRow)
-                val incomeTitle = sectionTitle(
+
+        val incomeTitle = sectionTitle(
             "Monthly Income",
             white
         )
@@ -555,8 +564,7 @@ class MainActivity : Activity() {
 
         setContentView(root)
     }
-
-    private fun saveIncome() {
+        private fun saveIncome() {
 
         val value = incomeInput.text
             .toString()
@@ -732,7 +740,86 @@ class MainActivity : Activity() {
         descriptionInput.text.clear()
         amountInput.text.clear()
     }
-        private fun saveData() {
+
+    private fun showMonthPicker() {
+
+        val dialogLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            setPadding(24, 0, 24, 0)
+        }
+
+        val monthPicker = NumberPicker(this).apply {
+            minValue = 1
+            maxValue = 12
+            value = selectedMonth + 1
+            displayedValues = arrayOf(
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December"
+            )
+        }
+
+        val yearPicker = NumberPicker(this).apply {
+            minValue = selectedYear - 10
+            maxValue = selectedYear + 10
+            value = selectedYear
+        }
+
+        dialogLayout.addView(
+            monthPicker,
+            LinearLayout.LayoutParams(
+                0,
+                220,
+                1f
+            )
+        )
+
+        dialogLayout.addView(
+            yearPicker,
+            LinearLayout.LayoutParams(
+                0,
+                220,
+                1f
+            )
+        )
+
+        AlertDialog.Builder(this)
+            .setTitle("Select Month")
+            .setView(dialogLayout)
+            .setPositiveButton("Select") { _, _ ->
+
+                saveData()
+
+                selectedMonth = monthPicker.value - 1
+                selectedYear = yearPicker.value
+
+                loadData()
+                updateMonthDisplay()
+                updateTotals()
+                refreshExpenses()
+
+                incomeInput.text.clear()
+                descriptionInput.text.clear()
+                amountInput.text.clear()
+            }
+            .setNegativeButton(
+                "Cancel",
+                null
+            )
+            .show()
+    }
+
+    private fun saveData() {
 
         val monthKey = currentMonthKey()
         val expensesArray = JSONArray()
@@ -925,8 +1012,7 @@ class MainActivity : Activity() {
                 .apply()
         }
     }
-
-    private fun refreshExpenses() {
+        private fun refreshExpenses() {
 
         expensesContainer.removeAllViews()
 
@@ -1065,7 +1151,8 @@ class MainActivity : Activity() {
             )
         }
     }
-        private fun sectionTitle(
+
+    private fun sectionTitle(
         text: String,
         color: Int
     ): TextView {
@@ -1146,8 +1233,7 @@ class MainActivity : Activity() {
             cornerRadius = radius
         }
     }
-
-    private fun inputParams():
+        private fun inputParams():
         LinearLayout.LayoutParams {
 
         val params = LinearLayout.LayoutParams(
@@ -1222,4 +1308,3 @@ class MainActivity : Activity() {
             .format(value)
     }
 }
-        
