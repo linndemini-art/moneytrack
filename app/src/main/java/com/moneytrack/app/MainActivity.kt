@@ -170,7 +170,7 @@ class MainActivity : Activity() {
         val monthCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(18, 18, 18, 18)
-            background = roundedBackground(
+            this.background = roundedBackground(
                 cardColor,
                 18f
             )
@@ -291,7 +291,7 @@ class MainActivity : Activity() {
         val expensesCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(16, 16, 16, 16)
-            background = roundedBackground(
+            this.background = roundedBackground(
                 cardColor,
                 16f
             )
@@ -333,7 +333,7 @@ class MainActivity : Activity() {
         val remainingCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(16, 16, 16, 16)
-            background = roundedBackground(
+            this.background = roundedBackground(
                 cardColor,
                 16f
             )
@@ -363,70 +363,7 @@ class MainActivity : Activity() {
         )
 
         content.addView(overviewRow)
-
-        val incomeTitle = sectionTitle(
-            "Monthly Income",
-            white
-        )
-
-        val incomeTitleParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-
-        incomeTitleParams.setMargins(0, 26, 0, 12)
-
-        content.addView(
-            incomeTitle,
-            incomeTitleParams
-        )
-
-        val incomeCard = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
-            background = roundedBackground(
-                cardColor,
-                16f
-            )
-        }
-
-        incomeDisplay = TextView(this).apply {
-            text = "€0.00"
-            textSize = 26f
-            setTextColor(white)
-            typeface = Typeface.DEFAULT_BOLD
-        }
-
-        incomeCard.addView(incomeDisplay)
-
-        incomeInput = createInput(
-            "Monthly income",
-            InputType.TYPE_CLASS_NUMBER or
-                InputType.TYPE_NUMBER_FLAG_DECIMAL
-        )
-
-        incomeCard.addView(
-            incomeInput,
-            inputParams()
-        )
-
-        val incomeButton = createButton(
-            "Save Income",
-            blue
-        )
-
-        incomeButton.setOnClickListener {
-            saveIncome()
-        }
-
-        incomeCard.addView(
-            incomeButton,
-            buttonParams()
-        )
-
-        content.addView(incomeCard)
-
-        val addTitle = sectionTitle(
+                val addTitle = sectionTitle(
             "Add Expense",
             white
         )
@@ -446,7 +383,7 @@ class MainActivity : Activity() {
         val addCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(16, 16, 16, 16)
-            background = roundedBackground(
+            this.background = roundedBackground(
                 cardColor,
                 16f
             )
@@ -550,7 +487,8 @@ class MainActivity : Activity() {
 
         setContentView(root)
     }
-        private fun saveIncome() {
+
+    private fun saveIncome() {
 
         val value = incomeInput.text
             .toString()
@@ -919,7 +857,8 @@ class MainActivity : Activity() {
                 .apply()
         }
     }
-        private fun refreshExpenses() {
+
+    private fun refreshExpenses() {
 
         expensesContainer.removeAllViews()
 
@@ -957,7 +896,7 @@ class MainActivity : Activity() {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
                 setPadding(16, 14, 12, 14)
-                background = roundedBackground(
+                this.background = roundedBackground(
                     cardColor,
                     16f
                 )
@@ -1058,8 +997,7 @@ class MainActivity : Activity() {
             )
         }
     }
-
-    private fun sectionTitle(
+        private fun sectionTitle(
         text: String,
         color: Int
     ): TextView {
@@ -1095,7 +1033,7 @@ class MainActivity : Activity() {
                 14,
                 12
             )
-            background = roundedBackground(
+            this.background = roundedBackground(
                 Color.rgb(
                     28,
                     36,
@@ -1123,7 +1061,7 @@ class MainActivity : Activity() {
                 16,
                 13
             )
-            background = roundedBackground(
+            this.background = roundedBackground(
                 color,
                 12f
             )
