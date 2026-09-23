@@ -7,7 +7,7 @@
 
     <!-- Blue circular background -->
     <path
-        android:fillColor="#2668D2"
+        android:fillColor="#085BA4"
         android:pathData="M54,0A54,54 0,1 0,54,108A54,54 0,1 0,54,0" />
 
     <!-- White S -->
