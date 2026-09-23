@@ -121,7 +121,7 @@ class MainActivity : Activity() {
 
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(12, 12, 12, 28)
+            setPadding(12, 20, 12, 28)
         }
 
         val bankCard = LinearLayout(this).apply {
