@@ -7,25 +7,25 @@
 
     <!-- Blue circular background -->
     <path
-        android:fillColor="#085BA4"
+        android:fillColor="#70C6EB"
         android:pathData="M54,0A54,54 0,1 0,54,108A54,54 0,1 0,54,0" />
 
     <!-- White M -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M21,32
+        android:pathData="M15,32
+            L15,73
             L21,73
-            L27,73
-            L27,43
+            L21,43
+            L29,58
             L35,58
-            L41,58
-            L49,43
+            L43,43
+            L43,73
             L49,73
-            L55,73
-            L55,32
-            L48,32
-            L38,51
-            L28,32
+            L49,32
+            L42,32
+            L32,51
+            L22,32
             Z" />
 
     <!-- Center separator -->
