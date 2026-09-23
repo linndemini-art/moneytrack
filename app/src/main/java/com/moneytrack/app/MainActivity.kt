@@ -602,25 +602,74 @@ class MainActivity : Activity() {
         }
 
         content.addView(
-            expensesContainer,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        )
+    expensesContainer,
+    LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    )
+)
 
-        scrollView.addView(content)
+val backupTitle = sectionTitle(
+    "DATA BACKUP",
+    white
+)
 
-        root.addView(
-            scrollView,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                0,
-                1f
-            )
-        )
+val backupTitleParams = LinearLayout.LayoutParams(
+    LinearLayout.LayoutParams.MATCH_PARENT,
+    LinearLayout.LayoutParams.WRAP_CONTENT
+)
 
-        setContentView(root)
+backupTitleParams.setMargins(2, 24, 0, 10)
+
+content.addView(
+    backupTitle,
+    backupTitleParams
+)
+
+val backupCard = createMainCard()
+
+val exportButton = createGradientButton(
+    "Export Backup",
+    blueDark,
+    blueBright
+)
+
+exportButton.setOnClickListener {
+    exportBackup()
+}
+
+backupCard.addView(
+    exportButton,
+    buttonParams()
+)
+
+val importButton = createGradientButton(
+    "Import Backup",
+    Color.rgb(35, 40, 52),
+    Color.rgb(70, 78, 96)
+)
+
+importButton.setOnClickListener {
+    importBackup()
+}
+
+backupCard.addView(
+    importButton,
+    buttonParams()
+)
+
+val backupHint = TextView(this).apply {
+    text = "Export your data before changing the app version or reinstalling it."
+    textSize = 12f
+    setTextColor(muted)
+    setPadding(2, 10, 2, 0)
+}
+
+backupCard.addView(backupHint)
+
+content.addView(backupCard)
+
+scrollView.addView(content)
     }
 
     private fun saveIncome() {
