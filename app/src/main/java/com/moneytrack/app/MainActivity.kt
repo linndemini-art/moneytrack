@@ -27,7 +27,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-
 class MainActivity : Activity() {
 
     companion object {
@@ -498,7 +497,8 @@ class MainActivity : Activity() {
         )
 
         content.addView(incomeCard)
-                val addTitle = sectionTitle(
+
+        val addTitle = sectionTitle(
             "ADD EXPENSE",
             white
         )
@@ -602,77 +602,86 @@ class MainActivity : Activity() {
         }
 
         content.addView(
-    expensesContainer,
-    LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT
-    )
-)
+            expensesContainer,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
 
-val backupTitle = sectionTitle(
-    "DATA BACKUP",
-    white
-)
+        val backupTitle = sectionTitle(
+            "DATA BACKUP",
+            white
+        )
 
-val backupTitleParams = LinearLayout.LayoutParams(
-    LinearLayout.LayoutParams.MATCH_PARENT,
-    LinearLayout.LayoutParams.WRAP_CONTENT
-)
+        val backupTitleParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
 
-backupTitleParams.setMargins(2, 24, 0, 10)
+        backupTitleParams.setMargins(2, 24, 0, 10)
 
-content.addView(
-    backupTitle,
-    backupTitleParams
-)
+        content.addView(
+            backupTitle,
+            backupTitleParams
+        )
 
-val backupCard = createMainCard()
+        val backupCard = createMainCard()
 
-val exportButton = createGradientButton(
-    "Export Backup",
-    blueDark,
-    blueBright
-)
+        val exportButton = createGradientButton(
+            "Export Backup",
+            blueDark,
+            blueBright
+        )
 
-exportButton.setOnClickListener {
-    exportBackup()
-}
+        exportButton.setOnClickListener {
+            exportBackup()
+        }
 
-backupCard.addView(
-    exportButton,
-    buttonParams()
-)
+        backupCard.addView(
+            exportButton,
+            buttonParams()
+        )
 
-val importButton = createGradientButton(
-    "Import Backup",
-    Color.rgb(35, 40, 52),
-    Color.rgb(70, 78, 96)
-)
+        val importButton = createGradientButton(
+            "Import Backup",
+            Color.rgb(35, 40, 52),
+            Color.rgb(70, 78, 96)
+        )
 
-importButton.setOnClickListener {
-    importBackup()
-}
+        importButton.setOnClickListener {
+            importBackup()
+        }
 
-backupCard.addView(
-    importButton,
-    buttonParams()
-)
+        backupCard.addView(
+            importButton,
+            buttonParams()
+        )
 
-val backupHint = TextView(this).apply {
-    text = "Export your data before changing the app version or reinstalling it."
-    textSize = 12f
-    setTextColor(muted)
-    setPadding(2, 10, 2, 0)
-}
+        val backupHint = TextView(this).apply {
+            text = "Export your data before changing the app version or reinstalling it."
+            textSize = 12f
+            setTextColor(muted)
+            setPadding(2, 10, 2, 0)
+        }
 
-backupCard.addView(backupHint)
+        backupCard.addView(backupHint)
 
-content.addView(backupCard)
+        content.addView(backupCard)
 
-scrollView.addView(content)
+        scrollView.addView(content)
+
+        root.addView(
+            scrollView,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        setContentView(root)
     }
-
-    private fun saveIncome() {
+        private fun saveIncome() {
 
         val value = incomeInput.text
             .toString()
@@ -705,9 +714,11 @@ scrollView.addView(content)
     private fun addExpense() {
 
         val description = descriptionInput.text
-    .toString()
-    .trim()
-    .ifEmpty { "No description" }
+            .toString()
+            .trim()
+            .ifEmpty {
+                "No description"
+            }
 
         val amount = amountInput.text
             .toString()
@@ -965,7 +976,8 @@ scrollView.addView(content)
             )
             .apply()
     }
-        private fun loadData() {
+
+    private fun loadData() {
 
         income = 0.0
         expenses.clear()
@@ -1013,11 +1025,13 @@ scrollView.addView(content)
                             Expense(
                                 description =
                                     item.optString(
-                                        "description"
+                                        "description",
+                                        "No description"
                                     ),
                                 category =
                                     item.optString(
-                                        "category"
+                                        "category",
+                                        "Other"
                                     ),
                                 amount =
                                     item.optDouble(
@@ -1085,11 +1099,13 @@ scrollView.addView(content)
                                 Expense(
                                     description =
                                         item.optString(
-                                            "description"
+                                            "description",
+                                            "No description"
                                         ),
                                     category =
                                         item.optString(
-                                            "category"
+                                            "category",
+                                            "Other"
                                         ),
                                     amount =
                                         item.optDouble(
@@ -1278,8 +1294,7 @@ scrollView.addView(content)
             )
         }
     }
-
-    private fun sectionTitle(
+        private fun sectionTitle(
         text: String,
         color: Int
     ): TextView {
@@ -1401,7 +1416,8 @@ scrollView.addView(content)
             )
         }
     }
-        private fun roundedBackground(
+
+    private fun roundedBackground(
         color: Int,
         radius: Float
     ): GradientDrawable {
@@ -1502,5 +1518,352 @@ scrollView.addView(content)
                 Locale.GERMANY
             )
             .format(value)
+    }
+
+    private fun exportBackup() {
+
+        val intent = Intent(
+            Intent.ACTION_CREATE_DOCUMENT
+        ).apply {
+            addCategory(
+                Intent.CATEGORY_OPENABLE
+            )
+            type = "application/json"
+
+            putExtra(
+                Intent.EXTRA_TITLE,
+                "MoneyTrack_Backup.json"
+            )
+        }
+
+        startActivityForResult(
+            intent,
+            REQUEST_EXPORT_BACKUP
+        )
+    }
+
+    private fun importBackup() {
+
+        val intent = Intent(
+            Intent.ACTION_OPEN_DOCUMENT
+        ).apply {
+            addCategory(
+                Intent.CATEGORY_OPENABLE
+            )
+            type = "application/json"
+        }
+
+        startActivityForResult(
+            intent,
+            REQUEST_IMPORT_BACKUP
+        )
+    }
+
+    private fun createBackupJson(): JSONObject {
+
+        val root = JSONObject()
+
+        root.put(
+            "format",
+            "MoneyTrack Backup"
+        )
+
+        root.put(
+            "version",
+            1
+        )
+
+        val data = JSONObject()
+
+        for ((key, value) in prefs.all) {
+
+            when (value) {
+
+                is String -> {
+                    data.put(
+                        key,
+                        value
+                    )
+                }
+
+                is Boolean -> {
+                    data.put(
+                        key,
+                        value
+                    )
+                }
+
+                is Int -> {
+                    data.put(
+                        key,
+                        value
+                    )
+                }
+
+                is Long -> {
+                    data.put(
+                        key,
+                        value
+                    )
+                }
+
+                is Float -> {
+                    data.put(
+                        key,
+                        value
+                    )
+                }
+
+                is Double -> {
+                    data.put(
+                        key,
+                        value
+                    )
+                }
+            }
+        }
+
+        root.put(
+            "data",
+            data
+        )
+
+        return root
+    }
+
+    private fun restoreBackupJson(
+        jsonText: String
+    ) {
+
+        try {
+
+            val root = JSONObject(
+                jsonText
+            )
+
+            if (
+                root.optString("format") !=
+                "MoneyTrack Backup"
+            ) {
+
+                Toast.makeText(
+                    this,
+                    "Invalid MoneyTrack backup.",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                return
+            }
+
+            val version = root.optInt(
+                "version",
+                0
+            )
+
+            if (version != 1) {
+
+                Toast.makeText(
+                    this,
+                    "Unsupported backup version.",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                return
+            }
+
+            val data = root.optJSONObject(
+                "data"
+            )
+
+            if (data == null) {
+
+                Toast.makeText(
+                    this,
+                    "Backup contains no data.",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                return
+            }
+
+            val editor = prefs.edit()
+
+            editor.clear()
+
+            val keys = data.keys()
+
+            while (keys.hasNext()) {
+
+                val key = keys.next()
+                val value = data.get(key)
+
+                when (value) {
+
+                    is String -> {
+                        editor.putString(
+                            key,
+                            value
+                        )
+                    }
+
+                    is Boolean -> {
+                        editor.putBoolean(
+                            key,
+                            value
+                        )
+                    }
+
+                    is Int -> {
+                        editor.putInt(
+                            key,
+                            value
+                        )
+                    }
+
+                    is Long -> {
+                        editor.putLong(
+                            key,
+                            value
+                        )
+                    }
+
+                    is Double -> {
+                        editor.putFloat(
+                            key,
+                            value.toFloat()
+                        )
+                    }
+                }
+            }
+
+            editor.apply()
+
+            loadData()
+            updateMonthDisplay()
+            updateTotals()
+            refreshExpenses()
+
+            Toast.makeText(
+                this,
+                "Backup imported successfully.",
+                Toast.LENGTH_LONG
+            ).show()
+
+        } catch (
+            exception: Exception
+        ) {
+
+            Toast.makeText(
+                this,
+                "Could not import backup.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+        override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
+
+        super.onActivityResult(
+            requestCode,
+            resultCode,
+            data
+        )
+
+        if (
+            resultCode != RESULT_OK ||
+            data?.data == null
+        ) {
+            return
+        }
+
+        val uri = data.data ?: return
+
+        when (requestCode) {
+
+            REQUEST_EXPORT_BACKUP -> {
+
+                try {
+
+                    val backup = createBackupJson()
+
+                    contentResolver
+                        .openOutputStream(uri)
+                        ?.use { outputStream ->
+
+                            outputStream.write(
+                                backup
+                                    .toString(2)
+                                    .toByteArray(
+                                        Charsets.UTF_8
+                                    )
+                            )
+                        }
+
+                    Toast.makeText(
+                        this,
+                        "Backup exported successfully.",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                } catch (
+                    exception: Exception
+                ) {
+
+                    Toast.makeText(
+                        this,
+                        "Could not export backup.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            REQUEST_IMPORT_BACKUP -> {
+
+                try {
+
+                    val jsonText =
+                        contentResolver
+                            .openInputStream(uri)
+                            ?.use { inputStream ->
+
+                                inputStream
+                                    .bufferedReader()
+                                    .use {
+                                        it.readText()
+                                    }
+                            }
+
+                    if (
+                        jsonText.isNullOrEmpty()
+                    ) {
+
+                        Toast.makeText(
+                            this,
+                            "Backup file is empty.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        return
+                    }
+
+                    restoreBackupJson(
+                        jsonText
+                    )
+
+                } catch (
+                    exception: Exception
+                ) {
+
+                    Toast.makeText(
+                        this,
+                        "Could not read backup.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
     }
 }
