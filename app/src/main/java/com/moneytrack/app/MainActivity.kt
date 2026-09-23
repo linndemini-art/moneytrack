@@ -36,7 +36,6 @@ class MainActivity : Activity() {
     }
 
     private lateinit var incomeInput: EditText
-    private lateinit var incomeInput: EditText
     private lateinit var descriptionInput: EditText
     private lateinit var amountInput: EditText
     private lateinit var categorySpinner: Spinner
