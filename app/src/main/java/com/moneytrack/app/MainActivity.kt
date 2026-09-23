@@ -10,7 +10,6 @@ import android.view.Gravity
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.NumberPicker
 import android.widget.ScrollView
@@ -74,22 +73,26 @@ class MainActivity : Activity() {
         "Other"
     )
 
-    private val backgroundColor = Color.rgb(8, 8, 8)
-    private val cardColor = Color.rgb(21, 21, 21)
-    private val surfaceColor = Color.rgb(29, 29, 29)
+    private val backgroundColor = Color.rgb(7, 8, 12)
+    private val cardColor = Color.rgb(20, 22, 29)
+    private val surfaceColor = Color.rgb(28, 31, 40)
 
-    private val amberDark = Color.rgb(184, 107, 0)
-    private val amber = Color.rgb(255, 157, 0)
-    private val amberBright = Color.rgb(255, 181, 46)
+    private val blueDark = Color.rgb(18, 55, 110)
+    private val blue = Color.rgb(38, 104, 210)
+    private val blueBright = Color.rgb(74, 145, 255)
 
+    private val amber = Color.rgb(255, 166, 52)
     private val green = Color.rgb(72, 190, 110)
 
     private val white = Color.WHITE
-    private val secondary = Color.rgb(168, 168, 168)
-    private val muted = Color.rgb(125, 125, 125)
+    private val secondary = Color.rgb(168, 174, 187)
+    private val muted = Color.rgb(115, 121, 135)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        window.statusBarColor = backgroundColor
+        window.navigationBarColor = backgroundColor
 
         val calendar = Calendar.getInstance()
 
@@ -118,54 +121,34 @@ class MainActivity : Activity() {
 
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(20, 24, 20, 36)
+            setPadding(12, 12, 12, 28)
         }
 
-        val header = LinearLayout(this).apply {
+        val bankCard = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(20, 18, 20, 18)
+            background = gradientBackground(
+                Color.rgb(18, 29, 52),
+                Color.rgb(24, 67, 125),
+                22f
+            )
+        }
+
+        val cardTopRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
         }
 
-        val logo = ImageView(this).apply {
-            setImageResource(
-                resources.getIdentifier(
-                    "smart_money_logo",
-                    "drawable",
-                    packageName
-                )
-            )
-            scaleType = ImageView.ScaleType.CENTER_INSIDE
-        }
-
-        header.addView(
-            logo,
-            LinearLayout.LayoutParams(52, 52)
-        )
-
-        val titleColumn = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(12, 0, 0, 0)
-        }
-
-        val title = TextView(this).apply {
-            text = "Smart Money"
-            textSize = 25f
-            setTextColor(white)
+        val creditCardLabel = TextView(this).apply {
+            text = "CREDIT CARD"
+            textSize = 11f
+            setTextColor(Color.rgb(207, 220, 242))
             typeface = Typeface.DEFAULT_BOLD
+            letterSpacing = 0.08f
         }
 
-        val subtitle = TextView(this).apply {
-            text = "Personal finance tracker"
-            textSize = 13f
-            setTextColor(secondary)
-            setPadding(0, 3, 0, 0)
-        }
-
-        titleColumn.addView(title)
-        titleColumn.addView(subtitle)
-
-        header.addView(
-            titleColumn,
+        cardTopRow.addView(
+            creditCardLabel,
             LinearLayout.LayoutParams(
                 0,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -173,14 +156,114 @@ class MainActivity : Activity() {
             )
         )
 
-        content.addView(header)
+        val bankLabel = TextView(this).apply {
+            text = "BANK"
+            textSize = 11f
+            setTextColor(Color.rgb(207, 220, 242))
+            typeface = Typeface.DEFAULT_BOLD
+            letterSpacing = 0.08f
+            gravity = Gravity.END
+        }
+
+        cardTopRow.addView(
+            bankLabel,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        bankCard.addView(
+            cardTopRow,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        val smartMoney = TextView(this).apply {
+            text = "SMART MONEY"
+            textSize = 27f
+            setTextColor(white)
+            typeface = Typeface.create(
+                Typeface.DEFAULT,
+                Typeface.BOLD
+            )
+            gravity = Gravity.CENTER
+            letterSpacing = 0.04f
+        }
+
+        val smartMoneyParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            0,
+            1f
+        )
+
+        smartMoneyParams.setMargins(0, 4, 0, 4)
+
+        bankCard.addView(
+            smartMoney,
+            smartMoneyParams
+        )
+
+        val cardBottomRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+
+        val cardLine = View(this).apply {
+            setBackgroundColor(
+                Color.argb(
+                    90,
+                    255,
+                    255,
+                    255
+                )
+            )
+        }
+
+        cardBottomRow.addView(
+            cardLine,
+            LinearLayout.LayoutParams(
+                0,
+                1,
+                1f
+            )
+        )
+
+        val cardDot = TextView(this).apply {
+            text = "●"
+            textSize = 8f
+            setTextColor(amber)
+            gravity = Gravity.CENTER
+            setPadding(10, 0, 0, 0)
+        }
+
+        cardBottomRow.addView(
+            cardDot,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        bankCard.addView(cardBottomRow)
+
+        val bankCardParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            (190 * resources.displayMetrics.density).toInt()
+        )
+
+        content.addView(
+            bankCard,
+            bankCardParams
+        )
 
         val monthCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(18, 18, 18, 18)
-            background = gradientBackground(
-                Color.rgb(17, 17, 17),
-                Color.rgb(42, 26, 8),
+            setPadding(14, 14, 14, 14)
+            background = roundedBackground(
+                cardColor,
                 18f
             )
         }
@@ -198,7 +281,7 @@ class MainActivity : Activity() {
 
         monthNavigation.addView(
             previousButton,
-            LinearLayout.LayoutParams(52, 52)
+            LinearLayout.LayoutParams(48, 48)
         )
 
         monthText = TextView(this).apply {
@@ -230,17 +313,18 @@ class MainActivity : Activity() {
 
         monthNavigation.addView(
             nextButton,
-            LinearLayout.LayoutParams(52, 52)
+            LinearLayout.LayoutParams(48, 48)
         )
 
         monthCard.addView(monthNavigation)
 
         val status = TextView(this).apply {
             text = "●  OFFLINE"
-            textSize = 12f
-            setTextColor(amberBright)
-            setPadding(4, 8, 0, 0)
+            textSize = 11f
+            setTextColor(blueBright)
+            setPadding(4, 7, 0, 0)
             typeface = Typeface.DEFAULT_BOLD
+            letterSpacing = 0.04f
         }
 
         monthCard.addView(status)
@@ -249,7 +333,7 @@ class MainActivity : Activity() {
             text = "Your money, organized by month"
             textSize = 13f
             setTextColor(secondary)
-            setPadding(4, 7, 0, 0)
+            setPadding(4, 5, 0, 0)
         }
 
         monthCard.addView(monthDescription)
@@ -259,7 +343,7 @@ class MainActivity : Activity() {
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
 
-        monthCardParams.setMargins(0, 24, 0, 0)
+        monthCardParams.setMargins(0, 10, 0, 0)
 
         content.addView(
             monthCard,
@@ -267,7 +351,7 @@ class MainActivity : Activity() {
         )
 
         val overviewTitle = sectionTitle(
-            "Overview",
+            "OVERVIEW",
             white
         )
 
@@ -276,7 +360,7 @@ class MainActivity : Activity() {
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
 
-        overviewTitleParams.setMargins(0, 28, 0, 12)
+        overviewTitleParams.setMargins(2, 24, 0, 10)
 
         content.addView(
             overviewTitle,
@@ -293,7 +377,7 @@ class MainActivity : Activity() {
 
         val expensesValue = TextView(this).apply {
             text = "€0.00"
-            textSize = 22f
+            textSize = 21f
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
             setPadding(0, 5, 0, 0)
@@ -311,7 +395,7 @@ class MainActivity : Activity() {
 
         overviewRow.addView(
             Space(this),
-            LinearLayout.LayoutParams(12, 1)
+            LinearLayout.LayoutParams(10, 1)
         )
 
         val remainingCard = LinearLayout(this).apply {
@@ -319,7 +403,7 @@ class MainActivity : Activity() {
             setPadding(16, 16, 16, 16)
             background = gradientBackground(
                 cardColor,
-                Color.rgb(51, 32, 6),
+                Color.rgb(24, 42, 70),
                 16f
             )
         }
@@ -328,8 +412,8 @@ class MainActivity : Activity() {
 
         val remainingValue = TextView(this).apply {
             text = "€0.00"
-            textSize = 22f
-            setTextColor(amberBright)
+            textSize = 21f
+            setTextColor(blueBright)
             typeface = Typeface.DEFAULT_BOLD
             setPadding(0, 5, 0, 0)
         }
@@ -347,7 +431,7 @@ class MainActivity : Activity() {
         content.addView(overviewRow)
 
         val incomeTitle = sectionTitle(
-            "Monthly Income",
+            "MONTHLY INCOME",
             white
         )
 
@@ -356,7 +440,7 @@ class MainActivity : Activity() {
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
 
-        incomeTitleParams.setMargins(0, 28, 0, 12)
+        incomeTitleParams.setMargins(2, 24, 0, 10)
 
         content.addView(
             incomeTitle,
@@ -393,8 +477,8 @@ class MainActivity : Activity() {
 
         val saveIncomeButton = createGradientButton(
             "Save Income",
-            amberDark,
-            amberBright
+            blueDark,
+            blueBright
         )
 
         saveIncomeButton.setOnClickListener {
@@ -408,7 +492,7 @@ class MainActivity : Activity() {
 
         content.addView(incomeCard)
                 val addTitle = sectionTitle(
-            "Add Expense",
+            "ADD EXPENSE",
             white
         )
 
@@ -417,7 +501,7 @@ class MainActivity : Activity() {
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
 
-        addTitleParams.setMargins(0, 28, 0, 12)
+        addTitleParams.setMargins(2, 24, 0, 10)
 
         content.addView(
             addTitle,
@@ -474,8 +558,8 @@ class MainActivity : Activity() {
 
         val addExpenseButton = createGradientButton(
             "Add Expense",
-            amberDark,
-            amberBright
+            blueDark,
+            blueBright
         )
 
         addExpenseButton.setOnClickListener {
@@ -490,7 +574,7 @@ class MainActivity : Activity() {
         content.addView(addCard)
 
         val recentTitle = sectionTitle(
-            "Recent Expenses",
+            "RECENT EXPENSES",
             white
         )
 
@@ -499,7 +583,7 @@ class MainActivity : Activity() {
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
 
-        recentTitleParams.setMargins(0, 28, 0, 12)
+        recentTitleParams.setMargins(2, 24, 0, 10)
 
         content.addView(
             recentTitle,
@@ -647,7 +731,7 @@ class MainActivity : Activity() {
             if (remaining < 0) {
                 Color.rgb(255, 95, 95)
             } else {
-                amberBright
+                blueBright
             }
         )
     }
@@ -794,8 +878,8 @@ class MainActivity : Activity() {
             )
             .show()
     }
-    
-            private fun saveData() {
+
+    private fun saveData() {
 
         val monthKey = currentMonthKey()
         val expensesArray = JSONArray()
@@ -833,8 +917,7 @@ class MainActivity : Activity() {
             )
             .apply()
     }
-
-    private fun loadData() {
+        private fun loadData() {
 
         income = 0.0
         expenses.clear()
@@ -1050,7 +1133,7 @@ class MainActivity : Activity() {
             }
 
             val accent = View(this).apply {
-                setBackgroundColor(amber)
+                setBackgroundColor(blueBright)
             }
 
             expenseCard.addView(
@@ -1110,7 +1193,7 @@ class MainActivity : Activity() {
             val deleteButton = TextView(this).apply {
                 text = "Delete"
                 textSize = 12f
-                setTextColor(amberBright)
+                setTextColor(blueBright)
                 gravity = Gravity.END
                 setPadding(8, 5, 0, 0)
 
@@ -1155,9 +1238,10 @@ class MainActivity : Activity() {
 
         return TextView(this).apply {
             this.text = text
-            textSize = 19f
+            textSize = 17f
             setTextColor(color)
             typeface = Typeface.DEFAULT_BOLD
+            letterSpacing = 0.04f
         }
     }
 
@@ -1190,13 +1274,14 @@ class MainActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             setPadding(16, 16, 16, 16)
             background = gradientBackground(
-                Color.rgb(17, 17, 17),
-                Color.rgb(28, 22, 15),
+                Color.rgb(18, 20, 27),
+                Color.rgb(24, 31, 45),
                 16f
             )
         }
     }
-        private fun createInput(
+
+    private fun createInput(
         hint: String,
         inputType: Int
     ): EditText {
@@ -1256,20 +1341,19 @@ class MainActivity : Activity() {
 
         return TextView(this).apply {
             this.text = text
-            textSize = 32f
-            setTextColor(amberBright)
+            textSize = 31f
+            setTextColor(blueBright)
             gravity = Gravity.CENTER
             typeface = Typeface.DEFAULT
             setPadding(4, 0, 4, 2)
 
             background = roundedBackground(
-                Color.rgb(32, 24, 14),
+                Color.rgb(24, 35, 54),
                 12f
             )
         }
     }
-
-    private fun roundedBackground(
+        private fun roundedBackground(
         color: Int,
         radius: Float
     ): GradientDrawable {
