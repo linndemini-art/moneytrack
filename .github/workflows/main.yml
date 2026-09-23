@@ -25,11 +25,24 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Build APK
-        run: gradle assembleDebug --stacktrace
+      - name: Restore signing keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.MONEYTRACK_KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > moneytrack-release.jks
+          chmod 600 moneytrack-release.jks
 
-      - name: Upload APK
+      - name: Build signed release APK
+        env:
+          MONEYTRACK_KEYSTORE_PATH: ${{ github.workspace }}/moneytrack-release.jks
+          MONEYTRACK_KEYSTORE_PASSWORD: ${{ secrets.MONEYTRACK_KEYSTORE_PASSWORD }}
+          MONEYTRACK_KEY_ALIAS: ${{ secrets.MONEYTRACK_KEY_ALIAS }}
+          MONEYTRACK_KEY_PASSWORD: ${{ secrets.MONEYTRACK_KEY_PASSWORD }}
+        run: |
+          gradle assembleRelease --stacktrace
+
+      - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
           name: MoneyTrack-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/release/app-release.apk
