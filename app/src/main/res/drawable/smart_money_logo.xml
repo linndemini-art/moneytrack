@@ -8,46 +8,33 @@
     <!-- Blue circular background -->
     <path
         android:fillColor="#70C6EB"
-        android:pathData="M54,0A54,54 0,1 0,54,108A54,54 0,1 0,54,0" />
+        android:pathData="M54,0
+            A54,54 0,1 0,54,108
+            A54,54 0,1 0,54,0" />
 
-    <!-- White M -->
+    <!-- White dollar sign, centered at 54,54 -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M15,32
-            L15,73
-            L21,73
-            L21,43
-            L29,58
-            L35,58
-            L43,43
-            L43,73
-            L49,73
-            L49,32
-            L42,32
-            L32,51
-            L22,32
-            Z" />
+        android:pathData="M54,24
+            L54,84
+            L57,84
+            L57,24
+            Z
 
-    <!-- Center separator -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M53,30
-            L55,30
-            L55,78
-            L53,78
-            Z" />
-
-    <!-- White T -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M63,32
-            L63,38
-            L75,38
-            L75,73
-            L81,73
-            L81,38
-            L93,38
-            L93,32
+            M65,39
+            C63,35 59,32 54,32
+            C47,32 42,36 42,42
+            C42,48 47,51 54,53
+            C61,55 66,58 66,64
+            C66,70 61,76 54,76
+            C48,76 43,73 41,68
+            L45,66
+            C47,69 50,71 54,71
+            C58,71 61,68 61,64
+            C61,61 58,59 53,58
+            C45,56 37,52 37,43
+            C37,35 44,29 54,29
+            C61,29 67,33 69,37
             Z" />
 
 </vector>
