@@ -27,8 +27,15 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+
 class MainActivity : Activity() {
 
+    companion object {
+        private const val REQUEST_EXPORT_BACKUP = 1001
+        private const val REQUEST_IMPORT_BACKUP = 1002
+    }
+
+    private lateinit var incomeInput: EditText
     private lateinit var incomeInput: EditText
     private lateinit var descriptionInput: EditText
     private lateinit var amountInput: EditText
