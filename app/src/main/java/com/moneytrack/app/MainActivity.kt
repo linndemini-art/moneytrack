@@ -649,8 +649,9 @@ class MainActivity : Activity() {
     private fun addExpense() {
 
         val description = descriptionInput.text
-            .toString()
-            .trim()
+    .toString()
+    .trim()
+    .ifEmpty { "No description" }
 
         val amount = amountInput.text
             .toString()
@@ -661,15 +662,6 @@ class MainActivity : Activity() {
             .selectedItem
             ?.toString()
             ?: "Other"
-
-        if (description.isEmpty()) {
-            Toast.makeText(
-                this,
-                "Please enter a description.",
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
 
         if (amount == null || amount <= 0) {
             Toast.makeText(
