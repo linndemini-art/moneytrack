@@ -8,8 +8,10 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.NumberPicker
 import android.widget.ScrollView
@@ -44,6 +46,11 @@ class MainActivity : Activity() {
     private lateinit var remainingText: TextView
     private lateinit var incomeDisplay: TextView
     private lateinit var monthText: TextView
+
+    private lateinit var menuDrawer: LinearLayout
+    private lateinit var menuOverlay: View
+
+    private var isMenuOpen = false
 
     private var income = 0.0
     private val expenses = mutableListOf<Expense>()
@@ -114,7 +121,11 @@ class MainActivity : Activity() {
 
     private fun buildInterface() {
 
-        val root = LinearLayout(this).apply {
+        val root = FrameLayout(this).apply {
+            setBackgroundColor(backgroundColor)
+        }
+
+        val mainContent = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(backgroundColor)
         }
@@ -179,13 +190,7 @@ class MainActivity : Activity() {
             )
         )
 
-        bankCard.addView(
-            cardTopRow,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        )
+        bankCard.addView(cardTopRow)
 
         val smartMoney = TextView(this).apply {
             text = "SMART MONEY"
@@ -197,6 +202,10 @@ class MainActivity : Activity() {
             )
             gravity = Gravity.CENTER
             letterSpacing = 0.04f
+
+            setOnClickListener {
+                openMenu()
+            }
         }
 
         val smartMoneyParams = LinearLayout.LayoutParams(
@@ -435,8 +444,7 @@ class MainActivity : Activity() {
         )
 
         content.addView(overviewRow)
-
-        val incomeTitle = sectionTitle(
+                val incomeTitle = sectionTitle(
             "MONTHLY INCOME",
             white
         )
@@ -671,7 +679,7 @@ class MainActivity : Activity() {
 
         scrollView.addView(content)
 
-        root.addView(
+        mainContent.addView(
             scrollView,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -679,9 +687,184 @@ class MainActivity : Activity() {
             )
         )
 
+        root.addView(
+            mainContent,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        createMenuDrawer(root)
+
         setContentView(root)
     }
-        private fun saveIncome() {
+
+    private fun createMenuDrawer(
+        root: FrameLayout
+    ) {
+
+        menuOverlay = View(this).apply {
+            setBackgroundColor(
+                Color.argb(
+                    150,
+                    0,
+                    0,
+                    0
+                )
+            )
+            alpha = 0f
+            visibility = View.GONE
+
+            setOnClickListener {
+                closeMenu()
+            }
+        }
+
+        root.addView(
+            menuOverlay,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        menuDrawer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(
+                Color.rgb(15, 17, 23)
+            )
+            setPadding(24, 58, 24, 24)
+            elevation = 20f
+        }
+
+        val menuTitle = TextView(this).apply {
+            text = "MENU"
+            textSize = 24f
+            setTextColor(white)
+            typeface = Typeface.DEFAULT_BOLD
+            letterSpacing = 0.05f
+        }
+
+        menuDrawer.addView(
+            menuTitle,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        val menuLine = View(this).apply {
+            setBackgroundColor(
+                Color.rgb(45, 49, 60)
+            )
+        }
+
+        val lineParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            1
+        )
+
+        lineParams.setMargins(
+            0,
+            18,
+            0,
+            0
+        )
+
+        menuDrawer.addView(
+            menuLine,
+            lineParams
+        )
+
+        val drawerWidth =
+            (resources.displayMetrics.widthPixels * 0.78f).toInt()
+
+        val drawerParams = FrameLayout.LayoutParams(
+            drawerWidth,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        )
+
+        drawerParams.gravity = Gravity.START
+
+        root.addView(
+            menuDrawer,
+            drawerParams
+        )
+
+        menuDrawer.post {
+            menuDrawer.translationX =
+                -menuDrawer.width.toFloat()
+        }
+    }
+
+    private fun openMenu() {
+
+        if (isMenuOpen) {
+            return
+        }
+
+        isMenuOpen = true
+
+        menuOverlay.visibility = View.VISIBLE
+        menuOverlay.animate()
+            .alpha(1f)
+            .setDuration(220)
+            .setInterpolator(
+                AccelerateDecelerateInterpolator()
+            )
+            .start()
+
+        menuDrawer.animate()
+            .translationX(0f)
+            .setDuration(280)
+            .setInterpolator(
+                AccelerateDecelerateInterpolator()
+            )
+            .start()
+    }
+
+    private fun closeMenu() {
+
+        if (!isMenuOpen) {
+            return
+        }
+
+        isMenuOpen = false
+
+        menuOverlay.animate()
+            .alpha(0f)
+            .setDuration(180)
+            .setInterpolator(
+                AccelerateDecelerateInterpolator()
+            )
+            .withEndAction {
+                menuOverlay.visibility = View.GONE
+            }
+            .start()
+
+        menuDrawer.animate()
+            .translationX(
+                -menuDrawer.width.toFloat()
+            )
+            .setDuration(240)
+            .setInterpolator(
+                AccelerateDecelerateInterpolator()
+            )
+            .start()
+    }
+
+    override fun onBackPressed() {
+
+        if (isMenuOpen) {
+            closeMenu()
+            return
+        }
+
+        super.onBackPressed()
+    }
+
+    private fun saveIncome() {
 
         val value = incomeInput.text
             .toString()
@@ -805,173 +988,48 @@ class MainActivity : Activity() {
         )
     }
 
-    private fun updateMonthDisplay() {
+    private fun incomeKey(): String {
 
-        val calendar = Calendar.getInstance()
-
-        calendar.set(
-            selectedYear,
-            selectedMonth,
-            1
-        )
-
-        val formatter = SimpleDateFormat(
-            "MMMM yyyy",
-            Locale.ENGLISH
-        )
-
-        monthText.text = formatter.format(
-            calendar.time
-        )
+        return "income_${currentMonthKey()}"
     }
 
-    private fun changeMonth(delta: Int) {
+    private fun expensesKey(): String {
 
-        saveData()
-
-        val calendar = Calendar.getInstance()
-
-        calendar.set(
-            selectedYear,
-            selectedMonth,
-            1
-        )
-
-        calendar.add(
-            Calendar.MONTH,
-            delta
-        )
-
-        selectedYear = calendar.get(
-            Calendar.YEAR
-        )
-
-        selectedMonth = calendar.get(
-            Calendar.MONTH
-        )
-
-        loadData()
-        updateMonthDisplay()
-        updateTotals()
-        refreshExpenses()
-
-        incomeInput.text.clear()
-        descriptionInput.text.clear()
-        amountInput.text.clear()
+        return "expenses_${currentMonthKey()}"
     }
+        private fun saveData() {
 
-    private fun showMonthPicker() {
-
-        val dialogLayout = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER
-            setPadding(24, 0, 24, 0)
-        }
-
-        val monthPicker = NumberPicker(this).apply {
-            minValue = 1
-            maxValue = 12
-            value = selectedMonth + 1
-            displayedValues = arrayOf(
-                "January",
-                "February",
-                "March",
-                "April",
-                "May",
-                "June",
-                "July",
-                "August",
-                "September",
-                "October",
-                "November",
-                "December"
-            )
-        }
-
-        val yearPicker = NumberPicker(this).apply {
-            minValue = selectedYear - 10
-            maxValue = selectedYear + 10
-            value = selectedYear
-        }
-
-        dialogLayout.addView(
-            monthPicker,
-            LinearLayout.LayoutParams(
-                0,
-                220,
-                1f
-            )
-        )
-
-        dialogLayout.addView(
-            yearPicker,
-            LinearLayout.LayoutParams(
-                0,
-                220,
-                1f
-            )
-        )
-
-        AlertDialog.Builder(this)
-            .setTitle("Select Month")
-            .setView(dialogLayout)
-            .setPositiveButton("Select") { _, _ ->
-
-                saveData()
-
-                selectedMonth = monthPicker.value - 1
-                selectedYear = yearPicker.value
-
-                loadData()
-                updateMonthDisplay()
-                updateTotals()
-                refreshExpenses()
-
-                incomeInput.text.clear()
-                descriptionInput.text.clear()
-                amountInput.text.clear()
-            }
-            .setNegativeButton(
-                "Cancel",
-                null
-            )
-            .show()
-    }
-
-    private fun saveData() {
-
-        val monthKey = currentMonthKey()
         val expensesArray = JSONArray()
 
         for (expense in expenses) {
 
-            val objectItem = JSONObject()
+            val item = JSONObject()
 
-            objectItem.put(
+            item.put(
                 "description",
                 expense.description
             )
 
-            objectItem.put(
+            item.put(
                 "category",
                 expense.category
             )
 
-            objectItem.put(
+            item.put(
                 "amount",
                 expense.amount
             )
 
-            expensesArray.put(objectItem)
+            expensesArray.put(item)
         }
 
         prefs.edit()
             .putString(
-                "income_$monthKey",
+                incomeKey(),
                 income.toString()
             )
             .putString(
-                "expenses_$monthKey",
+                expensesKey(),
                 expensesArray.toString()
             )
             .apply()
@@ -979,75 +1037,59 @@ class MainActivity : Activity() {
 
     private fun loadData() {
 
-        income = 0.0
+        income = prefs.getString(
+            incomeKey(),
+            "0"
+        )?.toDoubleOrNull() ?: 0.0
+
         expenses.clear()
 
-        val monthKey = currentMonthKey()
-
-        val savedIncome = prefs.getString(
-            "income_$monthKey",
+        val storedExpenses = prefs.getString(
+            expensesKey(),
             null
         )
 
-        val savedExpenses = prefs.getString(
-            "expenses_$monthKey",
-            null
-        )
+        if (!storedExpenses.isNullOrEmpty()) {
 
-        if (
-            savedIncome != null ||
-            savedExpenses != null
-        ) {
+            try {
 
-            if (!savedIncome.isNullOrEmpty()) {
+                val array = JSONArray(
+                    storedExpenses
+                )
 
-                income = savedIncome
-                    .toDoubleOrNull()
-                    ?: 0.0
-            }
-
-            if (!savedExpenses.isNullOrEmpty()) {
-
-                try {
-
-                    val array = JSONArray(
-                        savedExpenses
-                    )
-
-                    for (
-                        index in 0 until array.length()
-                    ) {
-
-                        val item =
-                            array.getJSONObject(index)
-
-                        expenses.add(
-                            Expense(
-                                description =
-                                    item.optString(
-                                        "description",
-                                        "No description"
-                                    ),
-                                category =
-                                    item.optString(
-                                        "category",
-                                        "Other"
-                                    ),
-                                amount =
-                                    item.optDouble(
-                                        "amount",
-                                        0.0
-                                    )
-                            )
-                        )
-                    }
-
-                } catch (
-                    exception: Exception
+                for (
+                    index in 0 until array.length()
                 ) {
 
-                    expenses.clear()
+                    val item =
+                        array.getJSONObject(index)
+
+                    expenses.add(
+                        Expense(
+                            description =
+                                item.optString(
+                                    "description",
+                                    "No description"
+                                ),
+                            category =
+                                item.optString(
+                                    "category",
+                                    "Other"
+                                ),
+                            amount =
+                                item.optDouble(
+                                    "amount",
+                                    0.0
+                                )
+                        )
+                    )
                 }
+
+            } catch (
+                exception: Exception
+            ) {
+
+                expenses.clear()
             }
 
             return
@@ -1134,6 +1176,131 @@ class MainActivity : Activity() {
                 )
                 .apply()
         }
+    }
+
+    private fun changeMonth(
+        direction: Int
+    ) {
+
+        val calendar = Calendar.getInstance()
+
+        calendar.set(
+            selectedYear,
+            selectedMonth,
+            1
+        )
+
+        calendar.add(
+            Calendar.MONTH,
+            direction
+        )
+
+        selectedYear =
+            calendar.get(Calendar.YEAR)
+
+        selectedMonth =
+            calendar.get(Calendar.MONTH)
+
+        loadData()
+        updateMonthDisplay()
+        updateTotals()
+        refreshExpenses()
+    }
+
+    private fun updateMonthDisplay() {
+
+        val calendar = Calendar.getInstance()
+
+        calendar.set(
+            selectedYear,
+            selectedMonth,
+            1
+        )
+
+        val formatter = SimpleDateFormat(
+            "MMMM yyyy",
+            Locale.ENGLISH
+        )
+
+        monthText.text =
+            formatter.format(calendar.time)
+                .replaceFirstChar {
+                    it.uppercase()
+                }
+    }
+
+    private fun showMonthPicker() {
+
+        val dialogLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(24, 8, 24, 8)
+        }
+
+        val yearPicker = NumberPicker(this).apply {
+            minValue = 2000
+            maxValue = 2100
+            value = selectedYear
+        }
+
+        val monthPicker = NumberPicker(this).apply {
+            minValue = 0
+            maxValue = 11
+            value = selectedMonth
+            displayedValues = arrayOf(
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December"
+            )
+        }
+
+        dialogLayout.addView(
+            yearPicker,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        dialogLayout.addView(
+            monthPicker,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        AlertDialog.Builder(this)
+            .setTitle("Select month")
+            .setView(dialogLayout)
+            .setNegativeButton(
+                "Cancel",
+                null
+            )
+            .setPositiveButton(
+                "OK"
+            ) { _, _ ->
+
+                selectedYear =
+                    yearPicker.value
+
+                selectedMonth =
+                    monthPicker.value
+
+                loadData()
+                updateMonthDisplay()
+                updateTotals()
+                refreshExpenses()
+            }
+            .show()
     }
 
     private fun refreshExpenses() {
@@ -1294,7 +1461,8 @@ class MainActivity : Activity() {
             )
         }
     }
-        private fun sectionTitle(
+
+    private fun sectionTitle(
         text: String,
         color: Int
     ): TextView {
@@ -1369,8 +1537,7 @@ class MainActivity : Activity() {
             )
         }
     }
-
-    private fun createGradientButton(
+        private fun createGradientButton(
         text: String,
         startColor: Int,
         endColor: Int
@@ -1760,7 +1927,8 @@ class MainActivity : Activity() {
             ).show()
         }
     }
-        override fun onActivityResult(
+
+    override fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
         data: Intent?
@@ -1867,3 +2035,4 @@ class MainActivity : Activity() {
         }
     }
 }
+    
