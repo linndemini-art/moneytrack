@@ -703,6 +703,156 @@ class MainActivity : Activity() {
     private fun createMenuDrawer(
         root: FrameLayout
     ) {
+        private fun openHistory() {
+
+    closeMenu()
+
+    val historyRoot = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        setBackgroundColor(backgroundColor)
+        setPadding(20, 60, 20, 28)
+    }
+
+    val historyTitle = TextView(this).apply {
+        text = "‹  HISTORY"
+        textSize = 24f
+        setTextColor(white)
+        typeface = Typeface.DEFAULT_BOLD
+    }
+
+    historyRoot.addView(
+        historyTitle,
+        LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+    )
+
+    val divider = View(this).apply {
+        setBackgroundColor(
+            Color.rgb(45, 49, 60)
+        )
+    }
+
+    val dividerParams = LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        1
+    )
+
+    dividerParams.setMargins(
+        0,
+        18,
+        0,
+        0
+    )
+
+    historyRoot.addView(
+        divider,
+        dividerParams
+    )
+
+    val monthKeys = prefs.all.keys
+        .mapNotNull { key ->
+            when {
+                key.startsWith("income_") ->
+                    key.removePrefix("income_")
+
+                key.startsWith("expenses_") ->
+                    key.removePrefix("expenses_")
+
+                else -> null
+            }
+        }
+        .filter {
+            it.matches(
+                Regex("\\d{4}-\\d{2}")
+            )
+        }
+        .distinct()
+        .filter { key ->
+
+            val incomeValue =
+                prefs.getString(
+                    "income_$key",
+                    "0"
+                )?.toDoubleOrNull() ?: 0.0
+
+            val expensesValue =
+                prefs.getString(
+                    "expenses_$key",
+                    null
+                )
+
+            val hasExpenses =
+                !expensesValue.isNullOrEmpty() &&
+                try {
+                    JSONArray(
+                        expensesValue
+                    ).length() > 0
+                } catch (_: Exception) {
+                    false
+                }
+
+            incomeValue != 0.0 || hasExpenses
+        }
+        .sortedDescending()
+
+    if (monthKeys.isEmpty()) {
+
+        val emptyText = TextView(this).apply {
+            text = "No history yet"
+            textSize = 20f
+            setTextColor(white)
+            gravity = Gravity.CENTER
+            setPadding(0, 80, 0, 12)
+        }
+
+        historyRoot.addView(
+            emptyText,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+    } else {
+
+        for (key in monthKeys) {
+
+            val parts = key.split("-")
+
+            val year = parts[0].toInt()
+            val month = parts[1].toInt() - 1
+
+            val monthName =
+                SimpleDateFormat(
+                    "MMMM yyyy",
+                    Locale.getDefault()
+                ).format(
+                    Calendar.getInstance().apply {
+                        set(year, month, 1)
+                    }.time
+                )
+
+            val monthItem = TextView(this).apply {
+                text = monthName
+                textSize = 18f
+                setTextColor(white)
+                setPadding(0, 22, 0, 22)
+            }
+
+            historyRoot.addView(
+                monthItem,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+            )
+        }
+    }
+
+    setContentView(historyRoot)
+        }
 
         menuOverlay = View(this).apply {
             setBackgroundColor(
