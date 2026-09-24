@@ -778,7 +778,7 @@ class MainActivity : Activity() {
         )
 
         val drawerWidth =
-            (resources.displayMetrics.widthPixels * 0.78f).toInt()
+            (resources.displayMetrics.widthPixels * 0.35f).toInt()
 
         val drawerParams = FrameLayout.LayoutParams(
             drawerWidth,
