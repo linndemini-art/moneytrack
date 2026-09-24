@@ -429,6 +429,82 @@ class MainActivity : Activity() {
             backupTitle,
             backupTitleParams
         )
+        val overviewRow = LinearLayout(this).apply {
+    orientation = LinearLayout.HORIZONTAL
+    gravity = Gravity.CENTER
+}
+
+val expensesCard = createSmallCard()
+
+val expensesLabel = smallLabel("Expenses")
+
+monthlyText = TextView(this).apply {
+    textSize = 20f
+    setTextColor(white)
+    typeface = Typeface.DEFAULT_BOLD
+}
+
+expensesCard.addView(expensesLabel)
+expensesCard.addView(monthlyText)
+
+overviewRow.addView(
+    expensesCard,
+    weightParams()
+)
+
+val remainingCard = createSmallCard()
+
+val remainingLabel = smallLabel("Remaining")
+
+remainingText = TextView(this).apply {
+    textSize = 20f
+    setTextColor(green)
+    typeface = Typeface.DEFAULT_BOLD
+}
+
+remainingCard.addView(remainingLabel)
+remainingCard.addView(remainingText)
+
+val remainingParams = weightParams()
+remainingParams.setMargins(10, 0, 0, 0)
+
+overviewRow.addView(
+    remainingCard,
+    remainingParams
+)
+
+content.addView(
+    overviewRow,
+    LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    )
+)
+
+val incomeCard = createSmallCard()
+
+val incomeLabel = smallLabel("Income")
+
+incomeDisplay = TextView(this).apply {
+    textSize = 20f
+    setTextColor(white)
+    typeface = Typeface.DEFAULT_BOLD
+}
+
+incomeCard.addView(incomeLabel)
+incomeCard.addView(incomeDisplay)
+
+val incomeCardParams = LinearLayout.LayoutParams(
+    LinearLayout.LayoutParams.MATCH_PARENT,
+    LinearLayout.LayoutParams.WRAP_CONTENT
+)
+
+incomeCardParams.setMargins(0, 10, 0, 0)
+
+content.addView(
+    incomeCard,
+    incomeCardParams
+)
 
         val backupCard = createMainCard()
 
