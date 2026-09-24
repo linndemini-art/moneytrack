@@ -776,6 +776,20 @@ class MainActivity : Activity() {
             menuLine,
             lineParams
         )
+        val historyItem = TextView(this).apply {
+    text = "History"
+    textSize = 18f
+    setTextColor(white)
+    setPadding(0, 24, 0, 24)
+}
+
+menuDrawer.addView(
+    historyItem,
+    LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    )
+)
 
         val drawerWidth =
             (resources.displayMetrics.widthPixels * 0.35f).toInt()
