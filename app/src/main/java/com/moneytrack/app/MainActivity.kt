@@ -2,10 +2,13 @@ package com.moneytrack.app
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.os.Bundle
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.os.Bundle
+import android.text.InputType
 import android.view.Gravity
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -15,13 +18,9 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.NumberPicker
 import android.widget.ScrollView
-import android.widget.Space
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
-import android.content.Context
-import android.content.Intent
-import android.text.InputType
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.NumberFormat
@@ -267,14 +266,12 @@ class MainActivity : Activity() {
 
         bankCard.addView(cardBottomRow)
 
-        val bankCardParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            (190 * resources.displayMetrics.density).toInt()
-        )
-
         content.addView(
             bankCard,
-            bankCardParams
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                (190 * resources.displayMetrics.density).toInt()
+            )
         )
 
         val monthCard = LinearLayout(this).apply {
@@ -384,7 +381,200 @@ class MainActivity : Activity() {
             overviewTitle,
             overviewTitleParams
         )
-                val recentTitle = sectionTitle(
+
+        val overviewRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+        }
+
+        val expensesCard = createSmallCard()
+
+        expensesCard.addView(
+            smallLabel("Expenses")
+        )
+
+        monthlyText = TextView(this).apply {
+            text = "€0.00"
+            textSize = 21f
+            setTextColor(white)
+            typeface = Typeface.DEFAULT_BOLD
+            setPadding(0, 5, 0, 0)
+        }
+
+        expensesCard.addView(monthlyText)
+
+        overviewRow.addView(
+            expensesCard,
+            weightParams()
+        )
+
+        val remainingCard = createSmallCard()
+
+        remainingCard.addView(
+            smallLabel("Remaining")
+        )
+
+        remainingText = TextView(this).apply {
+            text = "€0.00"
+            textSize = 21f
+            setTextColor(blueBright)
+            typeface = Typeface.DEFAULT_BOLD
+            setPadding(0, 5, 0, 0)
+        }
+
+        remainingCard.addView(remainingText)
+
+        val remainingParams = weightParams()
+        remainingParams.setMargins(10, 0, 0, 0)
+
+        overviewRow.addView(
+            remainingCard,
+            remainingParams
+        )
+
+        content.addView(
+            overviewRow
+        )
+
+        val incomeTitle = sectionTitle(
+            "MONTHLY INCOME",
+            white
+        )
+
+        val incomeTitleParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        incomeTitleParams.setMargins(2, 24, 0, 10)
+
+        content.addView(
+            incomeTitle,
+            incomeTitleParams
+        )
+
+        val incomeCard = createMainCard()
+
+        incomeDisplay = TextView(this).apply {
+            text = "€0.00"
+            textSize = 24f
+            setTextColor(green)
+            typeface = Typeface.DEFAULT_BOLD
+        }
+
+        incomeCard.addView(
+            incomeDisplay
+        )
+
+        incomeInput = createInput(
+            "Enter monthly income",
+            InputType.TYPE_CLASS_NUMBER or
+                InputType.TYPE_NUMBER_FLAG_DECIMAL
+        )
+
+        incomeCard.addView(
+            incomeInput,
+            inputParams()
+        )
+
+        val saveIncomeButton = createGradientButton(
+            "Save Income",
+            blueDark,
+            blueBright
+        )
+
+        saveIncomeButton.setOnClickListener {
+            saveIncome()
+        }
+
+        incomeCard.addView(
+            saveIncomeButton,
+            buttonParams()
+        )
+
+        content.addView(incomeCard)
+
+        val addTitle = sectionTitle(
+            "ADD EXPENSE",
+            white
+        )
+
+        val addTitleParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        addTitleParams.setMargins(2, 24, 0, 10)
+
+        content.addView(
+            addTitle,
+            addTitleParams
+        )
+                val addCard = createMainCard()
+
+        descriptionInput = createInput(
+            "Description",
+            InputType.TYPE_CLASS_TEXT
+        )
+
+        addCard.addView(
+            descriptionInput,
+            inputParams()
+        )
+
+        amountInput = createInput(
+            "Amount",
+            InputType.TYPE_CLASS_NUMBER or
+                InputType.TYPE_NUMBER_FLAG_DECIMAL
+        )
+
+        addCard.addView(
+            amountInput,
+            inputParams()
+        )
+
+        categorySpinner = Spinner(this).apply {
+            background = roundedBackground(
+                surfaceColor,
+                12f
+            )
+            setPadding(8, 0, 8, 0)
+        }
+
+        val adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            categories
+        )
+
+        adapter.setDropDownViewResource(
+            android.R.layout.simple_spinner_dropdown_item
+        )
+
+        categorySpinner.adapter = adapter
+
+        addCard.addView(
+            categorySpinner,
+            spinnerParams()
+        )
+
+        val addExpenseButton = createGradientButton(
+            "Add Expense",
+            blueDark,
+            blueBright
+        )
+
+        addExpenseButton.setOnClickListener {
+            addExpense()
+        }
+
+        addCard.addView(
+            addExpenseButton,
+            buttonParams()
+        )
+
+        content.addView(addCard)
+
+        val recentTitle = sectionTitle(
             "RECENT EXPENSES",
             white
         )
@@ -429,82 +619,6 @@ class MainActivity : Activity() {
             backupTitle,
             backupTitleParams
         )
-        val overviewRow = LinearLayout(this).apply {
-    orientation = LinearLayout.HORIZONTAL
-    gravity = Gravity.CENTER
-}
-
-val expensesCard = createSmallCard()
-
-val expensesLabel = smallLabel("Expenses")
-
-monthlyText = TextView(this).apply {
-    textSize = 20f
-    setTextColor(white)
-    typeface = Typeface.DEFAULT_BOLD
-}
-
-expensesCard.addView(expensesLabel)
-expensesCard.addView(monthlyText)
-
-overviewRow.addView(
-    expensesCard,
-    weightParams()
-)
-
-val remainingCard = createSmallCard()
-
-val remainingLabel = smallLabel("Remaining")
-
-remainingText = TextView(this).apply {
-    textSize = 20f
-    setTextColor(green)
-    typeface = Typeface.DEFAULT_BOLD
-}
-
-remainingCard.addView(remainingLabel)
-remainingCard.addView(remainingText)
-
-val remainingParams = weightParams()
-remainingParams.setMargins(10, 0, 0, 0)
-
-overviewRow.addView(
-    remainingCard,
-    remainingParams
-)
-
-content.addView(
-    overviewRow,
-    LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT
-    )
-)
-
-val incomeCard = createSmallCard()
-
-val incomeLabel = smallLabel("Income")
-
-incomeDisplay = TextView(this).apply {
-    textSize = 20f
-    setTextColor(white)
-    typeface = Typeface.DEFAULT_BOLD
-}
-
-incomeCard.addView(incomeLabel)
-incomeCard.addView(incomeDisplay)
-
-val incomeCardParams = LinearLayout.LayoutParams(
-    LinearLayout.LayoutParams.MATCH_PARENT,
-    LinearLayout.LayoutParams.WRAP_CONTENT
-)
-
-incomeCardParams.setMargins(0, 10, 0, 0)
-
-content.addView(
-    incomeCard,
-    incomeCardParams
-)
 
         val backupCard = createMainCard()
 
@@ -841,13 +955,13 @@ content.addView(
 
                 val hasExpenses =
                     !expensesValue.isNullOrEmpty() &&
-                    try {
-                        JSONArray(
-                            expensesValue
-                        ).length() > 0
-                    } catch (_: Exception) {
-                        false
-                    }
+                        try {
+                            JSONArray(
+                                expensesValue
+                            ).length() > 0
+                        } catch (_: Exception) {
+                            false
+                        }
 
                 incomeValue != 0.0 || hasExpenses
             }
@@ -870,10 +984,8 @@ content.addView(
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
             )
-
         } else {
-
-            for (key in monthKeys) {
+                        for (key in monthKeys) {
 
                 val parts = key.split("-")
 
@@ -1068,7 +1180,8 @@ content.addView(
             }
         )
     }
-        private fun currentMonthKey(): String {
+
+    private fun currentMonthKey(): String {
 
         return String.format(
             Locale.US,
@@ -1305,8 +1418,7 @@ content.addView(
         updateTotals()
         refreshExpenses()
     }
-
-    private fun updateMonthDisplay() {
+        private fun updateMonthDisplay() {
 
         val calendar =
             Calendar.getInstance()
@@ -1428,7 +1540,8 @@ content.addView(
                     orientation =
                         LinearLayout.VERTICAL
 
-                    gravity = Gravity.CENTER
+                    gravity =
+                        Gravity.CENTER
 
                     setPadding(
                         20,
@@ -1780,7 +1893,8 @@ content.addView(
                 )
         }
     }
-            private fun createInput(
+
+    private fun createInput(
         hint: String,
         inputType: Int
     ): EditText {
@@ -1864,8 +1978,7 @@ content.addView(
                 )
         }
     }
-
-    private fun roundedBackground(
+        private fun roundedBackground(
         color: Int,
         radius: Float
     ): GradientDrawable {
@@ -2338,4 +2451,4 @@ content.addView(
             }
         }
     }
-}
+} 
