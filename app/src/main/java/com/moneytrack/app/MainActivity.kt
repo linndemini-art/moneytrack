@@ -51,6 +51,7 @@ class MainActivity : Activity() {
     private lateinit var menuOverlay: View
 
     private var isMenuOpen = false
+    private var isHistoryOpen = false
 
     private var income = 0.0
     private val expenses = mutableListOf<Expense>()
@@ -120,6 +121,8 @@ class MainActivity : Activity() {
     }
 
     private fun buildInterface() {
+
+        isHistoryOpen = false
 
         val root = FrameLayout(this).apply {
             setBackgroundColor(backgroundColor)
@@ -381,214 +384,7 @@ class MainActivity : Activity() {
             overviewTitle,
             overviewTitleParams
         )
-
-        val overviewRow = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-        }
-
-        val expensesCard = createSmallCard()
-
-        val expensesLabel = smallLabel("Expenses")
-
-        val expensesValue = TextView(this).apply {
-            text = "€0.00"
-            textSize = 21f
-            setTextColor(white)
-            typeface = Typeface.DEFAULT_BOLD
-            setPadding(0, 5, 0, 0)
-        }
-
-        monthlyText = expensesValue
-
-        expensesCard.addView(expensesLabel)
-        expensesCard.addView(expensesValue)
-
-        overviewRow.addView(
-            expensesCard,
-            weightParams()
-        )
-
-        overviewRow.addView(
-            Space(this),
-            LinearLayout.LayoutParams(10, 1)
-        )
-
-        val remainingCard = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
-            background = gradientBackground(
-                cardColor,
-                Color.rgb(24, 42, 70),
-                16f
-            )
-        }
-
-        val remainingLabel = smallLabel("Remaining")
-
-        val remainingValue = TextView(this).apply {
-            text = "€0.00"
-            textSize = 21f
-            setTextColor(blueBright)
-            typeface = Typeface.DEFAULT_BOLD
-            setPadding(0, 5, 0, 0)
-        }
-
-        remainingText = remainingValue
-
-        remainingCard.addView(remainingLabel)
-        remainingCard.addView(remainingValue)
-
-        overviewRow.addView(
-            remainingCard,
-            weightParams()
-        )
-
-        content.addView(overviewRow)
-                val incomeTitle = sectionTitle(
-            "MONTHLY INCOME",
-            white
-        )
-
-        val incomeTitleParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-
-        incomeTitleParams.setMargins(2, 24, 0, 10)
-
-        content.addView(
-            incomeTitle,
-            incomeTitleParams
-        )
-
-        val incomeCard = createMainCard()
-
-        incomeDisplay = TextView(this).apply {
-            text = "€0.00"
-            textSize = 24f
-            setTextColor(green)
-            typeface = Typeface.DEFAULT_BOLD
-        }
-
-        incomeCard.addView(
-            incomeDisplay,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        )
-
-        incomeInput = createInput(
-            "Enter monthly income",
-            InputType.TYPE_CLASS_NUMBER or
-                InputType.TYPE_NUMBER_FLAG_DECIMAL
-        )
-
-        incomeCard.addView(
-            incomeInput,
-            inputParams()
-        )
-
-        val saveIncomeButton = createGradientButton(
-            "Save Income",
-            blueDark,
-            blueBright
-        )
-
-        saveIncomeButton.setOnClickListener {
-            saveIncome()
-        }
-
-        incomeCard.addView(
-            saveIncomeButton,
-            buttonParams()
-        )
-
-        content.addView(incomeCard)
-
-        val addTitle = sectionTitle(
-            "ADD EXPENSE",
-            white
-        )
-
-        val addTitleParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-
-        addTitleParams.setMargins(2, 24, 0, 10)
-
-        content.addView(
-            addTitle,
-            addTitleParams
-        )
-
-        val addCard = createMainCard()
-
-        descriptionInput = createInput(
-            "Description",
-            InputType.TYPE_CLASS_TEXT
-        )
-
-        addCard.addView(
-            descriptionInput,
-            inputParams()
-        )
-
-        amountInput = createInput(
-            "Amount",
-            InputType.TYPE_CLASS_NUMBER or
-                InputType.TYPE_NUMBER_FLAG_DECIMAL
-        )
-
-        addCard.addView(
-            amountInput,
-            inputParams()
-        )
-
-        categorySpinner = Spinner(this).apply {
-            background = roundedBackground(
-                surfaceColor,
-                12f
-            )
-            setPadding(8, 0, 8, 0)
-        }
-
-        val adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_item,
-            categories
-        )
-
-        adapter.setDropDownViewResource(
-            android.R.layout.simple_spinner_dropdown_item
-        )
-
-        categorySpinner.adapter = adapter
-
-        addCard.addView(
-            categorySpinner,
-            spinnerParams()
-        )
-
-        val addExpenseButton = createGradientButton(
-            "Add Expense",
-            blueDark,
-            blueBright
-        )
-
-        addExpenseButton.setOnClickListener {
-            addExpense()
-        }
-
-        addCard.addView(
-            addExpenseButton,
-            buttonParams()
-        )
-
-        content.addView(addCard)
-
-        val recentTitle = sectionTitle(
+                val recentTitle = sectionTitle(
             "RECENT EXPENSES",
             white
         )
@@ -698,162 +494,16 @@ class MainActivity : Activity() {
         createMenuDrawer(root)
 
         setContentView(root)
+
+        loadData()
+        updateMonthDisplay()
+        updateTotals()
+        refreshExpenses()
     }
 
     private fun createMenuDrawer(
         root: FrameLayout
     ) {
-        private fun openHistory() {
-
-    closeMenu()
-
-    val historyRoot = LinearLayout(this).apply {
-        orientation = LinearLayout.VERTICAL
-        setBackgroundColor(backgroundColor)
-        setPadding(20, 60, 20, 28)
-    }
-
-    val historyTitle = TextView(this).apply {
-        text = "‹  HISTORY"
-        textSize = 24f
-        setTextColor(white)
-        typeface = Typeface.DEFAULT_BOLD
-    }
-
-    historyRoot.addView(
-        historyTitle,
-        LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-    )
-
-    val divider = View(this).apply {
-        setBackgroundColor(
-            Color.rgb(45, 49, 60)
-        )
-    }
-
-    val dividerParams = LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT,
-        1
-    )
-
-    dividerParams.setMargins(
-        0,
-        18,
-        0,
-        0
-    )
-
-    historyRoot.addView(
-        divider,
-        dividerParams
-    )
-
-    val monthKeys = prefs.all.keys
-        .mapNotNull { key ->
-            when {
-                key.startsWith("income_") ->
-                    key.removePrefix("income_")
-
-                key.startsWith("expenses_") ->
-                    key.removePrefix("expenses_")
-
-                else -> null
-            }
-        }
-        .filter {
-            it.matches(
-                Regex("\\d{4}-\\d{2}")
-            )
-        }
-        .distinct()
-        .filter { key ->
-
-            val incomeValue =
-                prefs.getString(
-                    "income_$key",
-                    "0"
-                )?.toDoubleOrNull() ?: 0.0
-
-            val expensesValue =
-                prefs.getString(
-                    "expenses_$key",
-                    null
-                )
-
-            val hasExpenses =
-                !expensesValue.isNullOrEmpty() &&
-                try {
-                    JSONArray(
-                        expensesValue
-                    ).length() > 0
-                } catch (_: Exception) {
-                    false
-                }
-
-            incomeValue != 0.0 || hasExpenses
-        }
-        .sortedDescending()
-
-    if (monthKeys.isEmpty()) {
-
-        val emptyText = TextView(this).apply {
-            text = "No history yet"
-            textSize = 20f
-            setTextColor(white)
-            gravity = Gravity.CENTER
-            setPadding(0, 80, 0, 12)
-        }
-
-        historyRoot.addView(
-            emptyText,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        )
-
-    } else {
-
-        for (key in monthKeys) {
-
-            val parts = key.split("-")
-
-            val year = parts[0].toInt()
-            val month = parts[1].toInt() - 1
-
-            val monthName =
-                SimpleDateFormat(
-                    "MMMM yyyy",
-                    Locale.getDefault()
-                ).format(
-                    Calendar.getInstance().apply {
-                        set(year, month, 1)
-                    }.time
-                )
-
-            val monthItem = TextView(this).apply {
-                text = monthName
-                textSize = 18f
-                setTextColor(white)
-                setPadding(0, 22, 0, 22)
-            }
-
-            historyRoot.addView(
-                monthItem,
-                LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-            )
-        }
-    }
-
-    setContentView(historyRoot)
-        }
-
         menuOverlay = View(this).apply {
             setBackgroundColor(
                 Color.argb(
@@ -863,6 +513,7 @@ class MainActivity : Activity() {
                     0
                 )
             )
+
             alpha = 0f
             visibility = View.GONE
 
@@ -926,20 +577,25 @@ class MainActivity : Activity() {
             menuLine,
             lineParams
         )
-        val historyItem = TextView(this).apply {
-    text = "History"
-    textSize = 18f
-    setTextColor(white)
-    setPadding(0, 24, 0, 24)
-}
 
-menuDrawer.addView(
-    historyItem,
-    LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT
-    )
-)
+        val historyItem = TextView(this).apply {
+            text = "History"
+            textSize = 18f
+            setTextColor(white)
+            setPadding(0, 24, 0, 24)
+
+            setOnClickListener {
+                openHistory()
+            }
+        }
+
+        menuDrawer.addView(
+            historyItem,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
 
         val drawerWidth =
             (resources.displayMetrics.widthPixels * 0.35f).toInt()
@@ -971,6 +627,7 @@ menuDrawer.addView(
         isMenuOpen = true
 
         menuOverlay.visibility = View.VISIBLE
+
         menuOverlay.animate()
             .alpha(1f)
             .setDuration(220)
@@ -1018,10 +675,186 @@ menuDrawer.addView(
             .start()
     }
 
+    private fun openHistory() {
+
+        closeMenu()
+
+        isHistoryOpen = true
+
+        val historyRoot = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(backgroundColor)
+            setPadding(20, 60, 20, 28)
+        }
+
+        val historyTitle = TextView(this).apply {
+            text = "‹  HISTORY"
+            textSize = 24f
+            setTextColor(white)
+            typeface = Typeface.DEFAULT_BOLD
+            setPadding(0, 0, 0, 10)
+
+            setOnClickListener {
+                isHistoryOpen = false
+                buildInterface()
+            }
+        }
+
+        historyRoot.addView(
+            historyTitle,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        val divider = View(this).apply {
+            setBackgroundColor(
+                Color.rgb(45, 49, 60)
+            )
+        }
+
+        val dividerParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            1
+        )
+
+        dividerParams.setMargins(
+            0,
+            8,
+            0,
+            0
+        )
+
+        historyRoot.addView(
+            divider,
+            dividerParams
+        )
+
+        val monthKeys = prefs.all.keys
+            .mapNotNull { key ->
+                when {
+                    key.startsWith("income_") ->
+                        key.removePrefix("income_")
+
+                    key.startsWith("expenses_") ->
+                        key.removePrefix("expenses_")
+
+                    else -> null
+                }
+            }
+            .filter {
+                it.matches(
+                    Regex("\\d{4}-\\d{2}")
+                )
+            }
+            .distinct()
+            .filter { key ->
+
+                val incomeValue =
+                    prefs.getString(
+                        "income_$key",
+                        "0"
+                    )?.toDoubleOrNull() ?: 0.0
+
+                val expensesValue =
+                    prefs.getString(
+                        "expenses_$key",
+                        null
+                    )
+
+                val hasExpenses =
+                    !expensesValue.isNullOrEmpty() &&
+                    try {
+                        JSONArray(
+                            expensesValue
+                        ).length() > 0
+                    } catch (_: Exception) {
+                        false
+                    }
+
+                incomeValue != 0.0 || hasExpenses
+            }
+            .sortedDescending()
+
+        if (monthKeys.isEmpty()) {
+
+            val emptyText = TextView(this).apply {
+                text = "No history yet"
+                textSize = 20f
+                setTextColor(white)
+                gravity = Gravity.CENTER
+                setPadding(0, 80, 0, 12)
+            }
+
+            historyRoot.addView(
+                emptyText,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+            )
+
+        } else {
+
+            for (key in monthKeys) {
+
+                val parts = key.split("-")
+
+                val year = parts[0].toInt()
+                val month = parts[1].toInt() - 1
+
+                val monthName =
+                    SimpleDateFormat(
+                        "MMMM yyyy",
+                        Locale.ENGLISH
+                    ).format(
+                        Calendar.getInstance().apply {
+                            set(
+                                year,
+                                month,
+                                1
+                            )
+                        }.time
+                    )
+
+                val monthItem = TextView(this).apply {
+                    text = monthName
+                    textSize = 18f
+                    setTextColor(white)
+                    setPadding(0, 22, 0, 22)
+
+                    setOnClickListener {
+                        selectedYear = year
+                        selectedMonth = month
+                        isHistoryOpen = false
+                        buildInterface()
+                    }
+                }
+
+                historyRoot.addView(
+                    monthItem,
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                )
+            }
+        }
+
+        setContentView(historyRoot)
+    }
+
     override fun onBackPressed() {
 
         if (isMenuOpen) {
             closeMenu()
+            return
+        }
+
+        if (isHistoryOpen) {
+            isHistoryOpen = false
+            buildInterface()
             return
         }
 
@@ -1041,6 +874,7 @@ menuDrawer.addView(
                 "Please enter a valid income.",
                 Toast.LENGTH_SHORT
             ).show()
+
             return
         }
 
@@ -1083,6 +917,7 @@ menuDrawer.addView(
                 "Please enter a valid amount.",
                 Toast.LENGTH_SHORT
             ).show()
+
             return
         }
 
@@ -1108,9 +943,14 @@ menuDrawer.addView(
         ).show()
     }
 
-    private fun deleteExpense(index: Int) {
+    private fun deleteExpense(
+        index: Int
+    ) {
 
-        if (index < 0 || index >= expenses.size) {
+        if (
+            index < 0 ||
+            index >= expenses.size
+        ) {
             return
         }
 
@@ -1123,26 +963,36 @@ menuDrawer.addView(
 
     private fun updateTotals() {
 
-        val totalExpenses = expenses.sumOf {
-            it.amount
-        }
+        val totalExpenses =
+            expenses.sumOf {
+                it.amount
+            }
 
-        val remaining = income - totalExpenses
+        val remaining =
+            income - totalExpenses
 
-        monthlyText.text = money(totalExpenses)
-        remainingText.text = money(remaining)
-        incomeDisplay.text = money(income)
+        monthlyText.text =
+            money(totalExpenses)
+
+        remainingText.text =
+            money(remaining)
+
+        incomeDisplay.text =
+            money(income)
 
         remainingText.setTextColor(
             if (remaining < 0) {
-                Color.rgb(255, 95, 95)
+                Color.rgb(
+                    255,
+                    95,
+                    95
+                )
             } else {
                 blueBright
             }
         )
     }
-
-    private fun currentMonthKey(): String {
+        private fun currentMonthKey(): String {
 
         return String.format(
             Locale.US,
@@ -1153,15 +1003,14 @@ menuDrawer.addView(
     }
 
     private fun incomeKey(): String {
-
         return "income_${currentMonthKey()}"
     }
 
     private fun expensesKey(): String {
-
         return "expenses_${currentMonthKey()}"
     }
-        private fun saveData() {
+
+    private fun saveData() {
 
         val expensesArray = JSONArray()
 
@@ -1217,9 +1066,8 @@ menuDrawer.addView(
 
             try {
 
-                val array = JSONArray(
-                    storedExpenses
-                )
+                val array =
+                    JSONArray(storedExpenses)
 
                 for (
                     index in 0 until array.length()
@@ -1259,22 +1107,25 @@ menuDrawer.addView(
             return
         }
 
-        val migrationDone = prefs.getBoolean(
-            "legacy_data_migrated",
-            false
-        )
+        val migrationDone =
+            prefs.getBoolean(
+                "legacy_data_migrated",
+                false
+            )
 
         if (!migrationDone) {
 
-            val legacyIncome = prefs.getString(
-                "income",
-                null
-            )
+            val legacyIncome =
+                prefs.getString(
+                    "income",
+                    null
+                )
 
-            val legacyExpenses = prefs.getString(
-                "expenses",
-                null
-            )
+            val legacyExpenses =
+                prefs.getString(
+                    "expenses",
+                    null
+                )
 
             if (
                 !legacyIncome.isNullOrEmpty() ||
@@ -1290,16 +1141,19 @@ menuDrawer.addView(
 
                     try {
 
-                        val array = JSONArray(
-                            legacyExpenses
-                        )
+                        val array =
+                            JSONArray(
+                                legacyExpenses
+                            )
 
                         for (
                             index in 0 until array.length()
                         ) {
 
                             val item =
-                                array.getJSONObject(index)
+                                array.getJSONObject(
+                                    index
+                                )
 
                             expenses.add(
                                 Expense(
@@ -1346,7 +1200,8 @@ menuDrawer.addView(
         direction: Int
     ) {
 
-        val calendar = Calendar.getInstance()
+        val calendar =
+            Calendar.getInstance()
 
         calendar.set(
             selectedYear,
@@ -1360,10 +1215,14 @@ menuDrawer.addView(
         )
 
         selectedYear =
-            calendar.get(Calendar.YEAR)
+            calendar.get(
+                Calendar.YEAR
+            )
 
         selectedMonth =
-            calendar.get(Calendar.MONTH)
+            calendar.get(
+                Calendar.MONTH
+            )
 
         loadData()
         updateMonthDisplay()
@@ -1373,7 +1232,8 @@ menuDrawer.addView(
 
     private fun updateMonthDisplay() {
 
-        val calendar = Calendar.getInstance()
+        val calendar =
+            Calendar.getInstance()
 
         calendar.set(
             selectedYear,
@@ -1381,50 +1241,64 @@ menuDrawer.addView(
             1
         )
 
-        val formatter = SimpleDateFormat(
-            "MMMM yyyy",
-            Locale.ENGLISH
-        )
+        val formatter =
+            SimpleDateFormat(
+                "MMMM yyyy",
+                Locale.ENGLISH
+            )
 
         monthText.text =
-            formatter.format(calendar.time)
-                .replaceFirstChar {
-                    it.uppercase()
-                }
+            formatter.format(
+                calendar.time
+            ).replaceFirstChar {
+                it.uppercase()
+            }
     }
 
     private fun showMonthPicker() {
 
-        val dialogLayout = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(24, 8, 24, 8)
-        }
+        val dialogLayout =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
 
-        val yearPicker = NumberPicker(this).apply {
-            minValue = 2000
-            maxValue = 2100
-            value = selectedYear
-        }
+                setPadding(
+                    24,
+                    8,
+                    24,
+                    8
+                )
+            }
 
-        val monthPicker = NumberPicker(this).apply {
-            minValue = 0
-            maxValue = 11
-            value = selectedMonth
-            displayedValues = arrayOf(
-                "January",
-                "February",
-                "March",
-                "April",
-                "May",
-                "June",
-                "July",
-                "August",
-                "September",
-                "October",
-                "November",
-                "December"
-            )
-        }
+        val yearPicker =
+            NumberPicker(this).apply {
+                minValue = 2000
+                maxValue = 2100
+                value = selectedYear
+            }
+
+        val monthPicker =
+            NumberPicker(this).apply {
+                minValue = 0
+                maxValue = 11
+                value = selectedMonth
+
+                displayedValues =
+                    arrayOf(
+                        "January",
+                        "February",
+                        "March",
+                        "April",
+                        "May",
+                        "June",
+                        "July",
+                        "August",
+                        "September",
+                        "October",
+                        "November",
+                        "December"
+                    )
+            }
 
         dialogLayout.addView(
             yearPicker,
@@ -1473,34 +1347,74 @@ menuDrawer.addView(
 
         if (expenses.isEmpty()) {
 
-            val emptyCard = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                gravity = Gravity.CENTER
-                setPadding(20, 22, 20, 22)
-                background = roundedBackground(
-                    cardColor,
-                    16f
-                )
-            }
+            val emptyCard =
+                LinearLayout(this).apply {
+                    orientation =
+                        LinearLayout.VERTICAL
 
-            val emptyTitle = TextView(this).apply {
-                text = "No expenses this month"
-                textSize = 15f
-                setTextColor(white)
-                typeface = Typeface.DEFAULT_BOLD
-                gravity = Gravity.CENTER
-            }
+                    gravity = Gravity.CENTER
 
-            val emptySubtitle = TextView(this).apply {
-                text = "Your spending will appear here"
-                textSize = 12f
-                setTextColor(muted)
-                gravity = Gravity.CENTER
-                setPadding(0, 5, 0, 0)
-            }
+                    setPadding(
+                        20,
+                        22,
+                        20,
+                        22
+                    )
 
-            emptyCard.addView(emptyTitle)
-            emptyCard.addView(emptySubtitle)
+                    background =
+                        roundedBackground(
+                            cardColor,
+                            16f
+                        )
+                }
+
+            val emptyTitle =
+                TextView(this).apply {
+                    text =
+                        "No expenses this month"
+
+                    textSize = 15f
+
+                    setTextColor(
+                        white
+                    )
+
+                    typeface =
+                        Typeface.DEFAULT_BOLD
+
+                    gravity =
+                        Gravity.CENTER
+                }
+
+            val emptySubtitle =
+                TextView(this).apply {
+                    text =
+                        "Your spending will appear here"
+
+                    textSize = 12f
+
+                    setTextColor(
+                        muted
+                    )
+
+                    gravity =
+                        Gravity.CENTER
+
+                    setPadding(
+                        0,
+                        5,
+                        0,
+                        0
+                    )
+                }
+
+            emptyCard.addView(
+                emptyTitle
+            )
+
+            emptyCard.addView(
+                emptySubtitle
+            )
 
             expensesContainer.addView(
                 emptyCard,
@@ -1513,23 +1427,41 @@ menuDrawer.addView(
             return
         }
 
-        for (index in expenses.indices.reversed()) {
+        for (
+            index in expenses.indices.reversed()
+        ) {
 
-            val expense = expenses[index]
+            val expense =
+                expenses[index]
 
-            val expenseCard = LinearLayout(this).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                setPadding(16, 15, 12, 15)
-                background = roundedBackground(
-                    cardColor,
-                    16f
-                )
-            }
+            val expenseCard =
+                LinearLayout(this).apply {
+                    orientation =
+                        LinearLayout.HORIZONTAL
 
-            val accent = View(this).apply {
-                setBackgroundColor(blueBright)
-            }
+                    gravity =
+                        Gravity.CENTER_VERTICAL
+
+                    setPadding(
+                        16,
+                        15,
+                        12,
+                        15
+                    )
+
+                    background =
+                        roundedBackground(
+                            cardColor,
+                            16f
+                        )
+                }
+
+            val accent =
+                View(this).apply {
+                    setBackgroundColor(
+                        blueBright
+                    )
+                }
 
             expenseCard.addView(
                 accent,
@@ -1539,27 +1471,60 @@ menuDrawer.addView(
                 )
             )
 
-            val details = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                setPadding(12, 0, 8, 0)
-            }
+            val details =
+                LinearLayout(this).apply {
+                    orientation =
+                        LinearLayout.VERTICAL
 
-            val description = TextView(this).apply {
-                text = expense.description
-                textSize = 16f
-                setTextColor(white)
-                typeface = Typeface.DEFAULT_BOLD
-            }
+                    setPadding(
+                        12,
+                        0,
+                        8,
+                        0
+                    )
+                }
 
-            val category = TextView(this).apply {
-                text = expense.category
-                textSize = 12f
-                setTextColor(secondary)
-                setPadding(0, 4, 0, 0)
-            }
+            val description =
+                TextView(this).apply {
+                    text =
+                        expense.description
 
-            details.addView(description)
-            details.addView(category)
+                    textSize = 16f
+
+                    setTextColor(
+                        white
+                    )
+
+                    typeface =
+                        Typeface.DEFAULT_BOLD
+                }
+
+            val category =
+                TextView(this).apply {
+                    text =
+                        expense.category
+
+                    textSize = 12f
+
+                    setTextColor(
+                        secondary
+                    )
+
+                    setPadding(
+                        0,
+                        4,
+                        0,
+                        0
+                    )
+                }
+
+            details.addView(
+                description
+            )
+
+            details.addView(
+                category
+            )
 
             expenseCard.addView(
                 details,
@@ -1570,34 +1535,69 @@ menuDrawer.addView(
                 )
             )
 
-            val rightColumn = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                gravity = Gravity.END
-            }
+            val rightColumn =
+                LinearLayout(this).apply {
+                    orientation =
+                        LinearLayout.VERTICAL
 
-            val amountText = TextView(this).apply {
-                text = money(expense.amount)
-                textSize = 16f
-                setTextColor(white)
-                typeface = Typeface.DEFAULT_BOLD
-                gravity = Gravity.END
-            }
-
-            rightColumn.addView(amountText)
-
-            val deleteButton = TextView(this).apply {
-                text = "Delete"
-                textSize = 12f
-                setTextColor(blueBright)
-                gravity = Gravity.END
-                setPadding(8, 5, 0, 0)
-
-                setOnClickListener {
-                    deleteExpense(index)
+                    gravity =
+                        Gravity.END
                 }
-            }
 
-            rightColumn.addView(deleteButton)
+            val amountText =
+                TextView(this).apply {
+                    text =
+                        money(
+                            expense.amount
+                        )
+
+                    textSize = 16f
+
+                    setTextColor(
+                        white
+                    )
+
+                    typeface =
+                        Typeface.DEFAULT_BOLD
+
+                    gravity =
+                        Gravity.END
+                }
+
+            rightColumn.addView(
+                amountText
+            )
+
+            val deleteButton =
+                TextView(this).apply {
+                    text = "Delete"
+
+                    textSize = 12f
+
+                    setTextColor(
+                        blueBright
+                    )
+
+                    gravity =
+                        Gravity.END
+
+                    setPadding(
+                        8,
+                        5,
+                        0,
+                        0
+                    )
+
+                    setOnClickListener {
+                        deleteExpense(
+                            index
+                        )
+                    }
+                }
+
+            rightColumn.addView(
+                deleteButton
+            )
 
             expenseCard.addView(
                 rightColumn,
@@ -1607,10 +1607,11 @@ menuDrawer.addView(
                 )
             )
 
-            val params = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
+            val params =
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
 
             params.setMargins(
                 0,
@@ -1651,32 +1652,59 @@ menuDrawer.addView(
         }
     }
 
-    private fun createSmallCard(): LinearLayout {
+    private fun createSmallCard():
+        LinearLayout {
 
         return LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
-            background = roundedBackground(
-                cardColor,
-                16f
+            orientation =
+                LinearLayout.VERTICAL
+
+            setPadding(
+                16,
+                16,
+                16,
+                16
             )
+
+            background =
+                roundedBackground(
+                    cardColor,
+                    16f
+                )
         }
     }
 
-    private fun createMainCard(): LinearLayout {
+    private fun createMainCard():
+        LinearLayout {
 
         return LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
-            background = gradientBackground(
-                Color.rgb(18, 20, 27),
-                Color.rgb(24, 31, 45),
-                16f
+            orientation =
+                LinearLayout.VERTICAL
+
+            setPadding(
+                16,
+                16,
+                16,
+                16
             )
+
+            background =
+                gradientBackground(
+                    Color.rgb(
+                        18,
+                        20,
+                        27
+                    ),
+                    Color.rgb(
+                        24,
+                        31,
+                        45
+                    ),
+                    16f
+                )
         }
     }
-
-    private fun createInput(
+            private fun createInput(
         hint: String,
         inputType: Int
     ): EditText {
@@ -1695,13 +1723,15 @@ menuDrawer.addView(
                 12
             )
 
-            background = roundedBackground(
-                surfaceColor,
-                12f
-            )
+            background =
+                roundedBackground(
+                    surfaceColor,
+                    12f
+                )
         }
     }
-        private fun createGradientButton(
+
+    private fun createGradientButton(
         text: String,
         startColor: Int,
         endColor: Int
@@ -1721,11 +1751,12 @@ menuDrawer.addView(
                 13
             )
 
-            background = gradientBackground(
-                startColor,
-                endColor,
-                12f
-            )
+            background =
+                gradientBackground(
+                    startColor,
+                    endColor,
+                    12f
+                )
         }
     }
 
@@ -1739,12 +1770,22 @@ menuDrawer.addView(
             setTextColor(blueBright)
             gravity = Gravity.CENTER
             typeface = Typeface.DEFAULT
-            setPadding(4, 0, 4, 2)
-
-            background = roundedBackground(
-                Color.rgb(24, 35, 54),
-                12f
+            setPadding(
+                4,
+                0,
+                4,
+                2
             )
+
+            background =
+                roundedBackground(
+                    Color.rgb(
+                        24,
+                        35,
+                        54
+                    ),
+                    12f
+                )
         }
     }
 
@@ -1779,10 +1820,11 @@ menuDrawer.addView(
     private fun inputParams():
         LinearLayout.LayoutParams {
 
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
+        val params =
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
 
         params.setMargins(
             0,
@@ -1797,10 +1839,11 @@ menuDrawer.addView(
     private fun spinnerParams():
         LinearLayout.LayoutParams {
 
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
+        val params =
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
 
         params.setMargins(
             0,
@@ -1815,10 +1858,11 @@ menuDrawer.addView(
     private fun buttonParams():
         LinearLayout.LayoutParams {
 
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
+        val params =
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
 
         params.setMargins(
             0,
@@ -1853,19 +1897,22 @@ menuDrawer.addView(
 
     private fun exportBackup() {
 
-        val intent = Intent(
-            Intent.ACTION_CREATE_DOCUMENT
-        ).apply {
-            addCategory(
-                Intent.CATEGORY_OPENABLE
-            )
-            type = "application/json"
+        val intent =
+            Intent(
+                Intent.ACTION_CREATE_DOCUMENT
+            ).apply {
+                addCategory(
+                    Intent.CATEGORY_OPENABLE
+                )
 
-            putExtra(
-                Intent.EXTRA_TITLE,
-                "MoneyTrack_Backup.json"
-            )
-        }
+                type =
+                    "application/json"
+
+                putExtra(
+                    Intent.EXTRA_TITLE,
+                    "MoneyTrack_Backup.json"
+                )
+            }
 
         startActivityForResult(
             intent,
@@ -1875,14 +1922,17 @@ menuDrawer.addView(
 
     private fun importBackup() {
 
-        val intent = Intent(
-            Intent.ACTION_OPEN_DOCUMENT
-        ).apply {
-            addCategory(
-                Intent.CATEGORY_OPENABLE
-            )
-            type = "application/json"
-        }
+        val intent =
+            Intent(
+                Intent.ACTION_OPEN_DOCUMENT
+            ).apply {
+                addCategory(
+                    Intent.CATEGORY_OPENABLE
+                )
+
+                type =
+                    "application/json"
+            }
 
         startActivityForResult(
             intent,
@@ -1890,9 +1940,11 @@ menuDrawer.addView(
         )
     }
 
-    private fun createBackupJson(): JSONObject {
+    private fun createBackupJson():
+        JSONObject {
 
-        val root = JSONObject()
+        val root =
+            JSONObject()
 
         root.put(
             "format",
@@ -1904,9 +1956,12 @@ menuDrawer.addView(
             1
         )
 
-        val data = JSONObject()
+        val data =
+            JSONObject()
 
-        for ((key, value) in prefs.all) {
+        for (
+            (key, value) in prefs.all
+        ) {
 
             when (value) {
 
@@ -1968,13 +2023,13 @@ menuDrawer.addView(
 
         try {
 
-            val root = JSONObject(
-                jsonText
-            )
+            val root =
+                JSONObject(jsonText)
 
             if (
-                root.optString("format") !=
-                "MoneyTrack Backup"
+                root.optString(
+                    "format"
+                ) != "MoneyTrack Backup"
             ) {
 
                 Toast.makeText(
@@ -1986,10 +2041,11 @@ menuDrawer.addView(
                 return
             }
 
-            val version = root.optInt(
-                "version",
-                0
-            )
+            val version =
+                root.optInt(
+                    "version",
+                    0
+                )
 
             if (version != 1) {
 
@@ -2002,9 +2058,10 @@ menuDrawer.addView(
                 return
             }
 
-            val data = root.optJSONObject(
-                "data"
-            )
+            val data =
+                root.optJSONObject(
+                    "data"
+                )
 
             if (data == null) {
 
@@ -2017,16 +2074,21 @@ menuDrawer.addView(
                 return
             }
 
-            val editor = prefs.edit()
+            val editor =
+                prefs.edit()
 
             editor.clear()
 
-            val keys = data.keys()
+            val keys =
+                data.keys()
 
             while (keys.hasNext()) {
 
-                val key = keys.next()
-                val value = data.get(key)
+                val key =
+                    keys.next()
+
+                val value =
+                    data.get(key)
 
                 when (value) {
 
@@ -2111,7 +2173,8 @@ menuDrawer.addView(
             return
         }
 
-        val uri = data.data ?: return
+        val uri =
+            data.data ?: return
 
         when (requestCode) {
 
@@ -2119,7 +2182,8 @@ menuDrawer.addView(
 
                 try {
 
-                    val backup = createBackupJson()
+                    val backup =
+                        createBackupJson()
 
                     contentResolver
                         .openOutputStream(uri)
@@ -2199,4 +2263,3 @@ menuDrawer.addView(
         }
     }
 }
-    
