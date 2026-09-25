@@ -459,30 +459,66 @@ class AnalyticsActivity : Activity() {
         }
 
         val header = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(20, 92, 20, 16)
-        }
+    orientation = LinearLayout.HORIZONTAL
+    gravity = Gravity.CENTER_VERTICAL
+    setPadding(20, 92, 20, 16)
+}
 
-        val backButton = TextView(this).apply {
-            text = "‹"
-            textSize = 36f
-            setTextColor(white)
-            gravity = Gravity.CENTER
-            setPadding(0, 0, 0, 10)
+val backButton = TextView(this).apply {
+    text = "‹"
+    textSize = 36f
+    setTextColor(white)
+    gravity = Gravity.CENTER
+    includeFontPadding = true
 
-            setOnClickListener {
-                finish()
-            }
-        }
+    setOnClickListener {
+        finish()
+    }
+}
 
-        header.addView(
-            backButton,
-            LinearLayout.LayoutParams(
-                55,
-                60
-            )
-        )
+header.addView(
+    backButton,
+    LinearLayout.LayoutParams(
+        55,
+        60
+    )
+)
+
+val title = TextView(this).apply {
+    text = "ANALYTICS"
+    textSize = 24f
+    setTextColor(white)
+    typeface = Typeface.DEFAULT_BOLD
+    letterSpacing = 0.04f
+}
+
+header.addView(
+    title,
+    LinearLayout.LayoutParams(
+        0,
+        LinearLayout.LayoutParams.WRAP_CONTENT,
+        1f
+    )
+)
+
+val monthTitle = TextView(this).apply {
+    text = monthName(
+        selectedYear,
+        selectedMonth
+    ) + " " + selectedYear
+
+    textSize = 14f
+    setTextColor(secondary)
+    gravity = Gravity.CENTER_VERTICAL
+}
+
+header.addView(
+    monthTitle,
+    LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.WRAP_CONTENT,
+        60
+    )
+)
 
         val title = TextView(this).apply {
             text = "ANALYTICS"
