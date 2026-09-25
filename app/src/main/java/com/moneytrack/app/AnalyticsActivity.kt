@@ -1,10 +1,14 @@
 package com.moneytrack.app
 
 import android.app.Activity
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -53,6 +57,18 @@ class AnalyticsActivity : Activity() {
     private val green =
         Color.rgb(72, 190, 110)
 
+    private val orange =
+        Color.rgb(245, 125, 45)
+
+    private val pink =
+        Color.rgb(220, 80, 145)
+
+    private val teal =
+        Color.rgb(45, 185, 170)
+
+    private val yellow =
+        Color.rgb(235, 190, 55)
+
     private val white =
         Color.WHITE
 
@@ -79,7 +95,6 @@ class AnalyticsActivity : Activity() {
     data class MonthData(
         val year: Int,
         val month: Int,
-        val income: Double,
         val expenses: Double
     )
 
@@ -96,6 +111,21 @@ class AnalyticsActivity : Activity() {
         "Entertainment",
         "Travel",
         "Other"
+    )
+
+    private val categoryColors = arrayOf(
+        amber,
+        blue,
+        green,
+        orange,
+        red,
+        purple,
+        lightBlue,
+        pink,
+        teal,
+        yellow,
+        grey,
+        secondary
     )
 
     override fun onCreate(
@@ -323,13 +353,6 @@ class AnalyticsActivity : Activity() {
             val month =
                 calendar.get(Calendar.MONTH)
 
-            val monthIncome =
-                prefs.getString(
-                    incomeKey(year, month),
-                    "0"
-                )?.toDoubleOrNull()
-                    ?: 0.0
-
             val monthExpenses =
                 readExpensesTotal(
                     year,
@@ -340,7 +363,6 @@ class AnalyticsActivity : Activity() {
                 MonthData(
                     year = year,
                     month = month,
-                    income = monthIncome,
                     expenses = monthExpenses
                 )
             )
@@ -361,7 +383,10 @@ class AnalyticsActivity : Activity() {
 
         val stored =
             prefs.getString(
-                expensesKey(year, month),
+                expensesKey(
+                    year,
+                    month
+                ),
                 null
             )
 
@@ -461,6 +486,7 @@ class AnalyticsActivity : Activity() {
             text = "←  ANALYTICS"
             textSize = 24f
             setTextColor(white)
+
             typeface =
                 Typeface.DEFAULT_BOLD
 
@@ -488,13 +514,15 @@ class AnalyticsActivity : Activity() {
         )
 
         val monthTitle = TextView(this).apply {
-            text = monthName(
-                selectedYear,
-                selectedMonth
-            ) + " " + selectedYear
+            text =
+                monthName(
+                    selectedYear,
+                    selectedMonth
+                ) + " " + selectedYear
 
             textSize = 14f
             setTextColor(secondary)
+
             gravity =
                 Gravity.CENTER_VERTICAL
         }
@@ -527,13 +555,15 @@ class AnalyticsActivity : Activity() {
 
                 setPadding(
                     20,
-                    92,
+                    18,
                     20,
                     32
                 )
             }
 
-        scrollView.addView(content)
+        scrollView.addView(
+            content
+        )
 
         root.addView(
             scrollView,
@@ -544,78 +574,9 @@ class AnalyticsActivity : Activity() {
             )
         )
 
-        val overviewTitle =
-            sectionTitle(
-                "MONTHLY OVERVIEW"
-            )
-
-        content.addView(
-            overviewTitle,
-            sectionParams()
-        )
-
-        val overviewCard =
-            createCard()
-
-        val incomeValue =
-            createValueText(
-                money(income),
-                green
-            )
-
-        overviewCard.addView(
-            createLabel("Income")
-        )
-
-        overviewCard.addView(
-            incomeValue,
-            valueParams()
-        )
-
-        val expenseValue =
-            createValueText(
-                money(totalExpenses()),
-                red
-            )
-
-        overviewCard.addView(
-            createLabel("Expenses")
-        )
-
-        overviewCard.addView(
-            expenseValue,
-            valueParams()
-        )
-
-        val remaining =
-            remainingMoney()
-
-        val remainingValue =
-            createValueText(
-                money(remaining),
-                if (remaining >= 0)
-                    green
-                else
-                    red
-            )
-
-        overviewCard.addView(
-            createLabel("Remaining")
-        )
-
-        overviewCard.addView(
-            remainingValue,
-            valueParams()
-        )
-
-        content.addView(
-            overviewCard,
-            cardParams()
-        )
-
         val breakdownTitle =
             sectionTitle(
-                "SPENDING BY CATEGORY"
+                "MONTHLY SPENDING BREAKDOWN"
             )
 
         content.addView(
@@ -623,117 +584,44 @@ class AnalyticsActivity : Activity() {
             sectionParams()
         )
 
-        val categoryCard =
+        val breakdownCard =
             createCard()
 
-        val categoryTotals =
-            categoryTotals()
+        val breakdownView =
+            DonutChartView(this)
 
-        val totalSpent =
+        breakdownView.setData(
+            categoryTotals(),
             totalExpenses()
+        )
 
-        for (category in categories) {
-
-            val amount =
-                categoryTotals[category]
-                    ?: 0.0
-
-            if (amount <= 0.0) {
-                continue
-            }
-
-            val percentage =
-                if (totalSpent > 0.0) {
-                    ((amount / totalSpent) * 100)
-                        .roundToInt()
-                } else {
-                    0
-                }
-
-            val row =
-                LinearLayout(this).apply {
-                    orientation =
-                        LinearLayout.HORIZONTAL
-
-                    gravity =
-                        Gravity.CENTER_VERTICAL
-
-                    setPadding(
-                        0,
-                        10,
-                        0,
-                        10
-                    )
-                }
-
-            val categoryName =
-                TextView(this).apply {
-                    text = category
-                    textSize = 15f
-                    setTextColor(white)
-                }
-
-            row.addView(
-                categoryName,
-                LinearLayout.LayoutParams(
-                    0,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    1f
-                )
+        breakdownCard.addView(
+            breakdownView,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                330
             )
+        )
 
-            val percentText =
-                TextView(this).apply {
-                    text = "$percentage%"
-                    textSize = 14f
-                    setTextColor(secondary)
-                    gravity = Gravity.END
-                }
+        val categoryLegend =
+            createCategoryLegend()
 
-            row.addView(
-                percentText,
-                LinearLayout.LayoutParams(
-                    55,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
+        breakdownCard.addView(
+            categoryLegend,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
             )
-
-            val amountText =
-                TextView(this).apply {
-                    text = money(amount)
-                    textSize = 14f
-                    setTextColor(white)
-                    gravity = Gravity.END
-                }
-
-            row.addView(
-                amountText,
-                LinearLayout.LayoutParams(
-                    95,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-            )
-
-            categoryCard.addView(row)
-        }
-
-        if (totalSpent <= 0.0) {
-
-            categoryCard.addView(
-                createEmptyText(
-                    "No expenses recorded this month."
-                )
-            )
-        }
+        )
 
         content.addView(
-            categoryCard,
+            breakdownCard,
             cardParams()
         )
 
         val ratioTitle =
             sectionTitle(
-                "INCOME VS. EXPENSE RATIO"
+                "INCOME VS. EXPENSES RATIO"
             )
 
         content.addView(
@@ -744,73 +632,52 @@ class AnalyticsActivity : Activity() {
         val ratioCard =
             createCard()
 
-        val ratio =
+        val incomePercent =
             if (income > 0.0) {
-                ((totalExpenses() / income) * 100)
-                    .roundToInt()
+                (
+                    (income /
+                        (income + totalExpenses())) *
+                        100.0
+                    )
+                        .roundToInt()
+                        .coerceIn(0, 100)
             } else {
                 0
             }
 
-        val ratioText =
-            TextView(this).apply {
-                text =
-                    if (income > 0.0)
-                        "$ratio% of income spent"
-                    else
-                        "No income recorded"
-
-                textSize = 20f
-                setTextColor(white)
-
-                typeface =
-                    Typeface.DEFAULT_BOLD
-
-                gravity =
-                    Gravity.CENTER
-
-                setPadding(
-                    0,
-                    8,
-                    0,
-                    14
-                )
+        val expensePercent =
+            if (income > 0.0) {
+                (
+                    (totalExpenses() /
+                        (income + totalExpenses())) *
+                        100.0
+                    )
+                        .roundToInt()
+                        .coerceIn(0, 100)
+            } else {
+                0
             }
 
         ratioCard.addView(
-            ratioText,
+            createRatioRow(
+                "INCOME",
+                incomePercent,
+                money(income),
+                green
+            ),
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
         )
 
-        val ratioDetails =
-            LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.VERTICAL
-            }
-
-        ratioDetails.addView(
-            createLabel(
-                "Income: ${money(income)}"
-            )
-        )
-
-        ratioDetails.addView(
-            createLabel(
-                "Spent: ${money(totalExpenses())}"
-            )
-        )
-
-        ratioDetails.addView(
-            createLabel(
-                "Remaining: ${money(remainingMoney())}"
-            )
-        )
-
         ratioCard.addView(
-            ratioDetails,
+            createRatioRow(
+                "EXPENSES",
+                expensePercent,
+                money(totalExpenses()),
+                red
+            ),
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -819,70 +686,6 @@ class AnalyticsActivity : Activity() {
 
         content.addView(
             ratioCard,
-            cardParams()
-        )
-                val dailyTitle =
-            sectionTitle(
-                "DAILY AVERAGE"
-            )
-
-        content.addView(
-            dailyTitle,
-            sectionParams()
-        )
-
-        val dailyCard =
-            createCard()
-
-        dailyCard.addView(
-            createValueText(
-                money(dailyAverage()) +
-                    " / day",
-                amber
-            ),
-            valueParams()
-        )
-
-        dailyCard.addView(
-            createLabel(
-                "Based on this month's total spending."
-            )
-        )
-
-        content.addView(
-            dailyCard,
-            cardParams()
-        )
-
-        val savingsTitle =
-            sectionTitle(
-                "SAVINGS RATE"
-            )
-
-        content.addView(
-            savingsTitle,
-            sectionParams()
-        )
-
-        val savingsCard =
-            createCard()
-
-        savingsCard.addView(
-            createValueText(
-                "${savingsRate()}%",
-                green
-            ),
-            valueParams()
-        )
-
-        savingsCard.addView(
-            createLabel(
-                "Income remaining after expenses."
-            )
-        )
-
-        content.addView(
-            savingsCard,
             cardParams()
         )
 
@@ -899,82 +702,106 @@ class AnalyticsActivity : Activity() {
         val trendCard =
             createCard()
 
-        val trendData =
+        val trendView =
+            SpendingTrendView(this)
+
+        trendView.setData(
             sixMonthData()
+        )
 
-        for (data in trendData) {
-
-            val row =
-                LinearLayout(this).apply {
-                    orientation =
-                        LinearLayout.HORIZONTAL
-
-                    gravity =
-                        Gravity.CENTER_VERTICAL
-
-                    setPadding(
-                        0,
-                        9,
-                        0,
-                        9
-                    )
-                }
-
-            val monthText =
-                TextView(this).apply {
-                    text =
-                        monthName(
-                            data.year,
-                            data.month
-                        ).take(3) +
-                            " " +
-                            data.year
-
-                    textSize = 14f
-                    setTextColor(white)
-                }
-
-            row.addView(
-                monthText,
-                LinearLayout.LayoutParams(
-                    0,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    1f
-                )
+        trendCard.addView(
+            trendView,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                330
             )
-
-            val spentText =
-                TextView(this).apply {
-                    text =
-                        money(data.expenses)
-
-                    textSize = 14f
-
-                    setTextColor(
-                        if (data.expenses > 0)
-                            red
-                        else
-                            muted
-                    )
-
-                    gravity =
-                        Gravity.END
-                }
-
-            row.addView(
-                spentText,
-                LinearLayout.LayoutParams(
-                    120,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-            )
-
-            trendCard.addView(row)
-        }
+        )
 
         content.addView(
             trendCard,
             cardParams()
+        )
+
+        val statsRow =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.HORIZONTAL
+
+                gravity =
+                    Gravity.CENTER
+
+                setPadding(
+                    0,
+                    0,
+                    0,
+                    0
+                )
+            }
+
+        val dailyCard =
+            createSquareCard()
+
+        dailyCard.addView(
+            createCardTitle(
+                "DAILY AVERAGE"
+            )
+        )
+
+        dailyCard.addView(
+            createSquareValue(
+                money(dailyAverage()),
+                amber
+            )
+        )
+
+        dailyCard.addView(
+            createSquareSubtitle(
+                "Per day"
+            )
+        )
+
+        statsRow.addView(
+            dailyCard,
+            squareCardParams(
+                true
+            )
+        )
+
+        val savingsCard =
+            createSquareCard()
+
+        savingsCard.addView(
+            createCardTitle(
+                "SAVINGS RATE"
+            )
+        )
+
+        savingsCard.addView(
+            createSquareValue(
+                "${savingsRate()}%",
+                green
+            )
+        )
+
+        savingsCard.addView(
+            createSquareSubtitle(
+                "Income saved"
+            )
+        )
+
+        statsRow.addView(
+            savingsCard,
+            squareCardParams(
+                false
+            )
+        )
+
+        content.addView(
+            statsRow,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                150
+            )
         )
 
         val footer =
@@ -984,11 +811,13 @@ class AnalyticsActivity : Activity() {
 
                 textSize = 12f
                 setTextColor(muted)
-                gravity = Gravity.CENTER
+
+                gravity =
+                    Gravity.CENTER
 
                 setPadding(
                     8,
-                    20,
+                    24,
                     8,
                     10
                 )
@@ -1005,10 +834,415 @@ class AnalyticsActivity : Activity() {
         setContentView(root)
     }
 
+    private fun createCategoryLegend():
+            LinearLayout {
+
+        val totals =
+            categoryTotals()
+
+        val total =
+            totalExpenses()
+
+        return LinearLayout(this).apply {
+
+            orientation =
+                LinearLayout.VERTICAL
+
+            for (
+                category in categories
+            ) {
+
+                val amount =
+                    totals[category]
+                        ?: 0.0
+
+                if (amount <= 0.0) {
+                    continue
+                }
+
+                val percentage =
+                    if (total > 0.0) {
+                        (
+                            (amount / total) *
+                                100.0
+                            )
+                                .roundToInt()
+                    } else {
+                        0
+                    }
+
+                val row =
+                    LinearLayout(
+                        this@AnalyticsActivity
+                    ).apply {
+
+                        orientation =
+                            LinearLayout.HORIZONTAL
+
+                        gravity =
+                            Gravity.CENTER_VERTICAL
+
+                        setPadding(
+                            0,
+                            6,
+                            0,
+                            6
+                        )
+                    }
+
+                val dot =
+                    TextView(
+                        this@AnalyticsActivity
+                    ).apply {
+
+                        text = "●"
+                        textSize = 14f
+
+                        setTextColor(
+                            categoryColor(
+                                category
+                            )
+                        )
+
+                        gravity =
+                            Gravity.CENTER
+                    }
+
+                row.addView(
+                    dot,
+                    LinearLayout.LayoutParams(
+                        30,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                )
+
+                val name =
+                    TextView(
+                        this@AnalyticsActivity
+                    ).apply {
+
+                        text =
+                            category
+
+                        textSize = 14f
+                        setTextColor(white)
+                    }
+
+                row.addView(
+                    name,
+                    LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        1f
+                    )
+                )
+
+                val percent =
+                    TextView(
+                        this@AnalyticsActivity
+                    ).apply {
+
+                        text =
+                            "$percentage%"
+
+                        textSize = 14f
+                        setTextColor(secondary)
+
+                        gravity =
+                            Gravity.END
+                    }
+
+                row.addView(
+                    percent,
+                    LinearLayout.LayoutParams(
+                        60,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                )
+
+                addView(
+                    row,
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                )
+            }
+
+            if (total <= 0.0) {
+
+                addView(
+                    createEmptyText(
+                        "No expenses recorded this month."
+                    )
+                )
+            }
+        }
+    }
+
+    private fun categoryColor(
+        category: String
+    ): Int {
+
+        val index =
+            categories.indexOf(category)
+
+        return if (
+            index >= 0 &&
+            index < categoryColors.size
+        ) {
+            categoryColors[index]
+        } else {
+            secondary
+        }
+    }
+       private fun createRatioRow(
+        label: String,
+        percentage: Int,
+        amount: String,
+        color: Int
+    ): LinearLayout {
+
+        val container =
+            LinearLayout(this).apply {
+
+                orientation =
+                    LinearLayout.VERTICAL
+
+                setPadding(
+                    0,
+                    8,
+                    0,
+                    16
+                )
+            }
+
+        val header =
+            LinearLayout(this).apply {
+
+                orientation =
+                    LinearLayout.HORIZONTAL
+
+                gravity =
+                    Gravity.CENTER_VERTICAL
+            }
+
+        val labelView =
+            TextView(this).apply {
+
+                text =
+                    label
+
+                textSize = 14f
+
+                setTextColor(
+                    white
+                )
+
+                typeface =
+                    Typeface.DEFAULT_BOLD
+            }
+
+        header.addView(
+            labelView,
+            LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f
+            )
+        )
+
+        val percentView =
+            TextView(this).apply {
+
+                text =
+                    "$percentage%"
+
+                textSize = 16f
+
+                setTextColor(
+                    color
+                )
+
+                typeface =
+                    Typeface.DEFAULT_BOLD
+
+                gravity =
+                    Gravity.END
+            }
+
+        header.addView(
+            percentView,
+            LinearLayout.LayoutParams(
+                70,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        container.addView(
+            header,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        val amountView =
+            TextView(this).apply {
+
+                text =
+                    amount
+
+                textSize = 14f
+
+                setTextColor(
+                    secondary
+                )
+
+                setPadding(
+                    0,
+                    4,
+                    0,
+                    8
+                )
+            }
+
+        container.addView(
+            amountView,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        val progress =
+            RatioProgressView(this)
+
+        progress.setProgress(
+            percentage,
+            color
+        )
+
+        container.addView(
+            progress,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                18
+            )
+        )
+
+        return container
+    }
+
+    private fun createSquareCard():
+            LinearLayout {
+
+        return LinearLayout(this).apply {
+
+            orientation =
+                LinearLayout.VERTICAL
+
+            gravity =
+                Gravity.CENTER
+
+            setBackgroundColor(
+                cardColor
+            )
+
+            setPadding(
+                12,
+                12,
+                12,
+                12
+            )
+        }
+    }
+
+    private fun createCardTitle(
+        text: String
+    ): TextView {
+
+        return TextView(this).apply {
+
+            this.text =
+                text
+
+            textSize =
+                12f
+
+            setTextColor(
+                secondary
+            )
+
+            typeface =
+                Typeface.DEFAULT_BOLD
+
+            gravity =
+                Gravity.CENTER
+
+            letterSpacing =
+                0.05f
+        }
+    }
+
+    private fun createSquareValue(
+        text: String,
+        color: Int
+    ): TextView {
+
+        return TextView(this).apply {
+
+            this.text =
+                text
+
+            textSize =
+                22f
+
+            setTextColor(
+                color
+            )
+
+            typeface =
+                Typeface.DEFAULT_BOLD
+
+            gravity =
+                Gravity.CENTER
+
+            setPadding(
+                0,
+                10,
+                0,
+                4
+            )
+        }
+    }
+
+    private fun createSquareSubtitle(
+        text: String
+    ): TextView {
+
+        return TextView(this).apply {
+
+            this.text =
+                text
+
+            textSize =
+                12f
+
+            setTextColor(
+                muted
+            )
+
+            gravity =
+                Gravity.CENTER
+        }
+    }
+
     private fun createCard():
             LinearLayout {
 
         return LinearLayout(this).apply {
+
             orientation =
                 LinearLayout.VERTICAL
 
@@ -1030,47 +1264,22 @@ class AnalyticsActivity : Activity() {
     ): TextView {
 
         return TextView(this).apply {
-            this.text = text
-            textSize = 13f
-            setTextColor(secondary)
 
-            typeface =
-                Typeface.DEFAULT_BOLD
+            this.text =
+                text
 
-            letterSpacing = 0.08f
-        }
-    }
+            textSize =
+                13f
 
-    private fun createLabel(
-        text: String
-    ): TextView {
-
-        return TextView(this).apply {
-            this.text = text
-            textSize = 14f
-            setTextColor(secondary)
-
-            setPadding(
-                0,
-                4,
-                0,
-                4
+            setTextColor(
+                secondary
             )
-        }
-    }
-
-    private fun createValueText(
-        text: String,
-        color: Int
-    ): TextView {
-
-        return TextView(this).apply {
-            this.text = text
-            textSize = 24f
-            setTextColor(color)
 
             typeface =
                 Typeface.DEFAULT_BOLD
+
+            letterSpacing =
+                0.08f
         }
     }
 
@@ -1079,19 +1288,30 @@ class AnalyticsActivity : Activity() {
     ): TextView {
 
         return TextView(this).apply {
-            this.text = text
-            textSize = 14f
-            setTextColor(muted)
+
+            this.text =
+                text
+
+            textSize =
+                14f
+
+            setTextColor(
+                muted
+            )
+
+            gravity =
+                Gravity.CENTER
 
             setPadding(
                 0,
-                12,
+                18,
                 0,
-                12
+                18
             )
         }
     }
-        private fun cardParams():
+
+    private fun cardParams():
             LinearLayout.LayoutParams {
 
         return LinearLayout.LayoutParams(
@@ -1103,7 +1323,7 @@ class AnalyticsActivity : Activity() {
                 0,
                 0,
                 0,
-                14
+                18
             )
         }
     }
@@ -1125,20 +1345,713 @@ class AnalyticsActivity : Activity() {
         }
     }
 
-    private fun valueParams():
-            LinearLayout.LayoutParams {
+    private fun squareCardParams(
+        left: Boolean
+    ): LinearLayout.LayoutParams {
 
         return LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
+            0,
+            150,
+            1f
         ).apply {
 
-            setMargins(
-                0,
-                2,
-                0,
-                12
+            if (left) {
+                setMargins(
+                    0,
+                    0,
+                    7,
+                    0
+                )
+            } else {
+                setMargins(
+                    7,
+                    0,
+                    0,
+                    0
+                )
+            }
+        }
+    }
+
+    private fun drawRoundRect(
+        canvas: Canvas,
+        paint: Paint,
+        left: Float,
+        top: Float,
+        right: Float,
+        bottom: Float,
+        radius: Float
+    ) {
+
+        canvas.drawRoundRect(
+            left,
+            top,
+            right,
+            bottom,
+            radius,
+            radius,
+            paint
+        )
+    }
+
+    private class RatioProgressView(
+        context: android.content.Context
+    ) : View(context) {
+
+        private var progress = 0
+        private var progressColor =
+            Color.WHITE
+
+        fun setProgress(
+            value: Int,
+            color: Int
+        ) {
+
+            progress =
+                value.coerceIn(
+                    0,
+                    100
+                )
+
+            progressColor =
+                color
+
+            invalidate()
+        }
+
+        override fun onDraw(
+            canvas: Canvas
+        ) {
+
+            super.onDraw(canvas)
+
+            val width =
+                width.toFloat()
+
+            val height =
+                height.toFloat()
+
+            val radius =
+                height / 2f
+
+            val backgroundPaint =
+                Paint(Paint.ANTI_ALIAS_FLAG).apply {
+
+                    style =
+                        Paint.Style.FILL
+
+                    color =
+                        Color.rgb(
+                            45,
+                            48,
+                            58
+                        )
+                }
+
+            drawRoundRect(
+                canvas,
+                backgroundPaint,
+                0f,
+                0f,
+                width,
+                height,
+                radius
             )
+
+            val progressPaint =
+                Paint(Paint.ANTI_ALIAS_FLAG).apply {
+
+                    style =
+                        Paint.Style.FILL
+
+                    color =
+                        progressColor
+                }
+
+            val progressWidth =
+                width *
+                    (progress / 100f)
+
+            if (progressWidth > 0f) {
+
+                drawRoundRect(
+                    canvas,
+                    progressPaint,
+                    0f,
+                    0f,
+                    progressWidth,
+                    height,
+                    radius
+                )
+            }
+        }
+    }
+        private class DonutChartView(
+        context: android.content.Context
+    ) : View(context) {
+
+        private var values =
+            emptyMap<String, Double>()
+
+        private var total =
+            0.0
+
+        private var colors =
+            IntArray(0)
+
+        fun setData(
+            categoryValues: Map<String, Double>,
+            totalValue: Double
+        ) {
+
+            values =
+                categoryValues
+
+            total =
+                totalValue
+
+            colors =
+                intArrayOf(
+                    Color.rgb(255, 166, 52),
+                    Color.rgb(38, 104, 210),
+                    Color.rgb(72, 190, 110),
+                    Color.rgb(245, 125, 45),
+                    Color.rgb(220, 70, 70),
+                    Color.rgb(145, 90, 200),
+                    Color.rgb(80, 150, 230),
+                    Color.rgb(220, 80, 145),
+                    Color.rgb(45, 185, 170),
+                    Color.rgb(235, 190, 55),
+                    Color.rgb(110, 116, 130),
+                    Color.rgb(168, 174, 187)
+                )
+
+            invalidate()
+        }
+
+        override fun onDraw(
+            canvas: Canvas
+        ) {
+
+            super.onDraw(canvas)
+
+            val centerX =
+                width / 2f
+
+            val centerY =
+                height / 2f
+
+            val radius =
+                minOf(
+                    width,
+                    height
+                ) *
+                    0.34f
+
+            val strokeWidth =
+                radius *
+                    0.34f
+
+            val paint =
+                Paint(
+                    Paint.ANTI_ALIAS_FLAG
+                ).apply {
+
+                    style =
+                        Paint.Style.STROKE
+
+                    this.strokeWidth =
+                        strokeWidth
+
+                    strokeCap =
+                        Paint.Cap.BUTT
+                }
+
+            if (total <= 0.0) {
+
+                paint.color =
+                    Color.rgb(
+                        45,
+                        48,
+                        58
+                    )
+
+                canvas.drawCircle(
+                    centerX,
+                    centerY,
+                    radius,
+                    paint
+                )
+
+                val emptyText =
+                    Paint(
+                        Paint.ANTI_ALIAS_FLAG
+                    ).apply {
+
+                        color =
+                            Color.rgb(
+                                115,
+                                121,
+                                135
+                            )
+
+                        textSize =
+                            14f
+
+                        textAlign =
+                            Paint.Align.CENTER
+                    }
+
+                canvas.drawText(
+                    "NO SPENDING",
+                    centerX,
+                    centerY + 5f,
+                    emptyText
+                )
+
+                return
+            }
+
+            var startAngle =
+                -90f
+
+            var colorIndex =
+                0
+
+            for (
+                category in values.keys
+            ) {
+
+                val amount =
+                    values[category]
+                        ?: 0.0
+
+                if (amount <= 0.0) {
+                    continue
+                }
+
+                val sweepAngle =
+                    (
+                        amount /
+                            total
+                        ) *
+                        360f
+
+                paint.color =
+                    colors[
+                        colorIndex %
+                            colors.size
+                    ]
+
+                canvas.drawArc(
+                    centerX - radius,
+                    centerY - radius,
+                    centerX + radius,
+                    centerY + radius,
+                    startAngle,
+                    sweepAngle.toFloat(),
+                    false,
+                    paint
+                )
+
+                startAngle +=
+                    sweepAngle.toFloat()
+
+                colorIndex++
+            }
+
+            paint.color =
+                Color.rgb(
+                    20,
+                    22,
+                    29
+                )
+
+            paint.strokeWidth =
+                strokeWidth * 0.9f
+
+            canvas.drawCircle(
+                centerX,
+                centerY,
+                radius -
+                    strokeWidth * 0.52f,
+                Paint(
+                    Paint.ANTI_ALIAS_FLAG
+                ).apply {
+
+                    style =
+                        Paint.Style.FILL
+
+                    color =
+                        Color.rgb(
+                            20,
+                            22,
+                            29
+                        )
+                }
+            )
+
+            val totalPaint =
+                Paint(
+                    Paint.ANTI_ALIAS_FLAG
+                ).apply {
+
+                    color =
+                        Color.WHITE
+
+                    textSize =
+                        22f
+
+                    typeface =
+                        Typeface.DEFAULT_BOLD
+
+                    textAlign =
+                        Paint.Align.CENTER
+                }
+
+            canvas.drawText(
+                money(total),
+                centerX,
+                centerY + 7f,
+                totalPaint
+            )
+        }
+    }
+
+    private class SpendingTrendView(
+        context: android.content.Context
+    ) : View(context) {
+
+        private var data =
+            emptyList<MonthData>()
+
+        private val axisColor =
+            Color.rgb(
+                75,
+                79,
+                90
+            )
+
+        private val lineColor =
+            Color.rgb(
+                255,
+                166,
+                52
+            )
+
+        fun setData(
+            values: List<MonthData>
+        ) {
+
+            data =
+                values
+
+            invalidate()
+        }
+
+        override fun onDraw(
+            canvas: Canvas
+        ) {
+
+            super.onDraw(canvas)
+
+            if (data.isEmpty()) {
+                return
+            }
+
+            val left =
+                78f
+
+            val right =
+                width - 24f
+
+            val top =
+                28f
+
+            val bottom =
+                height - 52f
+
+            val chartWidth =
+                right - left
+
+            val chartHeight =
+                bottom - top
+
+            val axisPaint =
+                Paint(
+                    Paint.ANTI_ALIAS_FLAG
+                ).apply {
+
+                    color =
+                        axisColor
+
+                    strokeWidth =
+                        2f
+
+                    style =
+                        Paint.Style.STROKE
+                }
+
+            canvas.drawLine(
+                left,
+                top,
+                left,
+                bottom,
+                axisPaint
+            )
+
+            canvas.drawLine(
+                left,
+                bottom,
+                right,
+                bottom,
+                axisPaint
+            )
+
+            val maximum =
+                data.maxOfOrNull {
+                    it.expenses
+                } ?: 0.0
+
+            val maxValue =
+                if (maximum > 0.0) {
+                    maximum
+                } else {
+                    1.0
+                }
+
+            val linePaint =
+                Paint(
+                    Paint.ANTI_ALIAS_FLAG
+                ).apply {
+
+                    color =
+                        lineColor
+
+                    strokeWidth =
+                        5f
+
+                    style =
+                        Paint.Style.STROKE
+
+                    strokeCap =
+                        Paint.Cap.ROUND
+
+                    strokeJoin =
+                        Paint.Join.ROUND
+                }
+
+            val pointPaint =
+                Paint(
+                    Paint.ANTI_ALIAS_FLAG
+                ).apply {
+
+                    color =
+                        lineColor
+
+                    style =
+                        Paint.Style.FILL
+                }
+
+            val path =
+                Path()
+
+            data.forEachIndexed {
+                index,
+                monthData ->
+
+                val x =
+                    if (data.size == 1) {
+                        left
+                    } else {
+                        left +
+                            (
+                                chartWidth *
+                                    index /
+                                    (data.size - 1)
+                            )
+                    }
+
+                val y =
+                    bottom -
+                        (
+                            monthData.expenses /
+                                maxValue
+                            ).toFloat() *
+                            chartHeight
+
+                if (index == 0) {
+                    path.moveTo(
+                        x,
+                        y
+                    )
+                } else {
+                    path.lineTo(
+                        x,
+                        y
+                    )
+                }
+            }
+
+            canvas.drawPath(
+                path,
+                linePaint
+            )
+
+            data.forEachIndexed {
+                index,
+                monthData ->
+
+                val x =
+                    if (data.size == 1) {
+                        left
+                    } else {
+                        left +
+                            (
+                                chartWidth *
+                                    index /
+                                    (data.size - 1)
+                            )
+                    }
+
+                val y =
+                    bottom -
+                        (
+                            monthData.expenses /
+                                maxValue
+                            ).toFloat() *
+                            chartHeight
+
+                canvas.drawCircle(
+                    x,
+                    y,
+                    7f,
+                    pointPaint
+                )
+
+                val monthPaint =
+                    Paint(
+                        Paint.ANTI_ALIAS_FLAG
+                    ).apply {
+
+                        color =
+                            Color.rgb(
+                                168,
+                                174,
+                                187
+                            )
+
+                        textSize =
+                            12f
+
+                        textAlign =
+                            Paint.Align.CENTER
+                    }
+
+                val monthLabel =
+                    monthName(
+                        monthData.year,
+                        monthData.month
+                    ).take(3)
+
+                canvas.drawText(
+                    monthLabel,
+                    x,
+                    bottom + 28f,
+                    monthPaint
+                )
+            }
+
+            val zeroPaint =
+                Paint(
+                    Paint.ANTI_ALIAS_FLAG
+                ).apply {
+
+                    color =
+                        Color.rgb(
+                            168,
+                            174,
+                            187
+                        )
+
+                    textSize =
+                        11f
+
+                    textAlign =
+                        Paint.Align.RIGHT
+                }
+
+            canvas.drawText(
+                money(0.0),
+                left - 10f,
+                bottom + 4f,
+                zeroPaint
+            )
+
+            canvas.drawText(
+                money(maxValue),
+                left - 10f,
+                top + 4f,
+                zeroPaint
+            )
+
+            val axisPaintText =
+                Paint(
+                    Paint.ANTI_ALIAS_FLAG
+                ).apply {
+
+                    color =
+                        Color.rgb(
+                            168,
+                            174,
+                            187
+                        )
+
+                    textSize =
+                        12f
+
+                    textAlign =
+                        Paint.Align.LEFT
+                }
+
+            canvas.drawText(
+                "€",
+                20f,
+                top + 4f,
+                axisPaintText
+            )
+        }
+
+        private fun monthName(
+            year: Int,
+            month: Int
+        ): String {
+
+            val calendar =
+                Calendar.getInstance()
+
+            calendar.set(
+                year,
+                month,
+                1
+            )
+
+            return calendar.getDisplayName(
+                Calendar.MONTH,
+                Calendar.LONG,
+                Locale.ENGLISH
+            ) ?: ""
+        }
+
+        private fun money(
+            amount: Double
+        ): String {
+
+            return NumberFormat
+                .getCurrencyInstance(
+                    Locale.GERMANY
+                )
+                .format(amount)
         }
     }
 
