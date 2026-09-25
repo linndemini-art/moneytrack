@@ -469,7 +469,7 @@ class AnalyticsActivity : Activity() {
             textSize = 36f
             setTextColor(white)
             gravity = Gravity.CENTER
-            setPadding(0, 0, 18, 0)
+            setPadding(0, 0, 0, 10)
 
             setOnClickListener {
                 finish()
