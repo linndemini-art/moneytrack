@@ -535,7 +535,7 @@ class AnalyticsActivity : Activity() {
 
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(20, 0, 20, 32)
+            setPadding(20, 92, 20, 32)
         }
 
         scrollView.addView(content)
