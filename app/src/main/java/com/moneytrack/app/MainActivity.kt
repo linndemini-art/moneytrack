@@ -509,7 +509,8 @@ class MainActivity : Activity() {
             addTitle,
             addTitleParams
         )
-                val addCard = createMainCard()
+
+        val addCard = createMainCard()
 
         descriptionInput = createInput(
             "Description",
@@ -690,6 +691,100 @@ class MainActivity : Activity() {
         updateTotals()
         refreshExpenses()
     }
+                descriptionInput,
+            inputParams()
+        )
+
+        amountInput = createInput(
+            "Amount",
+            InputType.TYPE_CLASS_NUMBER or
+                InputType.TYPE_NUMBER_FLAG_DECIMAL
+        )
+
+        addCard.addView(
+            amountInput,
+            inputParams()
+        )
+
+        categorySpinner = Spinner(this)
+
+        val categoryAdapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            categories
+        )
+
+        categoryAdapter.setDropDownViewResource(
+            android.R.layout.simple_spinner_dropdown_item
+        )
+
+        categorySpinner.adapter = categoryAdapter
+
+        addCard.addView(
+            categorySpinner,
+            spinnerParams()
+        )
+
+        val addExpenseButton = createGradientButton(
+            "Add Expense",
+            blueDark,
+            blueBright
+        )
+
+        addExpenseButton.setOnClickListener {
+            addExpense()
+        }
+
+        addCard.addView(
+            addExpenseButton,
+            buttonParams()
+        )
+
+        content.addView(addCard)
+
+        val expensesTitle = sectionTitle(
+            "EXPENSES",
+            white
+        )
+
+        val expensesTitleParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        expensesTitleParams.setMargins(
+            2,
+            24,
+            0,
+            10
+        )
+
+        content.addView(
+            expensesTitle,
+            expensesTitleParams
+        )
+
+        expensesContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+        }
+
+        content.addView(
+            expensesContainer,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        createMenuDrawer(root)
+
+        setContentView(root)
+
+        loadData()
+        updateMonthDisplay()
+        updateTotals()
+        refreshExpenses()
+    }
 
     private fun createMenuDrawer(
         root: FrameLayout
@@ -787,6 +882,32 @@ class MainActivity : Activity() {
             )
         )
 
+        val analyticsItem = TextView(this).apply {
+            text = "Analytics"
+            textSize = 18f
+            setTextColor(white)
+            setPadding(0, 24, 0, 24)
+
+            setOnClickListener {
+                closeMenu()
+
+                startActivity(
+                    Intent(
+                        this@MainActivity,
+                        AnalyticsActivity::class.java
+                    )
+                )
+            }
+        }
+
+        menuDrawer.addView(
+            analyticsItem,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
         val drawerWidth =
             (resources.displayMetrics.widthPixels * 0.35f).toInt()
 
@@ -821,14 +942,11 @@ class MainActivity : Activity() {
         menuOverlay.animate()
             .alpha(1f)
             .setDuration(220)
-            .setInterpolator(
-                AccelerateDecelerateInterpolator()
-            )
             .start()
 
         menuDrawer.animate()
             .translationX(0f)
-            .setDuration(280)
+            .setDuration(220)
             .setInterpolator(
                 AccelerateDecelerateInterpolator()
             )
@@ -846,9 +964,6 @@ class MainActivity : Activity() {
         menuOverlay.animate()
             .alpha(0f)
             .setDuration(180)
-            .setInterpolator(
-                AccelerateDecelerateInterpolator()
-            )
             .withEndAction {
                 menuOverlay.visibility = View.GONE
             }
@@ -858,14 +973,13 @@ class MainActivity : Activity() {
             .translationX(
                 -menuDrawer.width.toFloat()
             )
-            .setDuration(240)
+            .setDuration(180)
             .setInterpolator(
                 AccelerateDecelerateInterpolator()
             )
             .start()
     }
-
-    private fun openHistory() {
+        private fun openHistory() {
 
         closeMenu()
 
@@ -985,7 +1099,7 @@ class MainActivity : Activity() {
                 )
             )
         } else {
-                        for (key in monthKeys) {
+            for (key in monthKeys) {
 
                 val parts = key.split("-")
 
@@ -1180,8 +1294,7 @@ class MainActivity : Activity() {
             }
         )
     }
-
-    private fun currentMonthKey(): String {
+        private fun currentMonthKey(): String {
 
         return String.format(
             Locale.US,
@@ -1418,7 +1531,8 @@ class MainActivity : Activity() {
         updateTotals()
         refreshExpenses()
     }
-        private fun updateMonthDisplay() {
+
+    private fun updateMonthDisplay() {
 
         val calendar =
             Calendar.getInstance()
@@ -1615,8 +1729,7 @@ class MainActivity : Activity() {
 
             return
         }
-
-        for (
+                for (
             index in expenses.indices.reversed()
         ) {
 
@@ -1978,7 +2091,8 @@ class MainActivity : Activity() {
                 )
         }
     }
-        private fun roundedBackground(
+
+    private fun roundedBackground(
         color: Int,
         radius: Float
     ): GradientDrawable {
@@ -2451,4 +2565,4 @@ class MainActivity : Activity() {
             }
         }
     }
-} 
+}
