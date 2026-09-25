@@ -461,7 +461,7 @@ class AnalyticsActivity : Activity() {
         val header = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(20, 60, 20, 16)
+            setPadding(20, 92, 20, 16)
         }
 
         val backButton = TextView(this).apply {
