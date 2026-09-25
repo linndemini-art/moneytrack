@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
-import android.view.View
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -14,7 +13,6 @@ import java.text.NumberFormat
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.roundToInt
-
 
 class AnalyticsActivity : Activity() {
 
@@ -64,7 +62,6 @@ class AnalyticsActivity : Activity() {
     private val muted =
         Color.rgb(115, 121, 135)
 
-
     private var selectedYear = 0
     private var selectedMonth = 0
 
@@ -73,13 +70,11 @@ class AnalyticsActivity : Activity() {
     private val expenses =
         mutableListOf<Expense>()
 
-
     data class Expense(
         val description: String,
         val category: String,
         val amount: Double
     )
-
 
     data class MonthData(
         val year: Int,
@@ -87,7 +82,6 @@ class AnalyticsActivity : Activity() {
         val income: Double,
         val expenses: Double
     )
-
 
     private val categories = arrayOf(
         "Housing",
@@ -103,7 +97,6 @@ class AnalyticsActivity : Activity() {
         "Travel",
         "Other"
     )
-
 
     override fun onCreate(
         savedInstanceState: Bundle?
@@ -130,7 +123,6 @@ class AnalyticsActivity : Activity() {
         buildInterface()
     }
 
-
     private fun monthKey(
         year: Int,
         month: Int
@@ -144,7 +136,6 @@ class AnalyticsActivity : Activity() {
         )
     }
 
-
     private fun incomeKey(
         year: Int,
         month: Int
@@ -153,7 +144,6 @@ class AnalyticsActivity : Activity() {
         return "income_${monthKey(year, month)}"
     }
 
-
     private fun expensesKey(
         year: Int,
         month: Int
@@ -161,7 +151,6 @@ class AnalyticsActivity : Activity() {
 
         return "expenses_${monthKey(year, month)}"
     }
-
 
     private fun loadSelectedMonth() {
 
@@ -233,7 +222,6 @@ class AnalyticsActivity : Activity() {
         }
     }
 
-
     private fun totalExpenses(): Double {
 
         return expenses.sumOf {
@@ -241,12 +229,10 @@ class AnalyticsActivity : Activity() {
         }
     }
 
-
     private fun remainingMoney(): Double {
 
         return income - totalExpenses()
     }
-
 
     private fun categoryTotals():
             Map<String, Double> {
@@ -267,9 +253,7 @@ class AnalyticsActivity : Activity() {
 
         return totals
     }
-
-
-    private fun savingsRate(): Int {
+                private fun savingsRate(): Int {
 
         if (income <= 0.0) {
             return 0
@@ -283,7 +267,6 @@ class AnalyticsActivity : Activity() {
         ).roundToInt()
             .coerceIn(-100, 100)
     }
-
 
     private fun dailyAverage(): Double {
 
@@ -310,7 +293,6 @@ class AnalyticsActivity : Activity() {
 
         return total / daysInMonth
     }
-
 
     private fun sixMonthData():
             List<MonthData> {
@@ -371,7 +353,6 @@ class AnalyticsActivity : Activity() {
         return result
     }
 
-
     private fun readExpensesTotal(
         year: Int,
         month: Int
@@ -418,7 +399,6 @@ class AnalyticsActivity : Activity() {
         }
     }
 
-
     private fun money(
         amount: Double
     ): String {
@@ -429,7 +409,6 @@ class AnalyticsActivity : Activity() {
             )
             .format(amount)
     }
-
 
     private fun monthName(
         year: Int,
@@ -451,80 +430,60 @@ class AnalyticsActivity : Activity() {
             Locale.ENGLISH
         ) ?: ""
     }
-        private fun buildInterface() {
+
+    private fun buildInterface() {
 
         val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(backgroundColor)
+            orientation =
+                LinearLayout.VERTICAL
+
+            setBackgroundColor(
+                backgroundColor
+            )
         }
 
         val header = LinearLayout(this).apply {
-    orientation = LinearLayout.HORIZONTAL
-    gravity = Gravity.CENTER_VERTICAL
-    setPadding(20, 92, 20, 16)
-}
+            orientation =
+                LinearLayout.HORIZONTAL
 
-val backButton = TextView(this).apply {
-    text = "‹"
-    textSize = 36f
-    setTextColor(white)
-    gravity = Gravity.CENTER
-    includeFontPadding = true
+            gravity =
+                Gravity.CENTER_VERTICAL
 
-    setOnClickListener {
-        finish()
-    }
-}
+            setPadding(
+                20,
+                92,
+                20,
+                16
+            )
+        }
 
-header.addView(
-    backButton,
-    LinearLayout.LayoutParams(
-        55,
-        60
-    )
-)
+        val backButton = TextView(this).apply {
+            text = "‹"
+            textSize = 36f
+            setTextColor(white)
+            gravity = Gravity.CENTER
+            includeFontPadding = true
 
-val title = TextView(this).apply {
-    text = "ANALYTICS"
-    textSize = 24f
-    setTextColor(white)
-    typeface = Typeface.DEFAULT_BOLD
-    letterSpacing = 0.04f
-}
+            setOnClickListener {
+                finish()
+            }
+        }
 
-header.addView(
-    title,
-    LinearLayout.LayoutParams(
-        0,
-        LinearLayout.LayoutParams.WRAP_CONTENT,
-        1f
-    )
-)
-
-val monthTitle = TextView(this).apply {
-    text = monthName(
-        selectedYear,
-        selectedMonth
-    ) + " " + selectedYear
-
-    textSize = 14f
-    setTextColor(secondary)
-    gravity = Gravity.CENTER_VERTICAL
-}
-
-header.addView(
-    monthTitle,
-    LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.WRAP_CONTENT,
-        60
-    )
-)
+        header.addView(
+            backButton,
+            LinearLayout.LayoutParams(
+                55,
+                60
+            )
+        )
 
         val title = TextView(this).apply {
             text = "ANALYTICS"
             textSize = 24f
             setTextColor(white)
-            typeface = Typeface.DEFAULT_BOLD
+            typeface =
+                Typeface.DEFAULT_BOLD
+
             letterSpacing = 0.04f
         }
 
@@ -545,7 +504,8 @@ header.addView(
 
             textSize = 14f
             setTextColor(secondary)
-            gravity = Gravity.CENTER_VERTICAL
+            gravity =
+                Gravity.CENTER_VERTICAL
         }
 
         header.addView(
@@ -564,15 +524,23 @@ header.addView(
             )
         )
 
+        val scrollView =
+            ScrollView(this).apply {
+                setFillViewport(true)
+            }
 
-        val scrollView = ScrollView(this).apply {
-            setFillViewport(true)
-        }
+        val content =
+            LinearLayout(this).apply {
+                orientation =
+                    LinearLayout.VERTICAL
 
-        val content = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(20, 92, 20, 32)
-        }
+                setPadding(
+                    20,
+                    92,
+                    20,
+                    32
+                )
+            }
 
         scrollView.addView(content)
 
@@ -585,15 +553,15 @@ header.addView(
             )
         )
 
-
         val overviewTitle =
-            sectionTitle("MONTHLY OVERVIEW")
+            sectionTitle(
+                "MONTHLY OVERVIEW"
+            )
 
         content.addView(
             overviewTitle,
             sectionParams()
         )
-
 
         val overviewCard =
             createCard()
@@ -613,7 +581,6 @@ header.addView(
             valueParams()
         )
 
-
         val expenseValue =
             createValueText(
                 money(totalExpenses()),
@@ -628,7 +595,6 @@ header.addView(
             expenseValue,
             valueParams()
         )
-
 
         val remaining =
             remainingMoney()
@@ -655,9 +621,7 @@ header.addView(
             overviewCard,
             cardParams()
         )
-
-
-        val breakdownTitle =
+                val breakdownTitle =
             sectionTitle(
                 "SPENDING BY CATEGORY"
             )
@@ -666,7 +630,6 @@ header.addView(
             breakdownTitle,
             sectionParams()
         )
-
 
         val categoryCard =
             createCard()
@@ -699,8 +662,10 @@ header.addView(
                 LinearLayout(this).apply {
                     orientation =
                         LinearLayout.HORIZONTAL
+
                     gravity =
                         Gravity.CENTER_VERTICAL
+
                     setPadding(
                         0,
                         10,
@@ -774,7 +739,6 @@ header.addView(
             cardParams()
         )
 
-
         val ratioTitle =
             sectionTitle(
                 "INCOME VS. EXPENSE RATIO"
@@ -784,7 +748,6 @@ header.addView(
             ratioTitle,
             sectionParams()
         )
-
 
         val ratioCard =
             createCard()
@@ -807,10 +770,19 @@ header.addView(
 
                 textSize = 20f
                 setTextColor(white)
+
                 typeface =
                     Typeface.DEFAULT_BOLD
-                gravity = Gravity.CENTER
-                setPadding(0, 8, 0, 14)
+
+                gravity =
+                    Gravity.CENTER
+
+                setPadding(
+                    0,
+                    8,
+                    0,
+                    14
+                )
             }
 
         ratioCard.addView(
@@ -820,7 +792,6 @@ header.addView(
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
         )
-
 
         val ratioDetails =
             LinearLayout(this).apply {
@@ -859,7 +830,6 @@ header.addView(
             cardParams()
         )
 
-
         val dailyTitle =
             sectionTitle(
                 "DAILY AVERAGE"
@@ -869,7 +839,6 @@ header.addView(
             dailyTitle,
             sectionParams()
         )
-
 
         val dailyCard =
             createCard()
@@ -894,7 +863,6 @@ header.addView(
             cardParams()
         )
 
-
         val savingsTitle =
             sectionTitle(
                 "SAVINGS RATE"
@@ -904,7 +872,6 @@ header.addView(
             savingsTitle,
             sectionParams()
         )
-
 
         val savingsCard =
             createCard()
@@ -928,7 +895,6 @@ header.addView(
             cardParams()
         )
 
-
         val trendTitle =
             sectionTitle(
                 "SPENDING TREND"
@@ -938,7 +904,6 @@ header.addView(
             trendTitle,
             sectionParams()
         )
-
 
         val trendCard =
             createCard()
@@ -952,8 +917,10 @@ header.addView(
                 LinearLayout(this).apply {
                     orientation =
                         LinearLayout.HORIZONTAL
+
                     gravity =
                         Gravity.CENTER_VERTICAL
+
                     setPadding(
                         0,
                         9,
@@ -991,13 +958,16 @@ header.addView(
                         money(data.expenses)
 
                     textSize = 14f
+
                     setTextColor(
                         if (data.expenses > 0)
                             red
                         else
                             muted
                     )
-                    gravity = Gravity.END
+
+                    gravity =
+                        Gravity.END
                 }
 
             row.addView(
@@ -1015,9 +985,7 @@ header.addView(
             trendCard,
             cardParams()
         )
-
-
-        val footer =
+                val footer =
             TextView(this).apply {
                 text =
                     "Analytics are calculated from your saved MoneyTrack data."
@@ -1025,6 +993,7 @@ header.addView(
                 textSize = 12f
                 setTextColor(muted)
                 gravity = Gravity.CENTER
+
                 setPadding(
                     8,
                     20,
@@ -1041,18 +1010,28 @@ header.addView(
             )
         )
 
-
         setContentView(root)
     }
-            private fun createCard(): LinearLayout {
+
+    private fun createCard():
+            LinearLayout {
 
         return LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(cardColor)
-            setPadding(18, 18, 18, 18)
+            orientation =
+                LinearLayout.VERTICAL
+
+            setBackgroundColor(
+                cardColor
+            )
+
+            setPadding(
+                18,
+                18,
+                18,
+                18
+            )
         }
     }
-
 
     private fun sectionTitle(
         text: String
@@ -1062,11 +1041,12 @@ header.addView(
             this.text = text
             textSize = 13f
             setTextColor(secondary)
-            typeface = Typeface.DEFAULT_BOLD
+            typeface =
+                Typeface.DEFAULT_BOLD
+
             letterSpacing = 0.08f
         }
     }
-
 
     private fun createLabel(
         text: String
@@ -1076,10 +1056,15 @@ header.addView(
             this.text = text
             textSize = 14f
             setTextColor(secondary)
-            setPadding(0, 4, 0, 4)
+
+            setPadding(
+                0,
+                4,
+                0,
+                4
+            )
         }
     }
-
 
     private fun createValueText(
         text: String,
@@ -1090,10 +1075,10 @@ header.addView(
             this.text = text
             textSize = 24f
             setTextColor(color)
-            typeface = Typeface.DEFAULT_BOLD
+            typeface =
+                Typeface.DEFAULT_BOLD
         }
     }
-
 
     private fun createEmptyText(
         text: String
@@ -1103,10 +1088,15 @@ header.addView(
             this.text = text
             textSize = 14f
             setTextColor(muted)
-            setPadding(0, 12, 0, 12)
+
+            setPadding(
+                0,
+                12,
+                0,
+                12
+            )
         }
     }
-
 
     private fun cardParams():
             LinearLayout.LayoutParams {
@@ -1115,6 +1105,7 @@ header.addView(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply {
+
             setMargins(
                 0,
                 0,
@@ -1124,7 +1115,6 @@ header.addView(
         }
     }
 
-
     private fun sectionParams():
             LinearLayout.LayoutParams {
 
@@ -1132,6 +1122,7 @@ header.addView(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply {
+
             setMargins(
                 0,
                 18,
@@ -1141,7 +1132,6 @@ header.addView(
         }
     }
 
-
     private fun valueParams():
             LinearLayout.LayoutParams {
 
@@ -1149,6 +1139,7 @@ header.addView(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply {
+
             setMargins(
                 0,
                 2,
@@ -1157,9 +1148,7 @@ header.addView(
             )
         }
     }
-
-
-    override fun onBackPressed() {
+                override fun onBackPressed() {
         finish()
     }
 }
