@@ -253,7 +253,8 @@ class AnalyticsActivity : Activity() {
 
         return totals
     }
-                private fun savingsRate(): Int {
+
+    private fun savingsRate(): Int {
 
         if (income <= 0.0) {
             return 0
@@ -430,8 +431,7 @@ class AnalyticsActivity : Activity() {
             Locale.ENGLISH
         ) ?: ""
     }
-
-    private fun buildInterface() {
+        private fun buildInterface() {
 
         val root = LinearLayout(this).apply {
             orientation =
@@ -457,34 +457,25 @@ class AnalyticsActivity : Activity() {
             )
         }
 
-        val backButton = TextView(this).apply {
-            text = "‹"
-            textSize = 36f
-            setTextColor(white)
-            gravity = Gravity.CENTER
-            includeFontPadding = true
-
-            setOnClickListener {
-                finish()
-            }
-        }
-
-        header.addView(
-            backButton,
-            LinearLayout.LayoutParams(
-                55,
-                60
-            )
-        )
-
         val title = TextView(this).apply {
-            text = "ANALYTICS"
+            text = "←  ANALYTICS"
             textSize = 24f
             setTextColor(white)
             typeface =
                 Typeface.DEFAULT_BOLD
 
             letterSpacing = 0.04f
+
+            setPadding(
+                0,
+                0,
+                0,
+                10
+            )
+
+            setOnClickListener {
+                finish()
+            }
         }
 
         header.addView(
@@ -621,7 +612,8 @@ class AnalyticsActivity : Activity() {
             overviewCard,
             cardParams()
         )
-                val breakdownTitle =
+
+        val breakdownTitle =
             sectionTitle(
                 "SPENDING BY CATEGORY"
             )
@@ -829,8 +821,7 @@ class AnalyticsActivity : Activity() {
             ratioCard,
             cardParams()
         )
-
-        val dailyTitle =
+                val dailyTitle =
             sectionTitle(
                 "DAILY AVERAGE"
             )
@@ -985,7 +976,8 @@ class AnalyticsActivity : Activity() {
             trendCard,
             cardParams()
         )
-                val footer =
+
+        val footer =
             TextView(this).apply {
                 text =
                     "Analytics are calculated from your saved MoneyTrack data."
@@ -1041,6 +1033,7 @@ class AnalyticsActivity : Activity() {
             this.text = text
             textSize = 13f
             setTextColor(secondary)
+
             typeface =
                 Typeface.DEFAULT_BOLD
 
@@ -1075,6 +1068,7 @@ class AnalyticsActivity : Activity() {
             this.text = text
             textSize = 24f
             setTextColor(color)
+
             typeface =
                 Typeface.DEFAULT_BOLD
         }
@@ -1097,8 +1091,7 @@ class AnalyticsActivity : Activity() {
             )
         }
     }
-
-    private fun cardParams():
+        private fun cardParams():
             LinearLayout.LayoutParams {
 
         return LinearLayout.LayoutParams(
@@ -1148,7 +1141,8 @@ class AnalyticsActivity : Activity() {
             )
         }
     }
-                override fun onBackPressed() {
+
+    override fun onBackPressed() {
         finish()
     }
 }
