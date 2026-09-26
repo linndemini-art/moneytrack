@@ -1269,3 +1269,4 @@ class AnalyticsActivity : Activity() {
         finish()
     }
 }
+    
