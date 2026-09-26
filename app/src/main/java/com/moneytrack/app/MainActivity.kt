@@ -1113,7 +1113,7 @@ menuDrawer.addView(
             return
         }
 
-        income = value
+        income += value
 
         saveData()
         updateTotals()
