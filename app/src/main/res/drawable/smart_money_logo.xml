@@ -5,9 +5,9 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Premium dark background -->
+    <!-- White background -->
     <path
-        android:fillColor="#08131F"
+        android:fillColor="#FFFFFF"
         android:pathData="M54,0
             C83.82,0 108,24.18 108,54
             C108,83.82 83.82,108 54,108
@@ -15,98 +15,105 @@
             C0,24.18 24.18,0 54,0
             Z" />
 
-    <!-- Subtle inner glow -->
-    <path
-        android:fillColor="#0D2233"
-        android:pathData="M54,7
-            C79.95,7 101,28.05 101,54
-            C101,79.95 79.95,101 54,101
-            C28.05,101 7,79.95 7,54
-            C7,28.05 28.05,7 54,7
-            Z" />
-
-    <!-- Brain left hemisphere -->
+    <!-- Left brain structure -->
     <path
         android:fillColor="@android:color/transparent"
-        android:strokeColor="#63D9FF"
+        android:strokeColor="#111111"
+        android:strokeWidth="3.4"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round"
+        android:pathData="M53,30
+            C49,25 42,23 37,27
+            C32,24 26,28 27,34
+            C21,35 19,41 22,46
+            C17,50 19,57 24,60
+            C21,66 25,72 31,72
+            C30,79 36,83 42,80
+            C46,84 52,81 53,75
+            Z" />
+
+    <!-- Right brain structure -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#111111"
+        android:strokeWidth="3.4"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round"
+        android:pathData="M55,30
+            C59,25 66,23 71,27
+            C76,24 82,28 81,34
+            C87,35 89,41 86,46
+            C91,50 89,57 84,60
+            C87,66 83,72 77,72
+            C78,79 72,83 66,80
+            C62,84 56,81 55,75
+            Z" />
+
+    <!-- Interwoven neural pattern - left -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#111111"
+        android:strokeWidth="2.2"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round"
+        android:pathData="M29,36
+            C35,32 42,35 45,40
+            C48,45 44,50 38,50
+            C32,50 28,46 29,41
+            C30,37 35,35 39,38
+            C43,41 42,46 38,49
+            C34,52 30,56 31,61
+            C32,66 37,69 42,67
+            C47,65 49,60 46,56
+            C43,52 38,53 35,57" />
+
+    <!-- Interwoven neural pattern - right -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#111111"
+        android:strokeWidth="2.2"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round"
+        android:pathData="M79,36
+            C73,32 66,35 63,40
+            C60,45 64,50 70,50
+            C76,50 80,46 79,41
+            C78,37 73,35 69,38
+            C65,41 66,46 70,49
+            C74,52 78,56 77,61
+            C76,66 71,69 66,67
+            C61,65 59,60 62,56
+            C65,52 70,53 73,57" />
+
+    <!-- Central interwoven brain connection -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#111111"
         android:strokeWidth="2.6"
         android:strokeLineJoin="round"
         android:strokeLineCap="round"
-        android:pathData="M52,29
-            C46,24 37,27 36,34
-            C30,34 27,39 29,44
-            C24,48 27,55 32,57
-            C28,63 32,69 38,69
-            C37,76 43,80 49,77
-            C52,81 55,78 55,73
-            L55,34
-            C55,32 54,30 52,29
-            Z" />
+        android:pathData="M53,31
+            C48,36 49,43 54,47
+            C59,43 60,36 55,31
+            M54,47
+            C48,50 48,57 54,61
+            C60,57 60,50 54,47
+            M54,61
+            C49,65 49,72 54,77
+            C59,72 59,65 54,61" />
 
-    <!-- Brain right hemisphere -->
+    <!-- Lower interwoven connections -->
     <path
         android:fillColor="@android:color/transparent"
-        android:strokeColor="#63D9FF"
-        android:strokeWidth="2.6"
+        android:strokeColor="#111111"
+        android:strokeWidth="2.2"
         android:strokeLineJoin="round"
         android:strokeLineCap="round"
-        android:pathData="M56,29
-            C62,24 71,27 72,34
-            C78,34 81,39 79,44
-            C84,48 81,55 76,57
-            C80,63 76,69 70,69
-            C71,76 65,80 59,77
-            C56,81 53,78 53,73
-            L53,34
-            C53,32 54,30 56,29
-            Z" />
-
-    <!-- Neural connections -->
-    <path
-        android:fillColor="@android:color/transparent"
-        android:strokeColor="#63D9FF"
-        android:strokeWidth="1.4"
-        android:strokeLineJoin="round"
-        android:strokeLineCap="round"
-        android:pathData="M37,39
-            L46,45
-            L40,53
-            L48,59
-            L42,68
-            M71,39
-            L62,45
-            L68,53
-            L60,59
-            L66,68
-            M46,45
-            L53,40
-            L62,45
-            M48,59
-            L54,54
-            L60,59" />
-
-    <!-- Ascending financial chart -->
-    <path
-        android:fillColor="@android:color/transparent"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="3.2"
-        android:strokeLineJoin="round"
-        android:strokeLineCap="round"
-        android:pathData="M39,67
-            L47,60
-            L53,64
-            L60,53
-            L69,44" />
-
-    <!-- Chart arrow -->
-    <path
-        android:fillColor="@android:color/transparent"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="3.2"
-        android:strokeLineJoin="round"
-        android:strokeLineCap="round"
-        android:pathData="M62,44
-            L69,44
-            L69,51" />
+        android:pathData="M31,61
+            C38,59 44,61 48,66
+            C51,70 50,76 46,79
+            M77,61
+            C70,59 64,61 60,66
+            C57,70 58,76 62,79" />
 
 </vector>
