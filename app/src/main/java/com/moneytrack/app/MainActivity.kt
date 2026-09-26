@@ -815,6 +815,32 @@ class MainActivity : Activity() {
             )
         )
 
+        val debtLoanItem = TextView(this).apply {
+    text = "Debt & Loan"
+    textSize = 18f
+    setTextColor(white)
+    setPadding(0, 24, 0, 24)
+
+    setOnClickListener {
+        closeMenu()
+
+        startActivity(
+            Intent(
+                this@MainActivity,
+                LoansDebtsActivity::class.java
+            )
+        )
+    }
+}
+
+menuDrawer.addView(
+    debtLoanItem,
+    LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    )
+)
+
         val drawerWidth =
             (resources.displayMetrics.widthPixels * 0.35f).toInt()
 
