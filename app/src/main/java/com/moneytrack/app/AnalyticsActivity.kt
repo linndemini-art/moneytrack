@@ -635,7 +635,7 @@ class AnalyticsActivity : Activity() {
                 text = value
                 textSize = 21f
                 setTextColor(white)
-                typeface = Typeface.DEFAULT_BOLD
+                                typeface = Typeface.DEFAULT_BOLD
                 gravity = Gravity.CENTER
 
                 setPadding(
@@ -1284,305 +1284,805 @@ class AnalyticsActivity : Activity() {
                 .format(value)
         }
     }
-        private fun selectedMonthName(): String {
+        private inner class YearlyOverviewView(
+        context: Context
+    ) : View(context) {
 
-        val calendar = Calendar.getInstance().apply {
-            set(
-                selectedYear,
-                selectedMonth,
-                1
-            )
-        }
-
-        return SimpleDateFormat(
-            "MMMM yyyy",
-            Locale.ENGLISH
-        ).format(calendar.time)
-    }
-
-    private fun sectionTitle(
-        text: String
-    ): TextView {
-
-        return TextView(this).apply {
-            this.text = text
-            textSize = 16f
-            setTextColor(white)
-            typeface = Typeface.DEFAULT_BOLD
-            letterSpacing = 0.04f
-        }
-    }
-
-    private fun sectionTitleParams():
-        LinearLayout.LayoutParams {
-
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
+        private val paint = Paint(
+            Paint.ANTI_ALIAS_FLAG
         )
 
-        params.setMargins(
-            0,
-            dp(24),
-            0,
-            dp(10)
-        )
+        private var income = 0.0
+        private var expenses = 0.0
+        private var animatedExpenseRatio = 0f
+        private var animator: ValueAnimator? = null
 
-        return params
-    }
-
-    private fun createCard():
-        LinearLayout {
-
-        return LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-
-            setPadding(
-                dp(16),
-                dp(16),
-                dp(16),
-                dp(16)
-            )
-
-            background = roundedBackground(
-                cardColor,
-                18f
-            )
-        }
-    }
-
-    private fun cardParams():
-        LinearLayout.LayoutParams {
-
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-
-        params.setMargins(
-            0,
-            0,
-            0,
-            dp(4)
-        )
-
-        return params
-    }
-
-    private fun createStatCard(
-        label: String,
-        value: String
-    ): LinearLayout {
-
-        return LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
-
-            setPadding(
-                dp(12),
-                dp(20),
-                dp(12),
-                dp(20)
-            )
-
-            background = roundedBackground(
-                cardColor,
-                18f
-            )
-
-            val labelText = TextView(this@AnalyticsActivity).apply {
-                text = label
-                textSize = 12f
-                setTextColor(secondary)
-                gravity = Gravity.CENTER
-            }
-
-            addView(labelText)
-
-            val valueText = TextView(this@AnalyticsActivity).apply {
-                text = value
-                textSize = 21f
-                setTextColor(white)
-                typeface = Typeface.DEFAULT_BOLD
-                gravity = Gravity.CENTER
-
-                setPadding(
-                    0,
-                    dp(6),
-                    0,
-                    0
-                )
-            }
-
-            addView(valueText)
-        }
-    }
-
-    private fun statCardParams():
-        LinearLayout.LayoutParams {
-
-        return LinearLayout.LayoutParams(
-            0,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            1f
-        )
-    }
-
-    private fun roundedBackground(
-        color: Int,
-        radius: Float
-    ): android.graphics.drawable.GradientDrawable {
-
-        return android.graphics.drawable.GradientDrawable().apply {
-            setColor(color)
-            cornerRadius = dp(radius.toInt()).toFloat()
-        }
-    }
-
-    private fun dp(value: Int): Int {
-        return (
-            value *
-                resources.displayMetrics.density
-            ).toInt()
-    }
-
-    private fun money(
-        value: Double
-    ): String {
-
-        return NumberFormat
-            .getCurrencyInstance(
-                Locale.GERMANY
-            )
-            .format(value)
-    }
-
-    private fun currentMonthKey(
-        year: Int,
-        month: Int
-    ): String {
-
-        return String.format(
-            Locale.US,
-            "%04d-%02d",
-            year,
-            month + 1
-        )
-    }
-
-    private fun loadMonthData(
-        year: Int,
-        month: Int
-    ): MonthData {
-
-        val key = currentMonthKey(
-            year,
-            month
-        )
-
-        val income = prefs.getString(
-            "income_$key",
-            "0"
-        )?.toDoubleOrNull() ?: 0.0
-
-        val expenses = loadExpenses(
-            year,
-            month
-        )
-
-        return MonthData(
-            year = year,
-            month = month,
-            income = income,
-            expenses = expenses.sumOf {
-                it.amount
-            }
-        )
-    }
-
-    private fun loadExpenses(
-        year: Int,
-        month: Int
-    ): List<ExpenseData> {
-
-        val key = currentMonthKey(
-            year,
-            month
-        )
-
-        val stored = prefs.getString(
-            "expenses_$key",
-            null
-        )
-
-        if (stored.isNullOrEmpty()) {
-            return emptyList()
-        }
-
-        val result = mutableListOf<ExpenseData>()
-
-        try {
-
-            val array = JSONArray(stored)
-
-            for (
-                index in 0 until array.length()
-            ) {
-
-                val item =
-                    array.getJSONObject(index)
-
-                result.add(
-                    ExpenseData(
-                        description =
-                            item.optString(
-                                "description",
-                                "No description"
-                            ),
-                        category =
-                            item.optString(
-                                "category",
-                                "Other"
-                            ),
-                        amount =
-                            item.optDouble(
-                                "amount",
-                                0.0
-                            )
-                    )
-                )
-            }
-
-        } catch (
-            exception: Exception
+        fun setValues(
+            newIncome: Double,
+            newExpenses: Double
         ) {
-            result.clear()
+            income = newIncome
+            expenses = newExpenses
+
+            val targetExpenseRatio =
+                if (income > 0.0) {
+                    max(
+                        0f,
+                        min(
+                            1f,
+                            (expenses / income).toFloat()
+                        )
+                    )
+                } else {
+                    0f
+                }
+
+            animator?.cancel()
+
+            animator = ValueAnimator.ofFloat(
+                0f,
+                targetExpenseRatio
+            ).apply {
+                duration = 900L
+                interpolator = DecelerateInterpolator()
+
+                addUpdateListener { animation ->
+                    animatedExpenseRatio =
+                        animation.animatedValue as Float
+                    invalidate()
+                }
+
+                start()
+            }
         }
 
-        return result
+        override fun onDraw(
+            canvas: Canvas
+        ) {
+            super.onDraw(canvas)
+
+            val left = dp(2f)
+            val right = width.toFloat() - dp(2f)
+            val lineWidth = right - left
+
+            val incomeLineY = dp(70f)
+            val expenseLineY = dp(174f)
+
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = dp(5f)
+            paint.strokeCap = Paint.Cap.ROUND
+            paint.color = Color.rgb(42, 45, 54)
+
+            canvas.drawLine(
+                left,
+                incomeLineY,
+                right,
+                incomeLineY,
+                paint
+            )
+
+            canvas.drawLine(
+                left,
+                expenseLineY,
+                right,
+                expenseLineY,
+                paint
+            )
+
+            if (income > 0.0) {
+                paint.color = blue
+
+                canvas.drawLine(
+                    left,
+                    incomeLineY,
+                    right,
+                    incomeLineY,
+                    paint
+                )
+
+                if (animatedExpenseRatio > 0f) {
+                    paint.color = amber
+
+                    canvas.drawLine(
+                        left,
+                        expenseLineY,
+                        left +
+                            lineWidth *
+                            animatedExpenseRatio,
+                        expenseLineY,
+                        paint
+                    )
+                }
+            }
+
+            paint.style = Paint.Style.FILL
+            paint.typeface = Typeface.DEFAULT_BOLD
+            paint.textSize = sp(15f)
+            paint.textAlign = Paint.Align.LEFT
+            paint.color = white
+
+            canvas.drawText(
+                "Income",
+                left,
+                dp(24f),
+                paint
+            )
+
+            canvas.drawText(
+                "Expenses",
+                left,
+                dp(128f),
+                paint
+            )
+
+            canvas.drawText(
+                money(income),
+                left,
+                dp(47f),
+                paint
+            )
+
+            canvas.drawText(
+                money(expenses),
+                left,
+                dp(151f),
+                paint
+            )
+
+            paint.textAlign = Paint.Align.RIGHT
+            paint.color = secondary
+
+            canvas.drawText(
+                if (income > 0.0) "100%" else "—",
+                right,
+                dp(47f),
+                paint
+            )
+
+            canvas.drawText(
+                if (income > 0.0) {
+                    String.format(
+                        Locale.US,
+                        "%.0f%%",
+                        (expenses / income) * 100.0
+                    )
+                } else {
+                    "—"
+                },
+                right,
+                dp(151f),
+                paint
+            )
+
+            paint.textAlign = Paint.Align.LEFT
+        }
+
+        private fun dp(
+            value: Float
+        ): Float {
+            return value *
+                resources.displayMetrics.density
+        }
+
+        private fun sp(
+            value: Float
+        ): Float {
+            return value *
+                resources.displayMetrics.scaledDensity
+        }
+
+        private fun money(
+            value: Double
+        ): String {
+            return NumberFormat
+                .getCurrencyInstance(
+                    Locale.GERMANY
+                )
+                .format(value)
+        }
     }
 
-    private fun loadCategoryTotals():
-        LinkedHashMap<String, Double> {
+    private inner class DonutChartView(
+        context: Context
+    ) : View(context) {
 
-        val result =
+        private val paint = Paint(
+            Paint.ANTI_ALIAS_FLAG
+        )
+
+        private val rect = RectF()
+
+        private var values =
             LinkedHashMap<String, Double>()
 
-        val expenses = loadExpenses(
-            selectedYear,
-            selectedMonth
-        )
+        private var total = 0.0
 
-        for (expense in expenses) {
+        fun setData(
+            data: LinkedHashMap<String, Double>
+        ) {
 
-            val previous =
-                result[expense.category] ?: 0.0
+            values =
+                LinkedHashMap(data)
 
-            result[expense.category] =
-                previous + expense.amount
+            total =
+                values.values.sum()
+
+            invalidate()
         }
 
-        return result
+        override fun onDraw(
+            canvas: Canvas
+        ) {
+
+            super.onDraw(canvas)
+
+            val centerX =
+                width / 2f
+
+            val centerY =
+                height / 2f
+
+            val radius =
+                min(
+                    width,
+                    height
+                ) * 0.30f
+
+            paint.style =
+                Paint.Style.STROKE
+
+            paint.strokeWidth =
+                dp(30f)
+
+            paint.strokeCap =
+                Paint.Cap.BUTT
+
+            if (total <= 0.0) {
+
+                paint.color =
+                    Color.rgb(
+                        43,
+                        46,
+                        56
+                    )
+
+                canvas.drawCircle(
+                    centerX,
+                    centerY,
+                    radius,
+                    paint
+                )
+
+                paint.style =
+                    Paint.Style.FILL
+
+                paint.color =
+                    Color.rgb(
+                        115,
+                        121,
+                        135
+                    )
+
+                paint.textSize =
+                    sp(13f)
+
+                paint.textAlign =
+                    Paint.Align.CENTER
+
+                canvas.drawText(
+                    "No spending",
+                    centerX,
+                    centerY + dp(5f),
+                    paint
+                )
+
+                paint.textAlign =
+                    Paint.Align.LEFT
+
+                return
+            }
+
+            rect.set(
+                centerX - radius,
+                centerY - radius,
+                centerX + radius,
+                centerY + radius
+            )
+
+            val colors = intArrayOf(
+                Color.rgb(74, 145, 255),
+                Color.rgb(255, 166, 52),
+                Color.rgb(72, 190, 110),
+                Color.rgb(213, 91, 116),
+                Color.rgb(160, 104, 230),
+                Color.rgb(51, 191, 191),
+                Color.rgb(232, 108, 55),
+                Color.rgb(119, 151, 209),
+                Color.rgb(215, 190, 69),
+                Color.rgb(87, 167, 112),
+                Color.rgb(188, 91, 183),
+                Color.rgb(126, 126, 139)
+            )
+
+            var startAngle = -90f
+            var colorIndex = 0
+
+            for (amount in values.values) {
+
+                val sweep =
+                    (
+                        amount / total
+                    ).toFloat() * 360f
+
+                if (sweep > 0f) {
+
+                    paint.color =
+                        colors[
+                            colorIndex %
+                                colors.size
+                        ]
+
+                    canvas.drawArc(
+                        rect,
+                        startAngle,
+                        sweep,
+                        false,
+                        paint
+                    )
+
+                    startAngle += sweep
+                }
+
+                colorIndex++
+            }
+
+            paint.style =
+                Paint.Style.FILL
+
+            paint.color =
+                Color.rgb(
+                    20,
+                    22,
+                    29
+                )
+
+            canvas.drawCircle(
+                centerX,
+                centerY,
+                radius - dp(17f),
+                paint
+            )
+
+            paint.color = Color.WHITE
+            paint.textAlign =
+                Paint.Align.CENTER
+            paint.typeface =
+                Typeface.DEFAULT_BOLD
+
+            paint.textSize =
+                sp(18f)
+
+            canvas.drawText(
+                money(total),
+                centerX,
+                centerY + dp(4f),
+                paint
+            )
+
+            paint.typeface =
+                Typeface.DEFAULT
+
+            paint.textSize =
+                sp(11f)
+
+            paint.color =
+                Color.rgb(
+                    115,
+                    121,
+                    135
+                )
+
+            canvas.drawText(
+                "total spending",
+                centerX,
+                centerY + dp(23f),
+                paint
+            )
+
+            paint.textAlign =
+                Paint.Align.LEFT
+        }
+
+        private fun dp(
+            value: Float
+        ): Float {
+
+            return value *
+                resources.displayMetrics.density
+        }
+
+        private fun sp(
+            value: Float
+        ): Float {
+
+            return value *
+                resources.displayMetrics.scaledDensity
+        }
+
+        private fun money(
+            value: Double
+        ): String {
+
+            return NumberFormat
+                .getCurrencyInstance(
+                    Locale.GERMANY
+                )
+                .format(value)
+        }
+    }
+
+    private inner class SpendingTrendView(
+        context: Context
+    ) : View(context) {
+
+        private val paint = Paint(
+            Paint.ANTI_ALIAS_FLAG
+        )
+
+        private val linePath =
+            android.graphics.Path()
+
+        private var data =
+            emptyList<MonthData>()
+
+        fun setData(
+            newData: List<MonthData>
+        ) {
+
+            data =
+                newData.toList()
+
+            invalidate()
+        }
+
+        override fun onDraw(
+            canvas: Canvas
+        ) {
+
+            super.onDraw(canvas)
+
+            if (data.isEmpty()) {
+                return
+            }
+
+            val left =
+                dp(48f)
+
+            val right =
+                width.toFloat() -
+                    dp(16f)
+
+            val top =
+                dp(20f)
+
+            val bottom =
+                height.toFloat() -
+                    dp(48f)
+
+            val chartWidth =
+                right - left
+
+            val chartHeight =
+                bottom - top
+
+            var maxValue =
+                data.maxOf {
+                    it.expenses
+                }
+
+            if (maxValue <= 0.0) {
+                maxValue = 100.0
+            }
+
+            maxValue *= 1.15
+
+            paint.style =
+                Paint.Style.STROKE
+
+            paint.strokeWidth =
+                dp(1f)
+
+            paint.color =
+                Color.rgb(
+                    42,
+                    45,
+                    54
+                )
+
+            for (line in 0..4) {
+
+                val y =
+                    bottom -
+                        chartHeight *
+                        line / 4f
+
+                canvas.drawLine(
+                    left,
+                    y,
+                    right,
+                    y,
+                    paint
+                )
+            }
+
+            paint.style =
+                Paint.Style.FILL
+
+            paint.textSize =
+                sp(10f)
+
+            paint.typeface =
+                Typeface.DEFAULT
+
+            paint.color =
+                Color.rgb(
+                    115,
+                    121,
+                    135
+                )
+
+            for (line in 0..4) {
+
+                val value =
+                    maxValue *
+                        line / 4.0
+
+                val y =
+                    bottom -
+                        chartHeight *
+                        line / 4f
+
+                val text =
+                    moneyShort(value)
+
+                canvas.drawText(
+                    text,
+                    0f,
+                    y + dp(4f),
+                    paint
+                )
+            }
+
+            linePath.reset()
+
+            val pointCount =
+                data.size
+
+            for (
+                index in data.indices
+            ) {
+
+                val x =
+                    if (pointCount == 1) {
+                        left +
+                            chartWidth / 2f
+                    } else {
+                        left +
+                            chartWidth *
+                            index /
+                            (pointCount - 1).toFloat()
+                    }
+
+                val value =
+                    data[index].expenses
+
+                val y =
+                    bottom -
+                        (
+                            value /
+                                maxValue
+                        ).toFloat() *
+                        chartHeight
+
+                if (index == 0) {
+                    linePath.moveTo(
+                        x,
+                        y
+                    )
+                } else {
+                    linePath.lineTo(
+                        x,
+                        y
+                    )
+                }
+            }
+
+            paint.style =
+                Paint.Style.STROKE
+
+            paint.strokeWidth =
+                dp(3f)
+
+            paint.strokeCap =
+                Paint.Cap.ROUND
+
+            paint.strokeJoin =
+                Paint.Join.ROUND
+
+            paint.color =
+                Color.rgb(
+                    74,
+                    145,
+                    255
+                )
+
+            canvas.drawPath(
+                linePath,
+                paint
+            )
+
+            paint.style =
+                Paint.Style.FILL
+
+            for (
+                index in data.indices
+            ) {
+
+                val x =
+                    if (pointCount == 1) {
+                        left +
+                            chartWidth / 2f
+                    } else {
+                        left +
+                            chartWidth *
+                            index /
+                            (pointCount - 1).toFloat()
+                    }
+
+                val value =
+                    data[index].expenses
+
+                val y =
+                    bottom -
+                        (
+                            value /
+                                maxValue
+                        ).toFloat() *
+                        chartHeight
+
+                paint.color =
+                    Color.rgb(
+                        7,
+                        8,
+                        12
+                    )
+
+                canvas.drawCircle(
+                    x,
+                    y,
+                    dp(6f),
+                    paint
+                )
+
+                paint.color =
+                    Color.rgb(
+                        74,
+                        145,
+                        255
+                    )
+
+                canvas.drawCircle(
+                    x,
+                    y,
+                    dp(3.5f),
+                    paint
+                )
+            }
+
+            paint.color =
+                Color.rgb(
+                    168,
+                    174,
+                    187
+                )
+
+            paint.textSize =
+                sp(10f)
+
+            paint.textAlign =
+                Paint.Align.CENTER
+
+            for (
+                index in data.indices
+            ) {
+
+                val x =
+                    if (pointCount == 1) {
+                        left +
+                            chartWidth / 2f
+                    } else {
+                        left +
+                            chartWidth *
+                            index /
+                            (pointCount - 1).toFloat()
+                    }
+
+                val label =
+                    monthShort(
+                        data[index].year,
+                        data[index].month
+                    )
+
+                canvas.drawText(
+                    label,
+                    x,
+                    height.toFloat() -
+                        dp(18f),
+                    paint
+                )
+            }
+
+            paint.textAlign =
+                Paint.Align.LEFT
+        }
+
+        private fun monthShort(
+            year: Int,
+            month: Int
+        ): String {
+
+            val calendar =
+                Calendar.getInstance().apply {
+                    set(
+                        year,
+                        month,
+                        1
+                    )
+                }
+
+            return SimpleDateFormat(
+                "MMM",
+                Locale.ENGLISH
+            ).format(
+                calendar.time
+            )
+        }
+
+        private fun moneyShort(
+            value: Double
+        ): String {
+
+            if (value >= 1000.0) {
+
+                return String.format(
+                    Locale.US,
+                    "€%.1fk",
+                    value / 1000.0
+                )
+            }
+
+            return String.format(
+                Locale.US,
+                "€%.0f",
+                value
+            )
+        }
+
+        private fun dp(
+            value: Float
+        ): Float {
+
+            return value *
+                resources.displayMetrics.density
+        }
+
+        private fun sp(
+            value: Float
+        ): Float {
+
+            return value *
+                resources.displayMetrics.scaledDensity
+        }
     }
             private fun loadCurrentMonthIncome(): Double {
 
