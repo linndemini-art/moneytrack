@@ -476,6 +476,29 @@ class MainActivity : Activity() {
             inputParams()
         )
 
+       val clearIncomeButton = createGradientButton(
+    "Clear Income",
+    Color.rgb(70, 40, 40),
+    Color.rgb(125, 55, 55)
+)
+
+clearIncomeButton.setOnClickListener {
+    income = 0.0
+    saveData()
+    updateTotals()
+
+    Toast.makeText(
+        this,
+        "Income cleared.",
+        Toast.LENGTH_SHORT
+    ).show()
+}
+
+incomeCard.addView(
+    clearIncomeButton,
+    buttonParams()
+) 
+
         val saveIncomeButton = createGradientButton(
             "Save Income",
             blueDark,
