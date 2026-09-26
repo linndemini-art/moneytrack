@@ -302,7 +302,8 @@ class AnalyticsActivity : Activity() {
 
         setContentView(root)
     }
-       private fun buildMonthlyBreakdown(): LinearLayout {
+
+    private fun buildMonthlyBreakdown(): LinearLayout {
 
         val card = createCard()
 
@@ -420,8 +421,7 @@ class AnalyticsActivity : Activity() {
 
         return card
     }
-
-    private fun buildIncomeExpenses(): LinearLayout {
+        private fun buildIncomeExpenses(): LinearLayout {
 
         val card = createCard()
 
@@ -674,8 +674,6 @@ class AnalyticsActivity : Activity() {
 
         return card
     }
-            return card
-    }
 
     private fun buildYearlyOverview(): LinearLayout {
 
@@ -851,8 +849,7 @@ class AnalyticsActivity : Activity() {
 
         return card
     }
-
-    private fun createStatCard(
+        private fun createStatCard(
         label: String,
         value: String
     ): LinearLayout {
@@ -1060,7 +1057,8 @@ class AnalyticsActivity : Activity() {
         if (stored.isNullOrEmpty()) {
             return emptyList()
         }
-                return try {
+
+        return try {
 
             val array =
                 JSONArray(stored)
@@ -1137,8 +1135,7 @@ class AnalyticsActivity : Activity() {
                 LinkedHashMap()
             )
     }
-
-    private fun sixMonthData():
+            private fun sixMonthData():
         List<MonthData> {
 
         val result =
@@ -1271,4 +1268,4 @@ class AnalyticsActivity : Activity() {
     override fun onBackPressed() {
         finish()
     }
-}   
+}
