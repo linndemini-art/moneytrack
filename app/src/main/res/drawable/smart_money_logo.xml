@@ -8,134 +8,40 @@
     <!-- White background -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M54,0
-            C83.82,0 108,24.18 108,54
-            C108,83.82 83.82,108 54,108
-            C24.18,108 0,83.82 0,54
-            C0,24.18 24.18,0 54,0 Z" />
+        android:pathData="M0,0
+            H108
+            V108
+            H0
+            Z" />
 
-    <!-- Human brain silhouette -->
-    <path
-        android:fillColor="#111111"
-        android:pathData="M53,29
-            C50,23 43,20 37,23
-            C32,20 25,24 25,30
-            C19,31 16,37 19,42
-            C14,46 15,53 20,56
-            C16,61 18,68 23,70
-            C21,76 26,81 32,80
-            C34,86 41,88 46,84
-            C50,87 55,84 55,79
-            L55,34
-            C55,32 54,30 53,29 Z
-
-            M55,29
-            C58,23 65,20 71,23
-            C76,20 83,24 83,30
-            C89,31 92,37 89,42
-            C94,46 93,53 88,56
-            C92,61 90,68 85,70
-            C87,76 82,81 76,80
-            C74,86 67,88 62,84
-            C58,87 53,84 53,79
-            L53,34
-            C53,32 54,30 55,29 Z" />
-
-    <!-- Left hemisphere folds -->
+    <!-- Human brain outline -->
     <path
         android:fillColor="@android:color/transparent"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="3"
+        android:strokeColor="#111111"
+        android:strokeWidth="4"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="M27,32
-            C33,27 39,30 39,35
-            C39,40 32,40 29,37
+        android:pathData="M53,79
+            C49,84 42,85 37,82
+            C33,84 27,81 26,76
+            C20,76 17,71 19,66
+            C14,63 14,57 18,53
+            C14,48 16,42 21,40
+            C19,34 23,29 29,29
+            C30,23 36,20 42,23
+            C46,19 52,22 54,27
 
-            M21,43
-            C27,38 35,42 34,47
-            C33,52 25,51 22,48
+            C56,22 62,19 66,23
+            C72,20 78,23 79,29
+            C85,29 89,34 87,40
+            C92,42 94,48 90,53
+            C94,57 94,63 89,66
+            C91,71 88,76 82,76
+            C81,81 75,84 71,82
+            C66,85 59,84 55,79
 
-            M20,56
-            C27,52 38,55 38,61
-            C38,67 29,68 25,64
-
-            M26,72
-            C32,66 42,69 42,75
-            C42,80 37,82 33,79
-
-            M40,25
-            C45,29 44,35 40,39
-
-            M39,47
-            C45,43 50,46 50,51
-            C50,56 43,58 39,55
-
-            M40,62
-            C46,58 51,62 50,67
-            C49,72 44,73 40,70" />
-
-    <!-- Right hemisphere folds -->
-    <path
-        android:fillColor="@android:color/transparent"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="3"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M81,32
-            C75,27 69,30 69,35
-            C69,40 76,40 79,37
-
-            M87,43
-            C81,38 73,42 74,47
-            C75,52 83,51 86,48
-
-            M88,56
-            C81,52 70,55 70,61
-            C70,67 79,68 83,64
-
-            M82,72
-            C76,66 66,69 66,75
-            C66,80 71,82 75,79
-
-            M68,25
-            C63,29 64,35 68,39
-
-            M69,47
-            C63,43 58,46 58,51
-            C58,56 65,58 69,55
-
-            M68,62
-            C62,58 57,62 58,67
-            C59,72 64,73 68,70" />
-
-    <!-- Fine cortical folds -->
-    <path
-        android:fillColor="@android:color/transparent"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="1.8"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M30,29
-            C34,33 34,36 31,39
-            M25,52
-            C30,49 35,51 37,54
-            M28,67
-            C33,64 38,65 41,68
-            M44,31
-            C47,35 47,39 44,42
-            M43,76
-            C47,73 49,70 49,67
-
-            M78,29
-            C74,33 74,36 77,39
-            M83,52
-            C78,49 73,51 71,54
-            M80,67
-            C75,64 70,65 67,68
-            M64,31
-            C61,35 61,39 64,42
-            M65,76
-            C61,73 59,70 59,67" />
+            M54,27
+            C52,35 53,43 54,51
+            C55,60 54,70 55,79" />
 
 </vector>
