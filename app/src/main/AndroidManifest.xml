@@ -3,7 +3,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/smart_money_logo"
+        android:icon="@drawable/moneytrack_brain"
         android:label="MoneyTrack"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
 
