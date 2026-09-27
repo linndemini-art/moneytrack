@@ -3,6 +3,6 @@
 
     <background android:drawable="@color/icon_background" />
 
-    <foreground android:drawable="@drawable/icon_foreground" />
+    <foreground android:drawable="@drawable/moneytrack_brain" />
 
 </adaptive-icon>
