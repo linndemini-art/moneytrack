@@ -75,6 +75,7 @@ class MainActivity : Activity() {
         "Housing",
         "Utilities",
         "Food",
+        "Grocery / Household",
         "Fuel / Transport",
         "Car",
         "Phone / Internet",
