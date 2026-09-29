@@ -43,7 +43,7 @@ class CarFuelCalculatorActivity : Activity() {
             textSize = 24f
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
-            setPadding(24, 18, 24, 24)
+            setPadding(24, 12, 24, 24)
         }
 
         root.addView(
