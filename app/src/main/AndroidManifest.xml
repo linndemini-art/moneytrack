@@ -16,6 +16,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".CarFuelCalculatorActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="true">
 
