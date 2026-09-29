@@ -1,6 +1,7 @@
 package com.moneytrack.app
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
 import android.graphics.Canvas
@@ -156,7 +157,10 @@ class ScheduledActivity : Activity() {
             setTextColor(white)
             setHintTextColor(muted)
             setSingleLine(true)
-            background = roundedBackground(inputColor, 12f)
+            background = roundedBackground(
+                inputColor,
+                12f
+            )
             setPadding(14, 0, 14, 0)
         }
 
@@ -189,7 +193,10 @@ class ScheduledActivity : Activity() {
             setSingleLine(true)
             isFocusable = false
             isClickable = true
-            background = roundedBackground(inputColor, 12f)
+            background = roundedBackground(
+                inputColor,
+                12f
+            )
             setPadding(14, 0, 14, 0)
 
             setOnClickListener {
@@ -207,7 +214,7 @@ class ScheduledActivity : Activity() {
             }
         )
 
-        val dialog = android.app.AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle("ADD SCHEDULED")
             .setView(dialogLayout)
             .setNegativeButton("CANCEL", null)
@@ -217,11 +224,16 @@ class ScheduledActivity : Activity() {
         dialog.setOnShowListener {
 
             dialog.getButton(
-                android.app.AlertDialog.BUTTON_POSITIVE
+                AlertDialog.BUTTON_POSITIVE
             ).setOnClickListener {
 
-                val name = nameInput.text.toString().trim()
-                val date = dateInput.text.toString().trim()
+                val name = nameInput.text
+                    .toString()
+                    .trim()
+
+                val date = dateInput.text
+                    .toString()
+                    .trim()
 
                 if (name.isEmpty() || date.isEmpty()) {
                     return@setOnClickListener
@@ -232,6 +244,7 @@ class ScheduledActivity : Activity() {
                 }
 
                 addItem(name, date)
+
                 dialog.dismiss()
             }
         }
@@ -239,7 +252,135 @@ class ScheduledActivity : Activity() {
         dialog.show()
     }
 
-    private fun showDatePicker(input: EditText) {
+    private fun showEditDialog(
+        index: Int,
+        currentName: String,
+        currentDate: String
+    ) {
+
+        val dialogLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(40, 24, 40, 12)
+        }
+
+        val nameLabel = TextView(this).apply {
+            text = "NAME"
+            textSize = 11f
+            setTextColor(muted)
+            typeface = Typeface.DEFAULT_BOLD
+            letterSpacing = 0.08f
+        }
+
+        dialogLayout.addView(nameLabel)
+
+        val nameInput = EditText(this).apply {
+            setText(currentName)
+            textSize = 16f
+            setTextColor(white)
+            setHintTextColor(muted)
+            setSingleLine(true)
+            background = roundedBackground(
+                inputColor,
+                12f
+            )
+            setPadding(14, 0, 14, 0)
+        }
+
+        dialogLayout.addView(
+            nameInput,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                52
+            ).apply {
+                topMargin = 8
+                bottomMargin = 18
+            }
+        )
+
+        val dateLabel = TextView(this).apply {
+            text = "DATE"
+            textSize = 11f
+            setTextColor(muted)
+            typeface = Typeface.DEFAULT_BOLD
+            letterSpacing = 0.08f
+        }
+
+        dialogLayout.addView(dateLabel)
+
+        val dateInput = EditText(this).apply {
+            setText(currentDate)
+            textSize = 16f
+            setTextColor(white)
+            setHintTextColor(muted)
+            setSingleLine(true)
+            isFocusable = false
+            isClickable = true
+            background = roundedBackground(
+                inputColor,
+                12f
+            )
+            setPadding(14, 0, 14, 0)
+
+            setOnClickListener {
+                showDatePicker(this)
+            }
+        }
+
+        dialogLayout.addView(
+            dateInput,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                52
+            ).apply {
+                topMargin = 8
+            }
+        )
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("EDIT SCHEDULED")
+            .setView(dialogLayout)
+            .setNegativeButton("CANCEL", null)
+            .setPositiveButton("SAVE", null)
+            .create()
+
+        dialog.setOnShowListener {
+
+            dialog.getButton(
+                AlertDialog.BUTTON_POSITIVE
+            ).setOnClickListener {
+
+                val name = nameInput.text
+                    .toString()
+                    .trim()
+
+                val date = dateInput.text
+                    .toString()
+                    .trim()
+
+                if (name.isEmpty() || date.isEmpty()) {
+                    return@setOnClickListener
+                }
+
+                if (!isValidDate(date)) {
+                    return@setOnClickListener
+                }
+
+                updateItem(
+                    index,
+                    name,
+                    date
+                )
+
+                dialog.dismiss()
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun showDatePicker(
+        input: EditText
+    ) {
 
         val calendar = Calendar.getInstance()
 
@@ -269,13 +410,33 @@ class ScheduledActivity : Activity() {
         date: String
     ) {
 
-        val current = getStoredItems().toMutableList()
+        val current = getStoredItems()
+            .toMutableList()
 
         current.add(
             "$name|$date"
         )
 
         saveItems(current)
+        loadItems()
+    }
+
+    private fun updateItem(
+        index: Int,
+        name: String,
+        date: String
+    ) {
+
+        val items = getStoredItems()
+            .toMutableList()
+
+        if (index < 0 || index >= items.size) {
+            return
+        }
+
+        items[index] = "$name|$date"
+
+        saveItems(items)
         loadItems()
     }
 
@@ -293,12 +454,9 @@ class ScheduledActivity : Activity() {
                 continue
             }
 
-            val name = parts[0]
-            val date = parts[1]
-
             addScheduledItem(
-                name = name,
-                date = date,
+                name = parts[0],
+                date = parts[1],
                 index = index
             )
         }
@@ -312,11 +470,24 @@ class ScheduledActivity : Activity() {
 
         val itemContainer = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
+            setPadding(
+                dpToPx(16),
+                dpToPx(16),
+                dpToPx(16),
+                dpToPx(16)
+            )
             background = roundedBackground(
                 cardColor,
                 16f
             )
+
+            setOnClickListener {
+                showEditDialog(
+                    index,
+                    name,
+                    date
+                )
+            }
         }
 
         val topRow = LinearLayout(this).apply {
@@ -330,6 +501,7 @@ class ScheduledActivity : Activity() {
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
             maxLines = 1
+            ellipsize = android.text.TextUtils.TruncateAt.END
         }
 
         topRow.addView(
@@ -345,27 +517,31 @@ class ScheduledActivity : Activity() {
             text = date
             textSize = 13f
             setTextColor(muted)
-            gravity = Gravity.CENTER_VERTICAL
+            gravity = Gravity.CENTER
+            maxLines = 1
         }
 
         topRow.addView(
             dateText,
             LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                marginEnd = 8
-            }
+                dpToPx(88),
+                dpToPx(32)
+            )
         )
 
         val deleteButton = TextView(this).apply {
             text = "×"
-            textSize = 22f
-            setTextColor(muted)
+            textSize = 24f
+            setTextColor(white)
+            typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER
-            setPadding(6, 0, 2, 0)
+            isClickable = true
+            isFocusable = true
 
-            setOnClickListener {
+            setOnClickListener { view ->
+
+                view.isPressed = true
+
                 deleteItem(index)
             }
         }
@@ -373,8 +549,8 @@ class ScheduledActivity : Activity() {
         topRow.addView(
             deleteButton,
             LinearLayout.LayoutParams(
-                32,
-                32
+                dpToPx(40),
+                dpToPx(40)
             )
         )
 
@@ -382,12 +558,14 @@ class ScheduledActivity : Activity() {
             topRow,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
+                dpToPx(40)
             )
         )
 
         val remainingDays = calculateRemainingDays(date)
-        val progressValue = calculateProgress(remainingDays)
+        val progressValue = calculateProgress(
+            remainingDays
+        )
 
         val progressRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -420,14 +598,14 @@ class ScheduledActivity : Activity() {
             textSize = 13f
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
-            gravity = Gravity.CENTER_VERTICAL or Gravity.END
+            gravity = Gravity.CENTER
             includeFontPadding = false
         }
 
         progressRow.addView(
             daysText,
             LinearLayout.LayoutParams(
-                dpToPx(68),
+                dpToPx(72),
                 dpToPx(20)
             ).apply {
                 marginStart = dpToPx(12)
@@ -463,22 +641,27 @@ class ScheduledActivity : Activity() {
 
             dateFormat.isLenient = false
 
-            val targetDate = dateFormat.parse(dateString)
-                ?: return 0L
+            val targetDate =
+                dateFormat.parse(dateString)
+                    ?: return 0L
 
             val today = Calendar.getInstance().apply {
+
                 set(
                     Calendar.HOUR_OF_DAY,
                     0
                 )
+
                 set(
                     Calendar.MINUTE,
                     0
                 )
+
                 set(
                     Calendar.SECOND,
                     0
                 )
+
                 set(
                     Calendar.MILLISECOND,
                     0
@@ -486,20 +669,24 @@ class ScheduledActivity : Activity() {
             }
 
             val target = Calendar.getInstance().apply {
+
                 time = targetDate
 
                 set(
                     Calendar.HOUR_OF_DAY,
                     0
                 )
+
                 set(
                     Calendar.MINUTE,
                     0
                 )
+
                 set(
                     Calendar.SECOND,
                     0
                 )
+
                 set(
                     Calendar.MILLISECOND,
                     0
@@ -507,12 +694,14 @@ class ScheduledActivity : Activity() {
             }
 
             val difference =
-                target.timeInMillis - today.timeInMillis
+                target.timeInMillis -
+                    today.timeInMillis
 
             if (difference <= 0L) {
                 0L
             } else {
-                difference / (24L * 60L * 60L * 1000L)
+                difference /
+                    (24L * 60L * 60L * 1000L)
             }
 
         } catch (e: Exception) {
@@ -531,13 +720,21 @@ class ScheduledActivity : Activity() {
         val maximumDays = 365f
 
         return (
-            1f - remainingDays.toFloat() / maximumDays
-        ).coerceIn(0.02f, 1f)
+            1f -
+                remainingDays.toFloat() /
+                maximumDays
+        ).coerceIn(
+            0.02f,
+            1f
+        )
     }
 
-    private fun deleteItem(index: Int) {
+    private fun deleteItem(
+        index: Int
+    ) {
 
-        val items = getStoredItems().toMutableList()
+        val items = getStoredItems()
+            .toMutableList()
 
         if (index < 0 || index >= items.size) {
             return
@@ -613,32 +810,32 @@ class ScheduledActivity : Activity() {
     ): Int {
 
         return (
-            dp * resources.displayMetrics.density
-        ).toInt()
+            dp *
+                resources.displayMetrics.density
+            ).toInt()
     }
 
     private class ScheduledProgressView(
         context: Context,
         private val progress: Float,
-        private val fillColor: Int,
-        private val trackColor: Int
+        fillColor: Int,
+        trackColor: Int
     ) : View(context) {
 
-        private val fillPaint = Paint(
-            Paint.ANTI_ALIAS_FLAG
-        ).apply {
-            color = fillColor
-        }
+        private val fillPaint =
+            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = fillColor
+            }
 
-        private val trackPaint = Paint(
-            Paint.ANTI_ALIAS_FLAG
-        ).apply {
-            color = trackColor
-        }
+        private val trackPaint =
+            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = trackColor
+            }
 
         override fun onDraw(
             canvas: Canvas
         ) {
+
             super.onDraw(canvas)
 
             val width = width.toFloat()
@@ -655,12 +852,14 @@ class ScheduledActivity : Activity() {
                 trackPaint
             )
 
-            val safeProgress = progress.coerceIn(
-                0f,
-                1f
-            )
+            val safeProgress =
+                progress.coerceIn(
+                    0f,
+                    1f
+                )
 
-            val fillWidth = width * safeProgress
+            val fillWidth =
+                width * safeProgress
 
             if (fillWidth > 0f) {
 
