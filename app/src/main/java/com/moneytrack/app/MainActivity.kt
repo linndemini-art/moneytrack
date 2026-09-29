@@ -865,6 +865,32 @@ menuDrawer.addView(
     )
 )
 
+val carFuelCalculatorItem = TextView(this).apply {
+    text = "Car Fuel Calculator"
+    textSize = 18f
+    setTextColor(white)
+    setPadding(0, 24, 0, 24)
+
+    setOnClickListener {
+        closeMenu()
+
+        startActivity(
+            Intent(
+                this@MainActivity,
+                CarFuelCalculatorActivity::class.java
+            )
+        )
+    }
+}
+
+menuDrawer.addView(
+    carFuelCalculatorItem,
+    LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    )
+)
+
         val drawerWidth =
             (resources.displayMetrics.widthPixels * 0.35f).toInt()
 
