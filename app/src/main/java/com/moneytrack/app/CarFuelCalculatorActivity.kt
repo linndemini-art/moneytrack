@@ -18,7 +18,7 @@ class CarFuelCalculatorActivity : Activity() {
 
     private val white = Color.WHITE
     private val muted = Color.rgb(160, 174, 194)
-    private val background = Color.rgb(8, 13, 20)
+    private val backgroundColor = Color.rgb(8, 13, 20)
     private val card = Color.rgb(17, 25, 36)
 
     private lateinit var distanceInput: EditText
@@ -35,7 +35,7 @@ class CarFuelCalculatorActivity : Activity() {
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(24, 24, 24, 24)
-            setBackgroundColor(background)
+            setBackgroundColor(backgroundColor)
         }
 
         val title = TextView(this).apply {
@@ -61,8 +61,7 @@ class CarFuelCalculatorActivity : Activity() {
         distanceInput = distanceSection.second
         root.addView(distanceSection.first)
 
-        val fuelLabel = createLabel("Fuel")
-        root.addView(fuelLabel)
+        root.addView(createLabel("Fuel"))
 
         val fuelSpinner = Spinner(this).apply {
             adapter = ArrayAdapter(
