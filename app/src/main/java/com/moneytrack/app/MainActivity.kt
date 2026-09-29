@@ -891,6 +891,32 @@ menuDrawer.addView(
     )
 )
 
+val scheduledItem = TextView(this).apply {
+    text = "Scheduled"
+    textSize = 18f
+    setTextColor(white)
+    setPadding(0, 24, 0, 24)
+
+    setOnClickListener {
+        closeMenu()
+
+        startActivity(
+            Intent(
+                this@MainActivity,
+                ScheduledActivity::class.java
+            )
+        )
+    }
+}
+
+menuDrawer.addView(
+    scheduledItem,
+    LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    )
+)
+
         val drawerWidth =
             (resources.displayMetrics.widthPixels * 0.35f).toInt()
 
