@@ -2,7 +2,10 @@ package com.moneytrack.app
 
 import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.Context
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -310,7 +313,10 @@ class ScheduledActivity : Activity() {
         val itemContainer = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(16, 16, 16, 16)
-            background = roundedBackground(cardColor, 16f)
+            background = roundedBackground(
+                cardColor,
+                16f
+            )
         }
 
         val topRow = LinearLayout(this).apply {
@@ -323,6 +329,7 @@ class ScheduledActivity : Activity() {
             textSize = 16f
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
+            maxLines = 1
         }
 
         topRow.addView(
@@ -338,6 +345,7 @@ class ScheduledActivity : Activity() {
             text = date
             textSize = 13f
             setTextColor(muted)
+            gravity = Gravity.CENTER_VERTICAL
         }
 
         topRow.addView(
@@ -346,7 +354,7 @@ class ScheduledActivity : Activity() {
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                marginEnd = 12
+                marginEnd = 8
             }
         )
 
@@ -355,7 +363,7 @@ class ScheduledActivity : Activity() {
             textSize = 22f
             setTextColor(muted)
             gravity = Gravity.CENTER
-            setPadding(8, 0, 4, 0)
+            setPadding(6, 0, 2, 0)
 
             setOnClickListener {
                 deleteItem(index)
@@ -386,48 +394,18 @@ class ScheduledActivity : Activity() {
             gravity = Gravity.CENTER_VERTICAL
         }
 
-        val progressContainer = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-        }
-
-        val progressFill = View(this).apply {
-            background = roundedBackground(
-                blue,
-                50f
-            )
-        }
-
-        val progressEmpty = View(this).apply {
-            background = roundedBackground(
-                progressBackground,
-                50f
-            )
-        }
-
-        progressContainer.addView(
-            progressFill,
-            LinearLayout.LayoutParams(
-                0,
-                16,
-                progressValue
-            )
-        )
-
-        progressContainer.addView(
-            progressEmpty,
-            LinearLayout.LayoutParams(
-                0,
-                16,
-                1f - progressValue
-            )
+        val progressView = ScheduledProgressView(
+            this,
+            progressValue,
+            blue,
+            progressBackground
         )
 
         progressRow.addView(
-            progressContainer,
+            progressView,
             LinearLayout.LayoutParams(
                 0,
-                20,
+                dpToPx(16),
                 1f
             )
         )
@@ -442,25 +420,27 @@ class ScheduledActivity : Activity() {
             textSize = 13f
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
-            gravity = Gravity.CENTER
-            setPadding(12, 0, 0, 0)
+            gravity = Gravity.CENTER_VERTICAL or Gravity.END
+            includeFontPadding = false
         }
 
         progressRow.addView(
             daysText,
             LinearLayout.LayoutParams(
-                72,
-                20
-            )
+                dpToPx(68),
+                dpToPx(20)
+            ).apply {
+                marginStart = dpToPx(12)
+            }
         )
 
         itemContainer.addView(
             progressRow,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                20
+                dpToPx(20)
             ).apply {
-                topMargin = 14
+                topMargin = dpToPx(14)
             }
         )
 
@@ -470,7 +450,7 @@ class ScheduledActivity : Activity() {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                bottomMargin = 10
+                bottomMargin = dpToPx(10)
             }
         )
     }
@@ -480,6 +460,8 @@ class ScheduledActivity : Activity() {
     ): Long {
 
         return try {
+
+            dateFormat.isLenient = false
 
             val targetDate = dateFormat.parse(dateString)
                 ?: return 0L
@@ -505,6 +487,7 @@ class ScheduledActivity : Activity() {
 
             val target = Calendar.getInstance().apply {
                 time = targetDate
+
                 set(
                     Calendar.HOUR_OF_DAY,
                     0
@@ -526,7 +509,7 @@ class ScheduledActivity : Activity() {
             val difference =
                 target.timeInMillis - today.timeInMillis
 
-            if (difference <= 0) {
+            if (difference <= 0L) {
                 0L
             } else {
                 difference / (24L * 60L * 60L * 1000L)
@@ -541,7 +524,7 @@ class ScheduledActivity : Activity() {
         remainingDays: Long
     ): Float {
 
-        if (remainingDays <= 0) {
+        if (remainingDays <= 0L) {
             return 1f
         }
 
@@ -549,7 +532,7 @@ class ScheduledActivity : Activity() {
 
         return (
             1f - remainingDays.toFloat() / maximumDays
-        ).coerceIn(0.04f, 1f)
+        ).coerceIn(0.02f, 1f)
     }
 
     private fun deleteItem(index: Int) {
@@ -606,6 +589,7 @@ class ScheduledActivity : Activity() {
 
             dateFormat.isLenient = false
             dateFormat.parse(date)
+
             true
 
         } catch (e: Exception) {
@@ -621,6 +605,75 @@ class ScheduledActivity : Activity() {
         return GradientDrawable().apply {
             setColor(color)
             cornerRadius = radius
+        }
+    }
+
+    private fun dpToPx(
+        dp: Int
+    ): Int {
+
+        return (
+            dp * resources.displayMetrics.density
+        ).toInt()
+    }
+
+    private class ScheduledProgressView(
+        context: Context,
+        private val progress: Float,
+        private val fillColor: Int,
+        private val trackColor: Int
+    ) : View(context) {
+
+        private val fillPaint = Paint(
+            Paint.ANTI_ALIAS_FLAG
+        ).apply {
+            color = fillColor
+        }
+
+        private val trackPaint = Paint(
+            Paint.ANTI_ALIAS_FLAG
+        ).apply {
+            color = trackColor
+        }
+
+        override fun onDraw(
+            canvas: Canvas
+        ) {
+            super.onDraw(canvas)
+
+            val width = width.toFloat()
+            val height = height.toFloat()
+            val radius = height / 2f
+
+            canvas.drawRoundRect(
+                0f,
+                0f,
+                width,
+                height,
+                radius,
+                radius,
+                trackPaint
+            )
+
+            val safeProgress = progress.coerceIn(
+                0f,
+                1f
+            )
+
+            val fillWidth = width * safeProgress
+
+            if (fillWidth > 0f) {
+
+                canvas.drawRoundRect(
+                    0f,
+                    0f,
+                    fillWidth,
+                    height,
+                    radius,
+                    radius,
+                    fillPaint
+                )
+            }
         }
     }
 }
