@@ -1,5 +1,4 @@
 package com.moneytrack.app
-
 import android.app.Activity
 import android.graphics.Color
 import android.graphics.Typeface
@@ -240,7 +239,7 @@ class CarFuelCalculatorActivity : Activity() {
             setTextColor(white)
             setHintTextColor(muted)
             textSize = 16f
-            singleLine = true
+            setSingleLine(true)
             setPadding(16, 0, 16, 0)
             background = roundedBackground(inputColor, 12f)
 
