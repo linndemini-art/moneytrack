@@ -34,7 +34,7 @@ class CarFuelCalculatorActivity : Activity() {
 
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(24, 24, 24, 24)
+            setPadding(24, 12, 24, 24)
             setBackgroundColor(backgroundColor)
         }
 
