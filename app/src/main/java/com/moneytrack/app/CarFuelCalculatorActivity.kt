@@ -3,9 +3,12 @@ package com.moneytrack.app
 import android.app.Activity
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.InputType
 import android.text.TextWatcher
+import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.EditText
@@ -19,7 +22,9 @@ class CarFuelCalculatorActivity : Activity() {
     private val white = Color.WHITE
     private val muted = Color.rgb(160, 174, 194)
     private val backgroundColor = Color.rgb(8, 13, 20)
-    private val card = Color.rgb(17, 25, 36)
+    private val cardColor = Color.rgb(17, 25, 36)
+    private val inputColor = Color.rgb(22, 32, 46)
+    private val accent = Color.rgb(255, 166, 52)
 
     private lateinit var distanceInput: EditText
     private lateinit var priceInput: EditText
@@ -43,7 +48,7 @@ class CarFuelCalculatorActivity : Activity() {
             textSize = 24f
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
-            setPadding(24, 12, 24, 24)
+            letterSpacing = 0.04f
         }
 
         root.addView(
@@ -51,19 +56,49 @@ class CarFuelCalculatorActivity : Activity() {
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
-            )
+            ).apply {
+                bottomMargin = 6
+            }
         )
 
-        val distanceSection = createNumberInput(
-            "Distance (km)",
+        val subtitle = TextView(this).apply {
+            text = "Calculate your fuel cost before the trip"
+            textSize = 14f
+            setTextColor(muted)
+        }
+
+        root.addView(
+            subtitle,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin = 24
+            }
+        )
+
+        val inputCard = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(18, 18, 18, 18)
+            background = roundedBackground(cardColor, 18f)
+        }
+
+        inputCard.addView(createSectionLabel("DISTANCE"))
+
+        val distanceSection = createInput(
+            "Kilometers",
             "300"
         )
-        distanceInput = distanceSection.second
-        root.addView(distanceSection.first)
+        distanceInput = distanceSection
+        inputCard.addView(distanceInput)
 
-        root.addView(createLabel("Fuel"))
+        inputCard.addView(createSpacer(14))
+
+        inputCard.addView(createSectionLabel("FUEL TYPE"))
 
         val fuelSpinner = Spinner(this).apply {
+            background = roundedBackground(inputColor, 12f)
+
             adapter = ArrayAdapter(
                 this@CarFuelCalculatorActivity,
                 android.R.layout.simple_spinner_dropdown_item,
@@ -71,8 +106,36 @@ class CarFuelCalculatorActivity : Activity() {
             )
         }
 
-        root.addView(
+        inputCard.addView(
             fuelSpinner,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                52
+            )
+        )
+
+        inputCard.addView(createSpacer(14))
+
+        inputCard.addView(createSectionLabel("FUEL PRICE"))
+
+        priceInput = createInput(
+            "Price per liter",
+            "1.45"
+        )
+        inputCard.addView(priceInput)
+
+        inputCard.addView(createSpacer(14))
+
+        inputCard.addView(createSectionLabel("CONSUMPTION"))
+
+        consumptionInput = createInput(
+            "Liters per 100 km",
+            "6.5"
+        )
+        inputCard.addView(consumptionInput)
+
+        root.addView(
+            inputCard,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -81,32 +144,46 @@ class CarFuelCalculatorActivity : Activity() {
             }
         )
 
-        val priceSection = createNumberInput(
-            "Price (€ / L)",
-            "1.45"
-        )
-        priceInput = priceSection.second
-        root.addView(priceSection.first)
+        val resultsTitle = TextView(this).apply {
+            text = "TRIP ESTIMATE"
+            textSize = 12f
+            setTextColor(muted)
+            typeface = Typeface.DEFAULT_BOLD
+            letterSpacing = 0.12f
+        }
 
-        val consumptionSection = createNumberInput(
-            "Consumption (L / 100 km)",
-            "6.5"
+        root.addView(
+            resultsTitle,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin = 10
+            }
         )
-        consumptionInput = consumptionSection.second
-        root.addView(consumptionSection.first)
 
         val resultsCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(20, 20, 20, 20)
-            setBackgroundColor(card)
+            setPadding(18, 18, 18, 18)
+            background = roundedBackground(cardColor, 18f)
         }
 
-        fuelNeededValue = createResultText("Fuel needed")
-        costPer100Value = createResultText("Cost per 100 km")
-        estimatedCostValue = createResultText("Estimated cost")
+        fuelNeededValue = createResult(
+            "FUEL NEEDED",
+            "—"
+        )
+
+        costPer100Value = createResult(
+            "COST PER 100 KM",
+            "—"
+        )
+
+        estimatedCostValue = createMainResult()
 
         resultsCard.addView(fuelNeededValue)
+        resultsCard.addView(createDivider())
         resultsCard.addView(costPer100Value)
+        resultsCard.addView(createDivider())
         resultsCard.addView(estimatedCostValue)
 
         root.addView(
@@ -114,9 +191,7 @@ class CarFuelCalculatorActivity : Activity() {
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                topMargin = 12
-            }
+            )
         )
 
         setContentView(root)
@@ -140,57 +215,94 @@ class CarFuelCalculatorActivity : Activity() {
         updateResults()
     }
 
-    private fun createLabel(text: String): TextView {
+    private fun createSectionLabel(text: String): TextView {
         return TextView(this).apply {
             this.text = text
-            textSize = 14f
+            textSize = 11f
             setTextColor(muted)
-            setPadding(0, 8, 0, 6)
+            typeface = Typeface.DEFAULT_BOLD
+            letterSpacing = 0.08f
+            setPadding(2, 0, 0, 8)
         }
     }
 
-    private fun createNumberInput(
-        label: String,
+    private fun createInput(
+        hint: String,
         initialValue: String
-    ): Pair<LinearLayout, EditText> {
-
-        val container = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-        }
-
-        val input = EditText(this).apply {
+    ): EditText {
+        return EditText(this).apply {
             inputType =
                 InputType.TYPE_CLASS_NUMBER or
                     InputType.TYPE_NUMBER_FLAG_DECIMAL
 
             setText(initialValue)
+            setHint(hint)
             setTextColor(white)
             setHintTextColor(muted)
-            setBackgroundColor(card)
-            setPadding(16, 12, 16, 12)
-        }
+            textSize = 16f
+            singleLine = true
+            setPadding(16, 0, 16, 0)
+            background = roundedBackground(inputColor, 12f)
 
-        container.addView(createLabel(label))
-
-        container.addView(
-            input,
-            LinearLayout.LayoutParams(
+            layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                bottomMargin = 12
-            }
-        )
-
-        return Pair(container, input)
+                52
+            )
+        }
     }
 
-    private fun createResultText(label: String): TextView {
+    private fun createResult(
+        label: String,
+        value: String
+    ): TextView {
         return TextView(this).apply {
-            text = "$label\n—"
-            textSize = 17f
+            text = "$label\n$value"
+            textSize = 15f
             setTextColor(white)
-            setPadding(0, 8, 0, 16)
+            setPadding(2, 4, 2, 12)
+        }
+    }
+
+    private fun createMainResult(): TextView {
+        return TextView(this).apply {
+            text = "ESTIMATED COST\n—"
+            textSize = 20f
+            setTextColor(white)
+            typeface = Typeface.DEFAULT_BOLD
+            setPadding(2, 12, 2, 4)
+        }
+    }
+
+    private fun createDivider(): View {
+        return View(this).apply {
+            setBackgroundColor(Color.rgb(38, 48, 63))
+
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                1
+            ).apply {
+                topMargin = 2
+                bottomMargin = 2
+            }
+        }
+    }
+
+    private fun createSpacer(height: Int): View {
+        return View(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                1,
+                height
+            )
+        }
+    }
+
+    private fun roundedBackground(
+        color: Int,
+        radius: Float
+    ): GradientDrawable {
+        return GradientDrawable().apply {
+            setColor(color)
+            cornerRadius = radius
         }
     }
 
@@ -210,19 +322,19 @@ class CarFuelCalculatorActivity : Activity() {
 
         fuelNeededValue.text = String.format(
             Locale.US,
-            "Fuel needed\n%.2f L",
+            "FUEL NEEDED\n%.2f L",
             fuelNeeded
         )
 
         costPer100Value.text = String.format(
             Locale.US,
-            "Cost per 100 km\n€%.2f",
+            "COST PER 100 KM\n€%.2f",
             costPer100
         )
 
         estimatedCostValue.text = String.format(
             Locale.US,
-            "Estimated cost\n€%.2f",
+            "ESTIMATED COST\n€%.2f",
             estimatedCost
         )
     }
