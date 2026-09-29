@@ -9,13 +9,11 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 class ScheduledActivity : Activity() {
@@ -311,7 +309,7 @@ class ScheduledActivity : Activity() {
 
         val itemContainer = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(16, 14, 16, 14)
+            setPadding(16, 16, 16, 16)
             background = roundedBackground(cardColor, 16f)
         }
 
@@ -381,28 +379,55 @@ class ScheduledActivity : Activity() {
         )
 
         val remainingDays = calculateRemainingDays(date)
+        val progressValue = calculateProgress(remainingDays)
 
         val progressRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
         }
 
-        val progressBackgroundView = View(this).apply {
+        val progressContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+
+        val progressFill = View(this).apply {
+            background = roundedBackground(
+                blue,
+                50f
+            )
+        }
+
+        val progressEmpty = View(this).apply {
             background = roundedBackground(
                 progressBackground,
                 50f
             )
         }
 
-        val progressContainer = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-        }
-
         progressContainer.addView(
-            progressBackgroundView,
+            progressFill,
             LinearLayout.LayoutParams(
                 0,
-                12,
+                16,
+                progressValue
+            )
+        )
+
+        progressContainer.addView(
+            progressEmpty,
+            LinearLayout.LayoutParams(
+                0,
+                16,
+                1f - progressValue
+            )
+        )
+
+        progressRow.addView(
+            progressContainer,
+            LinearLayout.LayoutParams(
+                0,
+                20,
                 1f
             )
         )
@@ -414,25 +439,17 @@ class ScheduledActivity : Activity() {
                 "$remainingDays days"
             }
 
-            textSize = 12f
-            setTextColor(muted)
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(10, 0, 0, 0)
+            textSize = 13f
+            setTextColor(white)
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            setPadding(12, 0, 0, 0)
         }
-
-        progressRow.addView(
-            progressContainer,
-            LinearLayout.LayoutParams(
-                0,
-                20,
-                1f
-            )
-        )
 
         progressRow.addView(
             daysText,
             LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
+                72,
                 20
             )
         )
@@ -443,45 +460,8 @@ class ScheduledActivity : Activity() {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 20
             ).apply {
-                topMargin = 10
+                topMargin = 14
             }
-        )
-
-        itemContainer.addView(
-            View(this),
-            LinearLayout.LayoutParams(
-                1,
-                4
-            )
-        )
-
-        val progressFill = View(this).apply {
-            background = roundedBackground(
-                blue,
-                50f
-            )
-        }
-
-        val progressValue = calculateProgress(remainingDays)
-
-        progressContainer.removeAllViews()
-
-        progressContainer.addView(
-            progressFill,
-            LinearLayout.LayoutParams(
-                0,
-                12,
-                progressValue
-            )
-        )
-
-        progressContainer.addView(
-            View(this),
-            LinearLayout.LayoutParams(
-                0,
-                12,
-                1f - progressValue
-            )
         )
 
         listContainer.addView(
@@ -569,7 +549,7 @@ class ScheduledActivity : Activity() {
 
         return (
             1f - remainingDays.toFloat() / maximumDays
-        ).coerceIn(0.05f, 1f)
+        ).coerceIn(0.04f, 1f)
     }
 
     private fun deleteItem(index: Int) {
