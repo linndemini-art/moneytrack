@@ -730,7 +730,331 @@ class ScheduledActivity : Activity() {
             1f
         )
     }
-        private fun deleteItem(
+        private fun addItem(
+        name: String,
+        date: String
+    ) {
+
+        val current = getStoredItems()
+            .toMutableList()
+
+        current.add(
+            "$name|$date"
+        )
+
+        saveItems(current)
+        loadItems()
+    }
+
+    private fun updateItem(
+        index: Int,
+        name: String,
+        date: String
+    ) {
+
+        val items = getStoredItems()
+            .toMutableList()
+
+        if (index < 0 || index >= items.size) {
+            return
+        }
+
+        items[index] = "$name|$date"
+
+        saveItems(items)
+        loadItems()
+    }
+
+    private fun loadItems() {
+
+        listContainer.removeAllViews()
+
+        val items = getStoredItems()
+
+        for ((index, item) in items.withIndex()) {
+
+            val parts = item.split("|")
+
+            if (parts.size != 2) {
+                continue
+            }
+
+            addScheduledItem(
+                name = parts[0],
+                date = parts[1],
+                index = index
+            )
+        }
+    }
+
+    private fun addScheduledItem(
+        name: String,
+        date: String,
+        index: Int
+    ) {
+
+        val itemContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(
+                dpToPx(16),
+                dpToPx(16),
+                dpToPx(16),
+                dpToPx(16)
+            )
+            background = roundedBackground(
+                cardColor,
+                16f
+            )
+
+            setOnClickListener {
+                showEditDialog(
+                    index,
+                    name,
+                    date
+                )
+            }
+        }
+
+        val topRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+
+        val nameText = TextView(this).apply {
+            text = name
+            textSize = 16f
+            setTextColor(white)
+            typeface = Typeface.DEFAULT_BOLD
+            maxLines = 1
+            ellipsize = android.text.TextUtils.TruncateAt.END
+        }
+
+        topRow.addView(
+            nameText,
+            LinearLayout.LayoutParams(
+                0,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                1f
+            )
+        )
+
+        val dateText = TextView(this).apply {
+            text = date
+            textSize = 13f
+            setTextColor(muted)
+            gravity = Gravity.CENTER
+            maxLines = 1
+        }
+
+        topRow.addView(
+            dateText,
+            LinearLayout.LayoutParams(
+                dpToPx(88),
+                dpToPx(32)
+            )
+        )
+
+        val deleteButton = TextView(this).apply {
+            text = "×"
+            textSize = 24f
+            setTextColor(white)
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            isClickable = true
+            isFocusable = true
+
+            setOnClickListener { view ->
+
+                view.isPressed = true
+
+                deleteItem(index)
+            }
+        }
+
+        topRow.addView(
+            deleteButton,
+            LinearLayout.LayoutParams(
+                dpToPx(40),
+                dpToPx(40)
+            )
+        )
+
+        itemContainer.addView(
+            topRow,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dpToPx(40)
+            )
+        )
+
+        val remainingDays = calculateRemainingDays(date)
+        val progressValue = calculateProgress(
+            remainingDays
+        )
+
+        val progressRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+
+        val progressView = ScheduledProgressView(
+            this,
+            progressValue,
+            blue,
+            progressBackground
+        )
+
+        progressRow.addView(
+            progressView,
+            LinearLayout.LayoutParams(
+                0,
+                dpToPx(16),
+                1f
+            )
+        )
+
+        val daysText = TextView(this).apply {
+            text = if (remainingDays == 0L) {
+                "0 days"
+            } else {
+                "$remainingDays days"
+            }
+
+            textSize = 13f
+            setTextColor(white)
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            includeFontPadding = false
+        }
+
+        progressRow.addView(
+            daysText,
+            LinearLayout.LayoutParams(
+                dpToPx(72),
+                dpToPx(20)
+            ).apply {
+                marginStart = dpToPx(12)
+            }
+        )
+
+        itemContainer.addView(
+            progressRow,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dpToPx(20)
+            ).apply {
+                topMargin = dpToPx(14)
+            }
+        )
+
+        listContainer.addView(
+            itemContainer,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin = dpToPx(10)
+            }
+        )
+    }
+
+    private fun calculateRemainingDays(
+        dateString: String
+    ): Long {
+
+        return try {
+
+            dateFormat.isLenient = false
+
+            val targetDate =
+                dateFormat.parse(dateString)
+                    ?: return 0L
+
+            val today = Calendar.getInstance().apply {
+
+                set(
+                    Calendar.HOUR_OF_DAY,
+                    0
+                )
+
+                set(
+                    Calendar.MINUTE,
+                    0
+                )
+
+                set(
+                    Calendar.SECOND,
+                    0
+                )
+
+                set(
+                    Calendar.MILLISECOND,
+                    0
+                )
+            }
+
+            val target = Calendar.getInstance().apply {
+
+                time = targetDate
+
+                set(
+                    Calendar.HOUR_OF_DAY,
+                    0
+                )
+
+                set(
+                    Calendar.MINUTE,
+                    0
+                )
+
+                set(
+                    Calendar.SECOND,
+                    0
+                )
+
+                set(
+                    Calendar.MILLISECOND,
+                    0
+                )
+            }
+
+            val difference =
+                target.timeInMillis -
+                    today.timeInMillis
+
+            if (difference <= 0L) {
+                0L
+            } else {
+                difference /
+                    (24L * 60L * 60L * 1000L)
+            }
+
+        } catch (e: Exception) {
+            0L
+        }
+    }
+
+    private fun calculateProgress(
+        remainingDays: Long
+    ): Float {
+
+        if (remainingDays <= 0L) {
+            return 1f
+        }
+
+        val maximumDays = 365f
+
+        return (
+            1f -
+                remainingDays.toFloat() /
+                maximumDays
+        ).coerceIn(
+            0.02f,
+            1f
+        )
+    }
+
+    private fun deleteItem(
         index: Int
     ) {
 
@@ -876,6 +1200,13 @@ class ScheduledActivity : Activity() {
             val height = height.toFloat()
             val radius = height / 2f
 
+            val safeProgress =
+                progress.coerceIn(
+                    0f,
+                    1f
+                )
+
+            // Full rounded track
             canvas.drawRoundRect(
                 0f,
                 0f,
@@ -886,23 +1217,36 @@ class ScheduledActivity : Activity() {
                 trackPaint
             )
 
-            val safeProgress =
-                progress.coerceIn(
-                    0f,
-                    1f
-                )
+            if (safeProgress <= 0f) {
+                return
+            }
 
             val fillWidth =
                 width * safeProgress
 
-            if (fillWidth <= 0f) {
-                return
-            }
+            // Clip the fill to a rounded shape
+            // so both ends remain rounded.
+            canvas.save()
+
+            val fillPath =
+                android.graphics.Path().apply {
+                    addRoundRect(
+                        0f,
+                        0f,
+                        fillWidth,
+                        height,
+                        radius,
+                        radius,
+                        android.graphics.Path.Direction.CW
+                    )
+                }
+
+            canvas.clipPath(fillPath)
 
             canvas.drawRoundRect(
                 0f,
                 0f,
-                fillWidth,
+                width,
                 height,
                 radius,
                 radius,
@@ -930,7 +1274,7 @@ class ScheduledActivity : Activity() {
             canvas.drawRoundRect(
                 0f,
                 0f,
-                fillWidth,
+                width,
                 height,
                 radius,
                 radius,
@@ -938,6 +1282,9 @@ class ScheduledActivity : Activity() {
             )
 
             fillPaint.shader = null
+
+            canvas.restore()
         }
     }
 }
+    
