@@ -6,7 +6,9 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.LinearGradient
 import android.graphics.Paint
+import android.graphics.Shader
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -728,8 +730,7 @@ class ScheduledActivity : Activity() {
             1f
         )
     }
-
-    private fun deleteItem(
+        private fun deleteItem(
         index: Int
     ) {
 
@@ -822,15 +823,48 @@ class ScheduledActivity : Activity() {
         trackColor: Int
     ) : View(context) {
 
-        private val fillPaint =
-            Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = fillColor
-            }
+        private val density =
+            resources.displayMetrics.density
 
         private val trackPaint =
             Paint(Paint.ANTI_ALIAS_FLAG).apply {
                 color = trackColor
+                style = Paint.Style.FILL
             }
+
+        private val glowPaint =
+            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = Color.rgb(
+                    0,
+                    229,
+                    255
+                )
+                alpha = 150
+                style = Paint.Style.FILL
+
+                setShadowLayer(
+                    9f * density,
+                    0f,
+                    0f,
+                    Color.rgb(
+                        0,
+                        229,
+                        255
+                    )
+                )
+            }
+
+        private val fillPaint =
+            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                style = Paint.Style.FILL
+            }
+
+        init {
+            setLayerType(
+                View.LAYER_TYPE_SOFTWARE,
+                null
+            )
+        }
 
         override fun onDraw(
             canvas: Canvas
@@ -861,18 +895,49 @@ class ScheduledActivity : Activity() {
             val fillWidth =
                 width * safeProgress
 
-            if (fillWidth > 0f) {
-
-                canvas.drawRoundRect(
-                    0f,
-                    0f,
-                    fillWidth,
-                    height,
-                    radius,
-                    radius,
-                    fillPaint
-                )
+            if (fillWidth <= 0f) {
+                return
             }
+
+            canvas.drawRoundRect(
+                0f,
+                0f,
+                fillWidth,
+                height,
+                radius,
+                radius,
+                glowPaint
+            )
+
+            fillPaint.shader = LinearGradient(
+                0f,
+                0f,
+                width,
+                0f,
+                Color.rgb(
+                    0,
+                    229,
+                    255
+                ),
+                Color.rgb(
+                    33,
+                    150,
+                    243
+                ),
+                Shader.TileMode.CLAMP
+            )
+
+            canvas.drawRoundRect(
+                0f,
+                0f,
+                fillWidth,
+                height,
+                radius,
+                radius,
+                fillPaint
+            )
+
+            fillPaint.shader = null
         }
     }
 }
