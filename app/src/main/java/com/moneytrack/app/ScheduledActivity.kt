@@ -65,23 +65,58 @@ class ScheduledActivity : Activity() {
             setBackgroundColor(backgroundColor)
         }
 
-        val title = TextView(this).apply {
-            text = "SCHEDULED"
-            textSize = 24f
-            setTextColor(white)
-            typeface = Typeface.DEFAULT_BOLD
-            letterSpacing = 0.04f
-        }
+        val topRow = LinearLayout(this).apply {
+    orientation = LinearLayout.HORIZONTAL
+    gravity = Gravity.CENTER_VERTICAL
+}
 
-        root.addView(
-            title,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                bottomMargin = 6
-            }
-        )
+val backButton = TextView(this).apply {
+    text = "‹"
+    textSize = 36f
+    setTextColor(white)
+    gravity = Gravity.CENTER
+    isClickable = true
+    isFocusable = true
+
+    setOnClickListener {
+        finish()
+    }
+}
+
+topRow.addView(
+    backButton,
+    LinearLayout.LayoutParams(
+        dpToPx(48),
+        dpToPx(48)
+    )
+)
+
+val title = TextView(this).apply {
+    text = "SCHEDULED"
+    textSize = 24f
+    setTextColor(white)
+    typeface = Typeface.DEFAULT_BOLD
+    letterSpacing = 0.04f
+}
+
+topRow.addView(
+    title,
+    LinearLayout.LayoutParams(
+        0,
+        ViewGroup.LayoutParams.WRAP_CONTENT,
+        1f
+    )
+)
+
+root.addView(
+    topRow,
+    LinearLayout.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.WRAP_CONTENT
+    ).apply {
+        bottomMargin = 6
+    }
+)
 
         val subtitle = TextView(this).apply {
             text = "Keep track of important future dates"
