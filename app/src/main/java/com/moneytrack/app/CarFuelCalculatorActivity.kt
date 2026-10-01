@@ -47,23 +47,38 @@ class CarFuelCalculatorActivity : Activity() {
             setBackgroundColor(backgroundColor)
         }
 
-        val title = TextView(this).apply {
-            text = "CAR FUEL CALCULATOR"
-            textSize = 24f
-            setTextColor(white)
-            typeface = Typeface.DEFAULT_BOLD
-            letterSpacing = 0.04f
-        }
+        val topRow = LinearLayout(this).apply {
+    orientation = LinearLayout.HORIZONTAL
+    gravity = Gravity.CENTER_VERTICAL
+}
 
-        root.addView(
-            title,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                bottomMargin = 6
-            }
-        )
+val backButton = TextView(this).apply {
+    text = "‹"
+    textSize = 36f
+    setTextColor(white)
+    gravity = Gravity.CENTER
+    isClickable = true
+    isFocusable = true
+
+    setOnClickListener {
+        finish()
+    }
+}
+
+topRow.addView(
+    backButton,
+    LinearLayout.LayoutParams(
+        48,
+        48
+    )
+)
+
+val title = TextView(this).apply {
+    text = "CAR FUEL CALCULATOR"
+    textSize = 24f
+    setTextColor(white)
+    typeface = Typeface.DEFAULT_BOLD
+    letterSpacing = 
 
         val subtitle = TextView(this).apply {
             text = "Calculate your trip cost easily"
