@@ -68,8 +68,8 @@ val backButton = TextView(this).apply {
 topRow.addView(
     backButton,
     LinearLayout.LayoutParams(
-        48,
-        48
+        120,
+        120
     )
 )
 
