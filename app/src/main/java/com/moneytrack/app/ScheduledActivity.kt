@@ -415,9 +415,14 @@ class ScheduledActivity : Activity() {
         val current = getStoredItems()
             .toMutableList()
 
-        current.add(
-            "$name|$date"
-        )
+        val createdDate =
+    dateFormat.format(
+        Calendar.getInstance().time
+    )
+
+current.add(
+    "$name|$date|$createdDate"
+)
 
         saveItems(current)
         loadItems()
@@ -452,23 +457,25 @@ class ScheduledActivity : Activity() {
 
             val parts = item.split("|")
 
-            if (parts.size != 2) {
-                continue
-            }
+if (parts.size != 3) {
+    continue
+}
 
-            addScheduledItem(
-                name = parts[0],
-                date = parts[1],
-                index = index
-            )
+addScheduledItem(
+    name = parts[0],
+    date = parts[1],
+    createdDate = parts[2],
+    index = index
+)
         }
     }
 
     private fun addScheduledItem(
-        name: String,
-        date: String,
-        index: Int
-    ) {
+    name: String,
+    date: String,
+    createdDate: String,
+    index: Int
+) {
 
         val itemContainer = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -565,9 +572,10 @@ class ScheduledActivity : Activity() {
         )
 
         val remainingDays = calculateRemainingDays(date)
-        val progressValue = calculateProgress(
-            remainingDays
-        )
+val progressValue = calculateProgress(
+    createdDate,
+    date
+)
 
         val progressRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -712,24 +720,70 @@ class ScheduledActivity : Activity() {
     }
 
     private fun calculateProgress(
-        remainingDays: Long
-    ): Float {
+    createdDateString: String,
+    targetDateString: String
+): Float {
 
-        if (remainingDays <= 0L) {
+    return try {
+
+        dateFormat.isLenient = false
+
+        val createdDate =
+            dateFormat.parse(createdDateString)
+                ?: return 0f
+
+        val targetDate =
+            dateFormat.parse(targetDateString)
+                ?: return 0f
+
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+        val created = Calendar.getInstance().apply {
+            time = createdDate
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+        val target = Calendar.getInstance().apply {
+            time = targetDate
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+        val totalDays =
+            (
+                target.timeInMillis -
+                    created.timeInMillis
+            ) / (24L * 60L * 60L * 1000L)
+
+        val elapsedDays =
+            (
+                today.timeInMillis -
+                    created.timeInMillis
+            ) / (24L * 60L * 60L * 1000L)
+
+        if (totalDays <= 0L) {
             return 1f
         }
 
-        val maximumDays = 365f
+        (
+            elapsedDays.toFloat() /
+                totalDays.toFloat()
+        ).coerceIn(0f, 1f)
 
-        return (
-            1f -
-                remainingDays.toFloat() /
-                maximumDays
-        ).coerceIn(
-            0.02f,
-            1f
-        )
+    } catch (e: Exception) {
+        0f
     }
+}
 
     private fun deleteItem(
         index: Int
