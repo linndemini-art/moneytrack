@@ -103,8 +103,8 @@ class AnalyticsActivity : Activity() {
         }
 
         val backButton = TextView(this).apply {
-            text = "←"
-            textSize = 28f
+            text = "‹"
+            textSize = 36f
             setTextColor(white)
             gravity = Gravity.CENTER
             setPadding(
