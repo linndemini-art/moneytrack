@@ -47,7 +47,7 @@ class CarFuelCalculatorActivity : Activity() {
             setBackgroundColor(backgroundColor)
         }
 
-        val topRow = LinearLayout(this).apply {
+       val topRow = LinearLayout(this).apply {
     orientation = LinearLayout.HORIZONTAL
     gravity = Gravity.CENTER_VERTICAL
 }
@@ -78,8 +78,27 @@ val title = TextView(this).apply {
     textSize = 24f
     setTextColor(white)
     typeface = Typeface.DEFAULT_BOLD
-    letterSpacing = 
+    letterSpacing = 0.04f
+}
 
+topRow.addView(
+    title,
+    LinearLayout.LayoutParams(
+        0,
+        ViewGroup.LayoutParams.WRAP_CONTENT,
+        1f
+    )
+)
+
+root.addView(
+    topRow,
+    LinearLayout.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.WRAP_CONTENT
+    ).apply {
+        bottomMargin = 6
+    }
+) 
         val subtitle = TextView(this).apply {
             text = "Calculate your trip cost easily"
             textSize = 14f
