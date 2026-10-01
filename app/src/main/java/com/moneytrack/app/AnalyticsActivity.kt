@@ -503,6 +503,159 @@ class AnalyticsActivity : Activity() {
             cardParams()
         )
 
+        val yearlyBreakdownTitle = sectionTitle(
+    "YEARLY SPENDING BREAKDOWN"
+)
+
+content.addView(
+    yearlyBreakdownTitle,
+    sectionTitleParams()
+)
+
+var breakdownYear = selectedYear
+
+val yearlyBreakdownCard = createCard()
+
+val breakdownYearSelector =
+    LinearLayout(this).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER
+    }
+
+val breakdownPreviousYear =
+    TextView(this).apply {
+        text = "‹"
+        textSize = 28f
+        setTextColor(white)
+        gravity = Gravity.CENTER
+        setPadding(
+            0,
+            0,
+            dp(10),
+            dp(2)
+        )
+    }
+
+val breakdownYearText =
+    TextView(this).apply {
+        text = breakdownYear.toString()
+        textSize = 18f
+        setTextColor(white)
+        typeface = Typeface.DEFAULT_BOLD
+        gravity = Gravity.CENTER
+    }
+
+val breakdownNextYear =
+    TextView(this).apply {
+        text = "›"
+        textSize = 28f
+        setTextColor(white)
+        gravity = Gravity.CENTER
+        setPadding(
+            dp(10),
+            0,
+            0,
+            dp(2)
+        )
+    }
+
+breakdownYearSelector.addView(
+    breakdownPreviousYear,
+    LinearLayout.LayoutParams(
+        dp(48),
+        dp(48)
+    )
+)
+
+breakdownYearSelector.addView(
+    breakdownYearText,
+    LinearLayout.LayoutParams(
+        0,
+        dp(48),
+        1f
+    )
+)
+
+breakdownYearSelector.addView(
+    breakdownNextYear,
+    LinearLayout.LayoutParams(
+        dp(48),
+        dp(48)
+    )
+)
+
+yearlyBreakdownCard.addView(
+    breakdownYearSelector,
+    LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    )
+)
+
+val yearlyBreakdownDonut =
+    DonutChartView(this)
+
+val yearlyBreakdownLegend =
+    LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+    }
+
+fun updateYearlyBreakdown() {
+
+    val totals =
+        loadYearlyCategoryTotals(
+            breakdownYear
+        )
+
+    breakdownYearText.text =
+        breakdownYear.toString()
+
+    yearlyBreakdownDonut.setData(
+        totals
+    )
+
+    yearlyBreakdownLegend.removeAllViews()
+
+    yearlyBreakdownLegend.addView(
+        createCategoryLegend(
+            totals
+        )
+    )
+}
+
+breakdownPreviousYear.setOnClickListener {
+    breakdownYear--
+    updateYearlyBreakdown()
+}
+
+breakdownNextYear.setOnClickListener {
+    breakdownYear++
+    updateYearlyBreakdown()
+}
+
+yearlyBreakdownCard.addView(
+    yearlyBreakdownDonut,
+    LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        dp(245)
+    )
+)
+
+yearlyBreakdownCard.addView(
+    yearlyBreakdownLegend,
+    LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    )
+)
+
+updateYearlyBreakdown()
+
+content.addView(
+    yearlyBreakdownCard,
+    cardParams()
+) 
+
         scrollView.addView(content)
 
         root.addView(
