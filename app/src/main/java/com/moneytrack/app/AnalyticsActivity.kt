@@ -816,6 +816,33 @@ class AnalyticsActivity : Activity() {
         return result
     }
 
+        private fun loadYearlyCategoryTotals(
+    year: Int
+): LinkedHashMap<String, Double> {
+
+    val result =
+        LinkedHashMap<String, Double>()
+
+    for (month in 0..11) {
+
+        val expenses = loadExpenses(
+            year,
+            month
+        )
+
+        for (expense in expenses) {
+
+            val previous =
+                result[expense.category] ?: 0.0
+
+            result[expense.category] =
+                previous + expense.amount
+        }
+    }
+
+    return result
+}
+
     private fun createCategoryLegend(
         totals: LinkedHashMap<String, Double>
     ): LinearLayout {
