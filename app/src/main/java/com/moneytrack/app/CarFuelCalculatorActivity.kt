@@ -297,7 +297,15 @@ root.addView(
         val resultsCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(20, 20, 20, 20)
-            background = blueGradientBackground()
+            background = GradientDrawable(
+    GradientDrawable.Orientation.TL_BR,
+    intArrayOf(
+        AppearanceManager.getTheme(this).startColor,
+        AppearanceManager.getTheme(this).endColor
+    )
+).apply {
+    cornerRadius = 20f
+}
         }
 
         val estimatedLabel = TextView(this).apply {
