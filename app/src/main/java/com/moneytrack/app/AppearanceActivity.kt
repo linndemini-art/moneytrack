@@ -177,6 +177,21 @@ class AppearanceActivity : Activity() {
             AppearanceManager.NEON_BLUE
         )
 
+        addTheme(
+            "Ocean Gold",
+            AppearanceManager.OCEAN_GOLD
+        )
+
+        addTheme(
+            "Royal Lavender",
+            AppearanceManager.ROYAL_LAVENDER
+        )
+
+        addTheme(
+            "Rose Sunset",
+            AppearanceManager.ROSE_SUNSET
+        )
+
         setContentView(
             root
         )
@@ -462,6 +477,63 @@ class AppearanceActivity : Activity() {
                         50,
                         200,
                         255
+                    )
+                )
+
+            AppearanceManager.OCEAN_GOLD ->
+                AppearanceManager.Theme(
+                    startColor = Color.rgb(
+                        0,
+                        124,
+                        190
+                    ),
+                    endColor = Color.rgb(
+                        255,
+                        247,
+                        174
+                    ),
+                    accentColor = Color.rgb(
+                        255,
+                        247,
+                        174
+                    )
+                )
+
+            AppearanceManager.ROYAL_LAVENDER ->
+                AppearanceManager.Theme(
+                    startColor = Color.rgb(
+                        75,
+                        8,
+                        109
+                    ),
+                    endColor = Color.rgb(
+                        172,
+                        192,
+                        254
+                    ),
+                    accentColor = Color.rgb(
+                        172,
+                        192,
+                        254
+                    )
+                )
+
+            AppearanceManager.ROSE_SUNSET ->
+                AppearanceManager.Theme(
+                    startColor = Color.rgb(
+                        215,
+                        65,
+                        119
+                    ),
+                    endColor = Color.rgb(
+                        255,
+                        233,
+                        138
+                    ),
+                    accentColor = Color.rgb(
+                        255,
+                        233,
+                        138
                     )
                 )
 
