@@ -10,6 +10,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.InputType
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ArrayAdapter
@@ -2010,6 +2011,111 @@ menuDrawer.addView(
             )
         }
     }
+
+    private inner class SwipeDeleteLayout(
+    context: Context
+) : FrameLayout(context) {
+
+    private var downX = 0f
+    private var downY = 0f
+    private var deleteWidth = 0
+    private var dragging = false
+
+    fun setDeleteWidth(width: Int) {
+        deleteWidth = width
+    }
+
+    override fun onTouchEvent(
+        event: MotionEvent
+    ): Boolean {
+
+        when (event.actionMasked) {
+
+            MotionEvent.ACTION_DOWN -> {
+                downX = event.x
+                downY = event.y
+                dragging = false
+                return true
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+
+                val dx =
+                    event.x - downX
+
+                val dy =
+                    event.y - downY
+
+                if (
+                    !dragging &&
+                    kotlin.math.abs(dx) > 12 &&
+                    kotlin.math.abs(dx) >
+                        kotlin.math.abs(dy)
+                ) {
+
+                    dragging = true
+
+                    parent.requestDisallowInterceptTouchEvent(
+                        true
+                    )
+                }
+
+                if (dragging) {
+
+                    val translation =
+                        dx.coerceIn(
+                            -deleteWidth.toFloat(),
+                            0f
+                        )
+
+                    getChildAt(1).translationX =
+                        translation
+
+                    return true
+                }
+
+                return true
+            }
+
+            MotionEvent.ACTION_UP,
+            MotionEvent.ACTION_CANCEL -> {
+
+                if (dragging) {
+
+                    parent.requestDisallowInterceptTouchEvent(
+                        false
+                    )
+
+                    val front =
+                        getChildAt(1)
+
+                    val shouldOpen =
+                        front.translationX <=
+                            -deleteWidth * 0.45f
+
+                    front.animate()
+                        .translationX(
+                            if (shouldOpen) {
+                                -deleteWidth.toFloat()
+                            } else {
+                                0f
+                            }
+                        )
+                        .setDuration(180)
+                        .setInterpolator(
+                            AccelerateDecelerateInterpolator()
+                        )
+                        .start()
+                }
+
+                dragging = false
+                return true
+            }
+        }
+
+        return true
+    }
+}
 
     private fun sectionTitle(
         text: String,
