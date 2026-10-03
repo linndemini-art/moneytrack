@@ -125,6 +125,16 @@ class MainActivity : Activity() {
         refreshExpenses()
     }
 
+    override fun onResume() {
+    super.onResume()
+
+    buildInterface()
+    loadData()
+    updateMonthDisplay()
+    updateTotals()
+    refreshExpenses()
+    }
+
     private fun buildInterface() {
         appearanceTheme =
     AppearanceManager.getTheme(this)
