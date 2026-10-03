@@ -159,6 +159,7 @@ class MainActivity : Activity() {
             appearanceTheme.endColor,
             22f
         )
+        }
 
         val cardTopRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
