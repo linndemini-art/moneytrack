@@ -1953,37 +1953,6 @@ menuDrawer.addView(
                 amountText
             )
 
-            val deleteButton =
-                TextView(this).apply {
-                    text = "Delete"
-
-                    textSize = 12f
-
-                    setTextColor(
-                        blueBright
-                    )
-
-                    gravity =
-                        Gravity.END
-
-                    setPadding(
-                        8,
-                        5,
-                        0,
-                        0
-                    )
-
-                    setOnClickListener {
-                        deleteExpense(
-                            index
-                        )
-                    }
-                }
-
-            rightColumn.addView(
-                deleteButton
-            )
-
             expenseCard.addView(
                 rightColumn,
                 LinearLayout.LayoutParams(
