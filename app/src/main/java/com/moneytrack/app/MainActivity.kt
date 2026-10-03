@@ -842,6 +842,40 @@ incomeCard.addView(
             )
         )
 
+        val appearanceItem = TextView(this).apply {
+
+    text = "Appearance"
+    textSize = 18f
+    setTextColor(white)
+
+    setPadding(
+        0,
+        24,
+        0,
+        24
+    )
+
+    setOnClickListener {
+
+        closeMenu()
+
+        startActivity(
+            Intent(
+                this@MainActivity,
+                AppearanceActivity::class.java
+            )
+        )
+    }
+}
+
+menuDrawer.addView(
+    appearanceItem,
+    LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    )
+)
+
         val debtLoanItem = TextView(this).apply {
     text = "Debt & Loan"
     textSize = 18f
