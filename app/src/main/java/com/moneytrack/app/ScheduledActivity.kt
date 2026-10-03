@@ -618,11 +618,11 @@ val progressValue = calculateProgress(
         }
 
         val progressView = ScheduledProgressView(
-            this,
-            progressValue,
-            blue,
-            progressBackground
-        )
+    this,
+    progressValue,
+    AppearanceManager.getAccentColor(this),
+    progressBackground
+)
 
         progressRow.addView(
             progressView,
