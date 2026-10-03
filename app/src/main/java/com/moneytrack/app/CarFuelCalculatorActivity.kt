@@ -300,8 +300,8 @@ root.addView(
             background = GradientDrawable(
     GradientDrawable.Orientation.TL_BR,
     intArrayOf(
-        AppearanceManager.getTheme(this).startColor,
-        AppearanceManager.getTheme(this).endColor
+        AppearanceManager.getTheme(this@CarFuelCalculatorActivity).startColor,
+        AppearanceManager.getTheme(this@CarFuelCalculatorActivity).endColor
     )
 ).apply {
     cornerRadius = 20f
