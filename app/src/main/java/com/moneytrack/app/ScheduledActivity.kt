@@ -150,7 +150,7 @@ root.addView(
         val addButton = TextView(this).apply {
             text = "+ ADD"
             textSize = 16f
-            setTextColor(blue)
+            setTextColor(AppearanceManager.getAccentColor(this@ScheduledActivity))
             typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER
             setPadding(0, 18, 0, 18)
@@ -909,7 +909,7 @@ val progressValue = calculateProgress(
     private class ScheduledProgressView(
         context: Context,
         private val progress: Float,
-        fillColor: Int,
+        private val fillColor: Int,
         trackColor: Int
     ) : View(context) {
 
@@ -924,10 +924,7 @@ val progressValue = calculateProgress(
 
         private val glowPaint =
             Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = Color.rgb(
-                    0,
-                    229,
-                    255
+                color = fillColor
                 )
                 alpha = 150
                 style = Paint.Style.FILL
@@ -936,10 +933,7 @@ val progressValue = calculateProgress(
                     9f * density,
                     0f,
                     0f,
-                    Color.rgb(
-                        0,
-                        229,
-                        255
+                    fillColor
                     )
                 )
             }
@@ -1021,15 +1015,9 @@ val progressValue = calculateProgress(
                 0f,
                 width,
                 0f,
-                Color.rgb(
-                    0,
-                    229,
-                    255
+                fillColor,
                 ),
-                Color.rgb(
-                    33,
-                    150,
-                    243
+                fillColor,
                 ),
                 Shader.TileMode.CLAMP
             )
