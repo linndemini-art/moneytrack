@@ -94,6 +94,8 @@ class MainActivity : Activity() {
     private val cardColor = Color.rgb(20, 22, 29)
     private val surfaceColor = Color.rgb(28, 31, 40)
 
+    private lateinit var appearanceTheme: AppearanceManager.Theme
+
     private val blueDark = Color.rgb(18, 55, 110)
     private val blue = Color.rgb(38, 104, 210)
     private val blueBright = Color.rgb(74, 145, 255)
@@ -124,6 +126,8 @@ class MainActivity : Activity() {
     }
 
     private fun buildInterface() {
+        appearanceTheme =
+    AppearanceManager.getTheme(this)
 
         isHistoryOpen = false
 
@@ -151,11 +155,10 @@ class MainActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             setPadding(20, 18, 20, 18)
             background = gradientBackground(
-                Color.rgb(18, 29, 52),
-                Color.rgb(24, 67, 125),
-                22f
-            )
-        }
+            appearanceTheme.startColor,
+            appearanceTheme.endColor,
+            22f
+        )
 
         val cardTopRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
