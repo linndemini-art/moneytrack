@@ -165,7 +165,7 @@ class LoansDebtsActivity : Activity() {
         addButton.setTextColor(backgroundColor)
         addButton.setAllCaps(false)
         addButton.background = roundedBackground(
-            amberColor,
+            AppearanceManager.getAccentColor(this)
             dp(14).toFloat()
         )
 
@@ -225,12 +225,12 @@ class LoansDebtsActivity : Activity() {
         )
 
         borrowedTab.background = roundedBackground(
-            if (showingBorrowed) blueColor else surfaceColor,
+            if (showingBorrowed)  AppearanceManager.getAccentColor(this) else surfaceColor,
             dp(12).toFloat()
         )
 
         lentTab.background = roundedBackground(
-            if (!showingBorrowed) blueColor else surfaceColor,
+            if (!showingBorrowed) AppearanceManager.getAccentColor(this) else surfaceColor,
             dp(12).toFloat()
         )
     }
