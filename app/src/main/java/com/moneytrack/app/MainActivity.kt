@@ -2005,10 +2005,56 @@ menuDrawer.addView(
                 10
             )
 
-            expensesContainer.addView(
-                expenseCard,
-                params
+                    val swipeLayout =
+            SwipeDeleteLayout(this)
+
+        swipeLayout.addView(
+            TextView(this).apply {
+                text = "Delete"
+                textSize = 13f
+                setTextColor(white)
+                gravity = Gravity.CENTER
+                typeface = Typeface.DEFAULT_BOLD
+
+                background =
+                    roundedBackground(
+                        Color.rgb(190, 50, 55),
+                        16f
+                    )
+
+                setOnClickListener {
+                    deleteExpense(index)
+                }
+            },
+            FrameLayout.LayoutParams(
+                (
+                    92 *
+                        resources.displayMetrics.density
+                    ).toInt(),
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                Gravity.END
             )
+        )
+
+        swipeLayout.addView(
+            expenseCard,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        swipeLayout.setDeleteWidth(
+            (
+                92 *
+                    resources.displayMetrics.density
+                ).toInt()
+        )
+
+        expensesContainer.addView(
+            swipeLayout,
+            params
+        )
         }
     }
 
