@@ -354,7 +354,7 @@ class MainActivity : Activity() {
         val status = TextView(this).apply {
             text = "●  OFFLINE"
             textSize = 11f
-            setTextColor(blueBright)
+            setTextColor(appearanceTheme.accentColor)
             setPadding(4, 7, 0, 0)
             typeface = Typeface.DEFAULT_BOLD
             letterSpacing = 0.04f
@@ -434,7 +434,7 @@ class MainActivity : Activity() {
         remainingText = TextView(this).apply {
             text = "€0.00"
             textSize = 21f
-            setTextColor(blueBright)
+            setTextColor(appearanceTheme.accentColor)
             typeface = Typeface.DEFAULT_BOLD
             setPadding(0, 5, 0, 0)
         }
@@ -518,10 +518,10 @@ incomeCard.addView(
 ) 
 
         val saveIncomeButton = createGradientButton(
-            "Save Income",
-            blueDark,
-            blueBright
-        )
+    "Save Income",
+    appearanceTheme.startColor,
+    appearanceTheme.endColor
+)
 
         saveIncomeButton.setOnClickListener {
             saveIncome()
@@ -600,10 +600,10 @@ incomeCard.addView(
         )
 
         val addExpenseButton = createGradientButton(
-            "Add Expense",
-            blueDark,
-            blueBright
-        )
+    "Add Expense",
+    appearanceTheme.startColor,
+    appearanceTheme.endColor
+)
 
         addExpenseButton.setOnClickListener {
             addExpense()
@@ -1365,7 +1365,7 @@ menuDrawer.addView(
                     95
                 )
             } else {
-                blueBright
+                appearanceTheme.accentColor
             }
         )
     }
@@ -1866,7 +1866,7 @@ menuDrawer.addView(
             val accent =
                 View(this).apply {
                     setBackgroundColor(
-                        blueBright
+                        appearanceTheme.accentColor
                     )
                 }
 
