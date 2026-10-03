@@ -923,20 +923,18 @@ val progressValue = calculateProgress(
             }
 
         private val glowPaint =
-            Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = fillColor
-                )
-                alpha = 150
-                style = Paint.Style.FILL
+    Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = fillColor
+        alpha = 150
+        style = Paint.Style.FILL
 
-                setShadowLayer(
-                    9f * density,
-                    0f,
-                    0f,
-                    fillColor
-                    )
-                )
-            }
+        setShadowLayer(
+            9f * density,
+            0f,
+            0f,
+            fillColor
+        )
+    }
 
         private val fillPaint =
             Paint(Paint.ANTI_ALIAS_FLAG).apply {
