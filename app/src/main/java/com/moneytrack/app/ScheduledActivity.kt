@@ -1014,9 +1014,7 @@ val progressValue = calculateProgress(
                 width,
                 0f,
                 fillColor,
-                ),
                 fillColor,
-                ),
                 Shader.TileMode.CLAMP
             )
 
