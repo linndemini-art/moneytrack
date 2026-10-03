@@ -666,8 +666,8 @@ incomeCard.addView(
 
         val exportButton = createGradientButton(
             "Export Backup",
-            blueDark,
-            blueBright
+            appearanceTheme.startColor,
+            appearanceTheme.endColor
         )
 
         exportButton.setOnClickListener {
