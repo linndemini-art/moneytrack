@@ -165,7 +165,7 @@ class LoansDebtsActivity : Activity() {
         addButton.setTextColor(backgroundColor)
         addButton.setAllCaps(false)
         addButton.background = roundedBackground(
-            AppearanceManager.getAccentColor(this)
+            AppearanceManager.getAccentColor(this) , 
             dp(14).toFloat()
         )
 
