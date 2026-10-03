@@ -68,7 +68,9 @@ class MainActivity : Activity() {
     data class Expense(
         val description: String,
         val category: String,
-        val amount: Double
+        val amount: Double,
+        val date: String = "",
+        val time: String = ""
     )
 
     private val categories = arrayOf(
@@ -527,7 +529,7 @@ incomeCard.addView(
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
 
-        addTitleParams.setMargins(2, 24, 0, 10)
+                addTitleParams.setMargins(2, 24, 0, 10)
 
         content.addView(
             addTitle,
@@ -1056,7 +1058,8 @@ menuDrawer.addView(
                     else -> null
                 }
             }
-            .filter {
+
+                        .filter {
                 it.matches(
                     Regex("\\d{4}-\\d{2}")
                 )
@@ -1198,8 +1201,8 @@ menuDrawer.addView(
 
         Toast.makeText(
             this,
-            "Income saved.",
-            Toast.LENGTH_SHORT
+        "Income saved.",
+        Toast.LENGTH_SHORT
         ).show()
     }
 
@@ -1232,11 +1235,25 @@ menuDrawer.addView(
             return
         }
 
+        val now = Calendar.getInstance().time
+
+        val dateFormat = SimpleDateFormat(
+            "dd MMM yyyy",
+            Locale.ENGLISH
+        )
+
+        val timeFormat = SimpleDateFormat(
+            "HH:mm",
+            Locale.ENGLISH
+        )
+
         expenses.add(
             Expense(
                 description = description,
                 category = category,
-                amount = amount
+                amount = amount,
+                date = dateFormat.format(now),
+                time = timeFormat.format(now)
             )
         )
 
@@ -1344,6 +1361,16 @@ menuDrawer.addView(
                 expense.amount
             )
 
+            item.put(
+                "date",
+                expense.date
+            )
+
+            item.put(
+                "time",
+                expense.time
+            )
+
             expensesArray.put(item)
         }
 
@@ -1403,6 +1430,16 @@ menuDrawer.addView(
                                 item.optDouble(
                                     "amount",
                                     0.0
+                                ),
+                            date =
+                                item.optString(
+                                    "date",
+                                    ""
+                                ),
+                            time =
+                                item.optString(
+                                    "time",
+                                    ""
                                 )
                         )
                     )
@@ -1482,6 +1519,16 @@ menuDrawer.addView(
                                         item.optDouble(
                                             "amount",
                                             0.0
+                                        ),
+                                    date =
+                                        item.optString(
+                                            "date",
+                                            ""
+                                        ),
+                                    time =
+                                        item.optString(
+                                            "time",
+                                            ""
                                         )
                                 )
                             )
@@ -1543,7 +1590,7 @@ menuDrawer.addView(
 
     private fun updateMonthDisplay() {
 
-        val calendar =
+                val calendar =
             Calendar.getInstance()
 
         calendar.set(
@@ -1837,6 +1884,32 @@ menuDrawer.addView(
                 category
             )
 
+            if (
+                expense.date.isNotEmpty() ||
+                expense.time.isNotEmpty()
+            ) {
+                val timestamp = TextView(this).apply {
+                    text = listOf(
+                        expense.date,
+                        expense.time
+                    )
+                        .filter { it.isNotEmpty() }
+                        .joinToString(" • ")
+
+                    textSize = 11f
+                    setTextColor(muted)
+
+                    setPadding(
+                        0,
+                        4,
+                        0,
+                        0
+                    )
+                }
+
+                details.addView(timestamp)
+            }
+
             expenseCard.addView(
                 details,
                 LinearLayout.LayoutParams(
@@ -2046,7 +2119,7 @@ menuDrawer.addView(
     private fun createGradientButton(
         text: String,
         startColor: Int,
-        endColor: Int
+                endColor: Int
     ): TextView {
 
         return TextView(this).apply {
