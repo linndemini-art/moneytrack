@@ -498,7 +498,8 @@ class MainActivity : Activity() {
     "Clear Income",
     Color.rgb(70, 40, 40),
     Color.rgb(125, 55, 55)
-)
+
+    )
 
 clearIncomeButton.setOnClickListener {
     income = 0.0
@@ -737,6 +738,15 @@ incomeCard.addView(
     private fun createMenuDrawer(
         root: FrameLayout
     ) {
+        val menuTextColor = Color.rgb(210, 214, 223)
+        val menuFillColor = Color.argb(128, 8, 10, 15)
+        val menuCardColor = Color.argb(92, 255, 255, 255)
+        val menuCardBorderColor = Color.argb(48, 255, 255, 255)
+
+        fun dp(value: Int): Int {
+            return (value * resources.displayMetrics.density).toInt()
+        }
+
         menuOverlay = View(this).apply {
             setBackgroundColor(
                 Color.argb(
@@ -746,10 +756,8 @@ incomeCard.addView(
                     0
                 )
             )
-
             alpha = 0f
             visibility = View.GONE
-
             setOnClickListener {
                 closeMenu()
             }
@@ -765,19 +773,36 @@ incomeCard.addView(
 
         menuDrawer = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(
-                Color.rgb(15, 17, 23)
+            setPadding(
+                dp(16),
+                dp(28),
+                dp(16),
+                dp(16)
             )
-            setPadding(24, 58, 24, 24)
-            elevation = 20f
+            elevation = dp(18).toFloat()
+
+            background = GradientDrawable().apply {
+                setColor(menuFillColor)
+                setStroke(
+                    dp(2),
+                    appearanceTheme.accentColor
+                )
+            }
         }
 
         val menuTitle = TextView(this).apply {
-            text = "MENU"
-            textSize = 24f
-            setTextColor(white)
+            text = "MONEY TRACK"
+            textSize = 22f
+            setTextColor(menuTextColor)
             typeface = Typeface.DEFAULT_BOLD
-            letterSpacing = 0.05f
+            gravity = Gravity.CENTER
+            letterSpacing = 0.08f
+            setPadding(
+                0,
+                dp(4),
+                0,
+                dp(20)
+            )
         }
 
         menuDrawer.addView(
@@ -788,188 +813,146 @@ incomeCard.addView(
             )
         )
 
-        val menuLine = View(this).apply {
-            setBackgroundColor(
-                Color.rgb(45, 49, 60)
-            )
-        }
-
-        val lineParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            1
-        )
-
-        lineParams.setMargins(
-            0,
-            18,
-            0,
-            0
-        )
-
-        menuDrawer.addView(
-            menuLine,
-            lineParams
-        )
-
-        val historyItem = TextView(this).apply {
-            text = "History"
-            textSize = 18f
-            setTextColor(white)
-            setPadding(0, 24, 0, 24)
-
-            setOnClickListener {
-                openHistory()
-            }
-        }
-
-        menuDrawer.addView(
-            historyItem,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        )
-
-        val analyticsItem = TextView(this).apply {
-            text = "Analytics"
-            textSize = 18f
-            setTextColor(white)
-            setPadding(0, 24, 0, 24)
-
-            setOnClickListener {
-                closeMenu()
-
-                startActivity(
-                    Intent(
-                        this@MainActivity,
-                        AnalyticsActivity::class.java
-                    )
+        fun createMenuCard(
+            title: String,
+            iconRes: Int,
+            action: () -> Unit
+        ) {
+            val card = TextView(this).apply {
+                text = title
+                textSize = 16f
+                setTextColor(menuTextColor)
+                typeface = Typeface.DEFAULT_BOLD
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(
+                    dp(16),
+                    0,
+                    dp(16),
+                    0
                 )
+                compoundDrawablePadding = dp(14)
+
+                val icon = getDrawable(iconRes)?.mutate()
+                icon?.setTint(menuTextColor)
+
+                setCompoundDrawablesWithIntrinsicBounds(
+                    icon,
+                    null,
+                    null,
+                    null
+                )
+
+                background = GradientDrawable().apply {
+                    setColor(menuCardColor)
+                    setStroke(
+                        dp(1),
+                        menuCardBorderColor
+                    )
+                    cornerRadius = dp(14).toFloat()
+                }
+
+                setOnClickListener {
+                    action()
+                }
             }
+
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                dp(56)
+            )
+
+            params.setMargins(
+                0,
+                0,
+                0,
+                dp(8)
+            )
+
+            menuDrawer.addView(
+                card,
+                params
+            )
         }
 
-        menuDrawer.addView(
-            analyticsItem,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+        createMenuCard(
+            "HISTORY",
+            android.R.drawable.ic_menu_recent_history
+        ) {
+            openHistory()
+        }
+
+        createMenuCard(
+            "ANALYTICS",
+            android.R.drawable.ic_menu_sort_by_size
+        ) {
+            closeMenu()
+
+            startActivity(
+                Intent(
+                    this@MainActivity,
+                    AnalyticsActivity::class.java
+                )
             )
-        )
+        }
 
-        val debtLoanItem = TextView(this).apply {
-    text = "Debt & Loan"
-    textSize = 18f
-    setTextColor(white)
-    setPadding(0, 24, 0, 24)
+        createMenuCard(
+            "DEBT & LOAN",
+            android.R.drawable.ic_menu_save
+        ) {
+            closeMenu()
 
-    setOnClickListener {
-        closeMenu()
-
-        startActivity(
-            Intent(
-                this@MainActivity,
-                LoansDebtsActivity::class.java
+            startActivity(
+                Intent(
+                    this@MainActivity,
+                    LoansDebtsActivity::class.java
+                )
             )
-        )
-    }
-}
+        }
 
-menuDrawer.addView(
-    debtLoanItem,
-    LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT
-    )
-)
+        createMenuCard(
+            "SCHEDULED",
+            android.R.drawable.ic_menu_today
+        ) {
+            closeMenu()
 
-val carFuelCalculatorItem = TextView(this).apply {
-    text = "Car Fuel Calculator"
-    textSize = 18f
-    setTextColor(white)
-    setPadding(0, 24, 0, 24)
-
-    setOnClickListener {
-        closeMenu()
-
-        startActivity(
-            Intent(
-                this@MainActivity,
-                CarFuelCalculatorActivity::class.java
+            startActivity(
+                Intent(
+                    this@MainActivity,
+                    ScheduledActivity::class.java
+                )
             )
-        )
-    }
-}
+        }
 
-menuDrawer.addView(
-    carFuelCalculatorItem,
-    LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT
-    )
-)
+        createMenuCard(
+            "CAR FUEL CALCULATOR",
+            android.R.drawable.ic_menu_compass
+        ) {
+            closeMenu()
 
-val scheduledItem = TextView(this).apply {
-    text = "Scheduled"
-    textSize = 18f
-    setTextColor(white)
-    setPadding(0, 24, 0, 24)
-
-    setOnClickListener {
-        closeMenu()
-
-        startActivity(
-            Intent(
-                this@MainActivity,
-                ScheduledActivity::class.java
+            startActivity(
+                Intent(
+                    this@MainActivity,
+                    CarFuelCalculatorActivity::class.java
+                )
             )
-        )
-    }
-}
+        }
 
-menuDrawer.addView(
-    scheduledItem,
-    LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT
-    )
-)
+        createMenuCard(
+            "THEME",
+            android.R.drawable.ic_menu_preferences
+        ) {
+            closeMenu()
 
-val themeItem = TextView(this).apply {
-
-    text = "Theme"
-    textSize = 18f
-    setTextColor(white)
-
-    setPadding(
-        0,
-        24,
-        0,
-        24
-    )
-
-    setOnClickListener {
-
-        closeMenu()
-
-        startActivity(
-            Intent(
-                this@MainActivity,
-                AppearanceActivity::class.java
+            startActivity(
+                Intent(
+                    this@MainActivity,
+                    AppearanceActivity::class.java
+                )
             )
-        )
-    }
-}
-
-menuDrawer.addView(
-    themeItem,
-    LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT
-    )
-)
+        }
 
         val drawerWidth =
-            (resources.displayMetrics.widthPixels * 0.35f).toInt()
+            (resources.displayMetrics.widthPixels * 0.82f).toInt()
 
         val drawerParams = FrameLayout.LayoutParams(
             drawerWidth,
@@ -999,7 +982,7 @@ menuDrawer.addView(
 
         menuOverlay.visibility = View.VISIBLE
 
-        menuOverlay.animate()
+                menuOverlay.animate()
             .alpha(1f)
             .setDuration(220)
             .start()
@@ -1498,7 +1481,7 @@ menuDrawer.addView(
                 exception: Exception
             ) {
 
-                expenses.clear()
+                                expenses.clear()
             }
 
             return
@@ -1998,7 +1981,8 @@ menuDrawer.addView(
                 }
 
             rightColumn.addView(
-                amountText
+
+                                amountText
             )
 
             expenseCard.addView(
@@ -2498,6 +2482,7 @@ menuDrawer.addView(
         JSONObject {
 
         val root =
+                    val root =
             JSONObject()
 
         root.put(
