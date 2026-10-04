@@ -75,7 +75,24 @@ class AppearanceActivity : Activity() {
             )
         }
 
-        root.addView(
+        val backButton = TextView(this).apply {
+    text = "‹"
+    textSize = 36f
+    setTextColor(white)
+    gravity = Gravity.CENTER_VERTICAL
+    setPadding(
+        dp(24),
+        0,
+        dp(24),
+        0
+    )
+
+    setOnClickListener {
+        finish()
+    }
+}
+
+root.addView(
     backButton,
     LinearLayout.LayoutParams(
         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -84,7 +101,6 @@ class AppearanceActivity : Activity() {
 )
 
 val title = TextView(this).apply {
-
         val title = TextView(this).apply {
 
             text = "APPEARANCE"
