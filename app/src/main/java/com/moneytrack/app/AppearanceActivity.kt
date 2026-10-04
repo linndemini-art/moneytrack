@@ -75,32 +75,53 @@ class AppearanceActivity : Activity() {
             )
         }
 
+        val header = LinearLayout(this).apply {
+
+            orientation = LinearLayout.HORIZONTAL
+
+            gravity = Gravity.CENTER_VERTICAL
+
+            setPadding(
+                0,
+                0,
+                0,
+                dp(12)
+            )
+        }
+
         val backButton = TextView(this).apply {
-    text = "‹"
-    textSize = 36f
-    setTextColor(white)
-    gravity = Gravity.CENTER_VERTICAL
-    setPadding(
-        dp(24),
-        0,
-        dp(24),
-        0
-    )
 
-    setOnClickListener {
-        finish()
-    }
-}
+            text = "‹"
 
-root.addView(
-    backButton,
-    LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT,
-        dp(56)
-    )
-)
+            textSize = 36f
 
-val title = TextView(this).apply {
+            setTextColor(
+                white
+            )
+
+            gravity = Gravity.CENTER
+
+            setPadding(
+                dp(8),
+                0,
+                dp(8),
+                0
+            )
+
+            setOnClickListener {
+                finish()
+            }
+        }
+
+        header.addView(
+            backButton,
+            LinearLayout.LayoutParams(
+                dp(48),
+                dp(56)
+            )
+        )
+
+        val title = TextView(this).apply {
 
             text = "APPEARANCE"
 
@@ -117,16 +138,23 @@ val title = TextView(this).apply {
                 Gravity.CENTER_VERTICAL
 
             setPadding(
-    dp(24),
-    dp(0),
-    dp(24),
-    dp(24)
-)
+                0,
+                0,
+                0,
+                0
+            )
+        }
 
-}
+        header.addView(
+            title,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                dp(56)
+            )
+        )
 
         root.addView(
-            title,
+            header,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -220,14 +248,13 @@ val title = TextView(this).apply {
         )
 
         val scrollView = ScrollView(this).apply {
-    addView(root)
-}
+            addView(root)
+        }
 
-setContentView(
-    scrollView
-)
-
-}
+        setContentView(
+            scrollView
+        )
+    }
 
     private fun addTheme(
         name: String,
