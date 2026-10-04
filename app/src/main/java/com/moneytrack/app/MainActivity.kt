@@ -857,7 +857,7 @@ incomeCard.addView(
         )
         
 menuDrawer.addView(
-    appearanceItem,
+    themeItem,
     LinearLayout.LayoutParams(
         LinearLayout.LayoutParams.MATCH_PARENT,
         LinearLayout.LayoutParams.WRAP_CONTENT
