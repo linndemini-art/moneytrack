@@ -118,7 +118,7 @@ val title = TextView(this).apply {
 
             setPadding(
     dp(24),
-    dp(92),
+    dp(0),
     dp(24),
     dp(24)
 )
