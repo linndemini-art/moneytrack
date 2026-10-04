@@ -199,6 +199,8 @@ setContentView(
     scrollView
 )
 
+}
+
     private fun addTheme(
         name: String,
         themeName: String
