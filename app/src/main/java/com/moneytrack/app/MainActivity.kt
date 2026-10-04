@@ -815,7 +815,7 @@ incomeCard.addView(
             text = "History"
             textSize = 18f
             setTextColor(white)
-            setPadding(0, 24, 0, 24)
+
 
             setOnClickListener {
                 openHistory()
@@ -945,38 +945,347 @@ val themeItem = TextView(this).apply {
         24,
         0,
         24
-    )
+    private fun createMenuDrawer(
+        root: FrameLayout
+    ) {
+        menuOverlay = View(this).apply {
+            setBackgroundColor(
+                Color.argb(
+                    150,
+                    0,
+                    0,
+                    0
+                )
+            )
 
-    setOnClickListener {
+            alpha = 0f
+            visibility = View.GONE
 
-        closeMenu()
+            setOnClickListener {
+                closeMenu()
+            }
+        }
 
-        startActivity(
-            Intent(
-                this@MainActivity,
-                AppearanceActivity::class.java
+        root.addView(
+            menuOverlay,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
             )
         )
-    }
-}
 
-menuDrawer.addView(
-    themeItem,
-    LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT
-    )
-)
+        val density =
+            resources.displayMetrics.density
 
-        val drawerWidth =
-            (resources.displayMetrics.widthPixels * 0.35f).toInt()
+        fun dp(value: Int): Int {
+            return (value * density).toInt()
+        }
 
-        val drawerParams = FrameLayout.LayoutParams(
-            drawerWidth,
-            FrameLayout.LayoutParams.MATCH_PARENT
+        val menuTextColor =
+            Color.rgb(
+                205,
+                209,
+                218
+            )
+
+        val menuCardColor =
+            Color.argb(
+                105,
+                255,
+                255,
+                255
+            )
+
+        menuDrawer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+
+            setPadding(
+                dp(16),
+                dp(28),
+                dp(16),
+                dp(18)
+            )
+
+            background =
+                GradientDrawable().apply {
+                    setColor(
+                        Color.argb(
+                            128,
+                            8,
+                            10,
+                            15
+                        )
+                    )
+
+                    cornerRadius =
+                        dp(24).toFloat()
+
+                    setStroke(
+                        dp(2),
+                        appearanceTheme.accentColor
+                    )
+                }
+
+            elevation = dp(20).toFloat()
+        }
+
+        val menuTitle = TextView(this).apply {
+            text = "MONEY TRACK"
+            textSize = 21f
+            setTextColor(menuTextColor)
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            letterSpacing = 0.08f
+
+            setPadding(
+                0,
+                dp(4),
+                0,
+                dp(18)
+            )
+        }
+
+        menuDrawer.addView(
+            menuTitle,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
         )
 
-        drawerParams.gravity = Gravity.START
+        fun createMenuCard(
+            title: String,
+            iconResId: Int,
+            action: () -> Unit
+        ): LinearLayout {
+
+            val card =
+                LinearLayout(this).apply {
+                    orientation =
+                        LinearLayout.HORIZONTAL
+
+                    gravity =
+                        Gravity.CENTER_VERTICAL
+
+                    setPadding(
+                        dp(14),
+                        dp(11),
+                        dp(14),
+                        dp(11)
+                    )
+
+                    background =
+                        GradientDrawable().apply {
+                            setColor(
+                                menuCardColor
+                            )
+
+                            cornerRadius =
+                                dp(14).toFloat()
+
+                            setStroke(
+                                dp(1),
+                                Color.argb(
+                                    45,
+                                    255,
+                                    255,
+                                    255
+                                )
+                            )
+                        }
+
+                    isClickable = true
+                    isFocusable = true
+
+                    setOnClickListener {
+                        action()
+                    }
+                }
+
+            val icon =
+                android.widget.ImageView(this).apply {
+                    setImageResource(
+                        iconResId
+                    )
+
+                    setColorFilter(
+                        menuTextColor
+                    )
+
+                    scaleType =
+                        android.widget.ImageView.ScaleType.CENTER_INSIDE
+
+                    contentDescription =
+                        title
+                }
+
+            card.addView(
+                icon,
+                LinearLayout.LayoutParams(
+                    dp(24),
+                    dp(24)
+                )
+            )
+
+            val text =
+                TextView(this).apply {
+                    this.text = title
+                    textSize = 16f
+                    setTextColor(
+                        menuTextColor
+                    )
+                    typeface =
+                        Typeface.DEFAULT_BOLD
+                    gravity =
+                        Gravity.CENTER_VERTICAL
+
+                    letterSpacing = 0.02f
+
+                    setPadding(
+                        dp(12),
+                        0,
+                        0,
+                        0
+                    )
+                }
+
+            card.addView(
+                text,
+                LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+            )
+
+            return card
+        }
+
+        fun addMenuCard(
+            card: LinearLayout
+        ) {
+            val params =
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+
+            params.setMargins(
+                0,
+                dp(4),
+                0,
+                dp(4)
+            )
+
+            menuDrawer.addView(
+                card,
+                params
+            )
+        }
+
+        addMenuCard(
+            createMenuCard(
+                "HISTORY",
+                android.R.drawable.ic_menu_recent_history
+            ) {
+                openHistory()
+            }
+        )
+
+        addMenuCard(
+            createMenuCard(
+                "ANALYTICS",
+                android.R.drawable.ic_menu_sort_by_size
+            ) {
+                closeMenu()
+
+                startActivity(
+                    Intent(
+                        this@MainActivity,
+                        AnalyticsActivity::class.java
+                    )
+                )
+            }
+        )
+
+        addMenuCard(
+            createMenuCard(
+                "DEBT & LOAN",
+                android.R.drawable.ic_menu_agenda
+            ) {
+                closeMenu()
+
+                startActivity(
+                    Intent(
+                        this@MainActivity,
+                        LoansDebtsActivity::class.java
+                    )
+                )
+            }
+        )
+
+        addMenuCard(
+            createMenuCard(
+                "SCHEDULED",
+                android.R.drawable.ic_menu_today
+            ) {
+                closeMenu()
+
+                startActivity(
+                    Intent(
+                        this@MainActivity,
+                        ScheduledActivity::class.java
+                    )
+                )
+            }
+        )
+
+        addMenuCard(
+            createMenuCard(
+                "CAR FUEL CALCULATOR",
+                android.R.drawable.ic_menu_compass
+            ) {
+                closeMenu()
+
+                startActivity(
+                    Intent(
+                        this@MainActivity,
+                        CarFuelCalculatorActivity::class.java
+                    )
+                )
+            }
+        )
+
+        addMenuCard(
+            createMenuCard(
+                "THEME",
+                android.R.drawable.ic_menu_preferences
+            ) {
+                closeMenu()
+
+                startActivity(
+                    Intent(
+                        this@MainActivity,
+                        AppearanceActivity::class.java
+                    )
+                )
+            }
+        )
+
+        val drawerWidth =
+            (
+                resources.displayMetrics.widthPixels *
+                    0.35f
+            ).toInt()
+
+        val drawerParams =
+            FrameLayout.LayoutParams(
+                drawerWidth,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+
+        drawerParams.gravity =
+            Gravity.START
 
         root.addView(
             menuDrawer,
