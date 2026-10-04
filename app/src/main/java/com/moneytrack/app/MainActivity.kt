@@ -855,14 +855,6 @@ incomeCard.addView(
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
         )
-        
-menuDrawer.addView(
-    themeItem,
-    LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT
-    )
-)
 
         val debtLoanItem = TextView(this).apply {
     text = "Debt & Loan"
@@ -967,6 +959,14 @@ val themeItem = TextView(this).apply {
         )
     }
 }
+
+menuDrawer.addView(
+    themeItem,
+    LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    )
+)
 
         val drawerWidth =
             (resources.displayMetrics.widthPixels * 0.35f).toInt()
