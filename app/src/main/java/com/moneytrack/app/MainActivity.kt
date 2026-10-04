@@ -2480,8 +2480,7 @@ incomeCard.addView(
 
     private fun createBackupJson():
         JSONObject {
-
-        val root =
+            
                     val root =
             JSONObject()
 
