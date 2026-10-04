@@ -782,13 +782,13 @@ incomeCard.addView(
             elevation = dp(18).toFloat()
 
             background = GradientDrawable().apply {
-                setColor(menuFillColor)
-                setStroke(
-                    dp(2),
-                    appearanceTheme.accentColor
-                )
-            }
-        }
+    setColor(menuFillColor)
+    setStroke(
+        dp(2),
+        appearanceTheme.accentColor
+    )
+    cornerRadius = dp(22).toFloat()
+}
 
         val menuTitle = TextView(this).apply {
             text = "MONEY TRACK"
@@ -952,11 +952,11 @@ incomeCard.addView(
         }
 
         val drawerWidth =
-            (resources.displayMetrics.widthPixels * 0.82f).toInt()
+            (resources.displayMetrics.widthPixels * 0.50f).toInt()
 
         val drawerParams = FrameLayout.LayoutParams(
             drawerWidth,
-            FrameLayout.LayoutParams.MATCH_PARENT
+            FrameLayout.LayoutParams.WRAP_CONTENT
         )
 
         drawerParams.gravity = Gravity.START
