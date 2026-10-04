@@ -740,8 +740,19 @@ incomeCard.addView(
     ) {
         val menuTextColor = Color.rgb(210, 214, 223)
         val menuFillColor = Color.argb(128, 8, 10, 15)
-        val menuCardColor = Color.argb(92, 255, 255, 255)
-        val menuCardBorderColor = Color.argb(48, 255, 255, 255)
+        val menuCardColor = Color.argb(
+    55,
+    Color.red(appearanceTheme.accentColor),
+    Color.green(appearanceTheme.accentColor),
+    Color.blue(appearanceTheme.accentColor)
+)
+
+val menuCardBorderColor = Color.argb(
+    90,
+    Color.red(appearanceTheme.accentColor),
+    Color.green(appearanceTheme.accentColor),
+    Color.blue(appearanceTheme.accentColor)
+)
 
         fun dp(value: Int): Int {
             return (value * resources.displayMetrics.density).toInt()
