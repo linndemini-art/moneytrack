@@ -91,12 +91,11 @@ class AppearanceActivity : Activity() {
                 Gravity.CENTER_VERTICAL
 
             setPadding(
-                0,
-                0,
-                0,
-                dp(6)
-            )
-        }
+    dp(24),
+    dp(92),
+    dp(24),
+    dp(24)
+)
 
         root.addView(
             title,
@@ -192,10 +191,13 @@ class AppearanceActivity : Activity() {
             AppearanceManager.ROSE_SUNSET
         )
 
-        setContentView(
-            root
-        )
-    }
+        val scrollView = ScrollView(this).apply {
+    addView(root)
+}
+
+setContentView(
+    scrollView
+)
 
     private fun addTheme(
         name: String,
