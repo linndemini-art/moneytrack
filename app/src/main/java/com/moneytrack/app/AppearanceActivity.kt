@@ -75,6 +75,16 @@ class AppearanceActivity : Activity() {
             )
         }
 
+        root.addView(
+    backButton,
+    LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        dp(56)
+    )
+)
+
+val title = TextView(this).apply {
+
         val title = TextView(this).apply {
 
             text = "APPEARANCE"
