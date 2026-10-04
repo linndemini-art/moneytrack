@@ -91,7 +91,7 @@ class AnalyticsActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             setPadding(
                 dp(20),
-                dp(92),
+                dp(20),
                 dp(20),
                 dp(32)
             )
