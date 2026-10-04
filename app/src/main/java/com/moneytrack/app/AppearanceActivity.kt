@@ -101,7 +101,6 @@ root.addView(
 )
 
 val title = TextView(this).apply {
-        val title = TextView(this).apply {
 
             text = "APPEARANCE"
 
