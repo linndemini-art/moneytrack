@@ -958,7 +958,7 @@ incomeCard.addView(
 
         val drawerParams = FrameLayout.LayoutParams(
             drawerWidth,
-            FrameLayout.LayoutParams.WRAP_CONTENT
+            FrameLayout.LayoutParams.MATCH_PARENT
         )
 
         drawerParams.gravity = Gravity.START
