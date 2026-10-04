@@ -782,13 +782,15 @@ incomeCard.addView(
             elevation = dp(18).toFloat()
 
             background = GradientDrawable().apply {
-    setColor(menuFillColor)
-    setStroke(
-        dp(2),
-        appearanceTheme.accentColor
-    )
-    cornerRadius = dp(22).toFloat()
-}
+            setColor(menuFillColor)
+            setStroke(
+            dp(2),
+            appearanceTheme.accentColor
+            )
+            cornerRadius = dp(22).toFloat()
+        }
+        }
+            
 
         val menuTitle = TextView(this).apply {
             text = "MONEY TRACK"
