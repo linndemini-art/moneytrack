@@ -855,33 +855,7 @@ incomeCard.addView(
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
         )
-
-        val appearanceItem = TextView(this).apply {
-
-    text = "Appearance"
-    textSize = 18f
-    setTextColor(white)
-
-    setPadding(
-        0,
-        24,
-        0,
-        24
-    )
-
-    setOnClickListener {
-
-        closeMenu()
-
-        startActivity(
-            Intent(
-                this@MainActivity,
-                AppearanceActivity::class.java
-            )
-        )
-    }
-}
-
+        
 menuDrawer.addView(
     appearanceItem,
     LinearLayout.LayoutParams(
@@ -967,6 +941,32 @@ menuDrawer.addView(
         LinearLayout.LayoutParams.WRAP_CONTENT
     )
 )
+
+val themeItem = TextView(this).apply {
+
+    text = "Theme"
+    textSize = 18f
+    setTextColor(white)
+
+    setPadding(
+        0,
+        24,
+        0,
+        24
+    )
+
+    setOnClickListener {
+
+        closeMenu()
+
+        startActivity(
+            Intent(
+                this@MainActivity,
+                AppearanceActivity::class.java
+            )
+        )
+    }
+}
 
         val drawerWidth =
             (resources.displayMetrics.widthPixels * 0.35f).toInt()
