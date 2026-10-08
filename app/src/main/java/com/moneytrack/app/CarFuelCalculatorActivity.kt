@@ -193,6 +193,8 @@ class CarFuelCalculatorActivity : Activity() {
                 Color.rgb(15, 31, 54),
                 18f
             )
+
+            minimumHeight = 125
         }
 
         distanceCard.addView(
@@ -237,6 +239,8 @@ class CarFuelCalculatorActivity : Activity() {
                 Color.rgb(15, 31, 54),
                 18f
             )
+
+            minimumHeight = 125
         }
 
         fuelCard.addView(
@@ -280,6 +284,8 @@ class CarFuelCalculatorActivity : Activity() {
                 Color.rgb(15, 31, 54),
                 18f
             )
+
+            minimumHeight = 125
         }
 
         priceCard.addView(
@@ -329,6 +335,8 @@ class CarFuelCalculatorActivity : Activity() {
                 Color.rgb(15, 31, 54),
                 18f
             )
+
+            minimumHeight = 125
         }
 
         consumptionCard.addView(
