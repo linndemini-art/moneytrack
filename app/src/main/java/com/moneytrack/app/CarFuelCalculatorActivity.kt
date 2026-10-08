@@ -183,12 +183,12 @@ class CarFuelCalculatorActivity : Activity() {
         )
 
         // ------------------------------------------------------------
-        // DISTANCE — SEPARATE CARD
+        // DISTANCE — SEPARATE, LARGER CARD
         // ------------------------------------------------------------
 
         val distanceCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
+            setPadding(20, 24, 20, 24)
             background = roundedBackground(
                 Color.rgb(15, 31, 54),
                 18f
@@ -221,7 +221,7 @@ class CarFuelCalculatorActivity : Activity() {
         )
 
         // ------------------------------------------------------------
-        // FUEL TYPE + PRICE — TWO SEPARATE SIDE-BY-SIDE CARDS
+        // FUEL TYPE + PRICE — TWO SEPARATE, LARGER CARDS
         // ------------------------------------------------------------
 
         val fuelPriceRow = LinearLayout(this).apply {
@@ -232,7 +232,7 @@ class CarFuelCalculatorActivity : Activity() {
         // Fuel Type Card
         val fuelCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
+            setPadding(20, 24, 20, 24)
             background = roundedBackground(
                 Color.rgb(15, 31, 54),
                 18f
@@ -257,7 +257,7 @@ class CarFuelCalculatorActivity : Activity() {
             fuelSpinner,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                52
+                60
             )
         )
 
@@ -275,7 +275,7 @@ class CarFuelCalculatorActivity : Activity() {
         // Price Card
         val priceCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
+            setPadding(20, 24, 20, 24)
             background = roundedBackground(
                 Color.rgb(15, 31, 54),
                 18f
@@ -319,12 +319,12 @@ class CarFuelCalculatorActivity : Activity() {
         )
 
         // ------------------------------------------------------------
-        // CONSUMPTION — SEPARATE CARD
+        // CONSUMPTION — SEPARATE, LARGER CARD
         // ------------------------------------------------------------
 
         val consumptionCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
+            setPadding(20, 24, 20, 24)
             background = roundedBackground(
                 Color.rgb(15, 31, 54),
                 18f
@@ -379,7 +379,7 @@ class CarFuelCalculatorActivity : Activity() {
         )
 
         // ------------------------------------------------------------
-        // ESTIMATED COST — LARGE CARD
+        // ESTIMATED COST — UNCHANGED
         // ------------------------------------------------------------
 
         val resultsCard = LinearLayout(this).apply {
@@ -404,7 +404,6 @@ class CarFuelCalculatorActivity : Activity() {
             minimumHeight = 230
         }
 
-        // ESTIMATED COST — CENTERED
         val estimatedLabel = TextView(this).apply {
             text = "ESTIMATED COST"
             textSize = 12f
@@ -424,7 +423,6 @@ class CarFuelCalculatorActivity : Activity() {
             }
         )
 
-        // BIG PRICE — CENTERED
         estimatedCostValue = TextView(this).apply {
             text = "€28.28"
             textSize = 36f
@@ -443,7 +441,6 @@ class CarFuelCalculatorActivity : Activity() {
             }
         )
 
-        // DIVIDER
         val resultsDivider = View(this).apply {
             setBackgroundColor(dividerColor)
         }
@@ -457,10 +454,6 @@ class CarFuelCalculatorActivity : Activity() {
                 bottomMargin = 20
             }
         )
-
-        // ------------------------------------------------------------
-        // FUEL NEEDED LEFT / COST RIGHT
-        // ------------------------------------------------------------
 
         val secondaryResults = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -565,10 +558,6 @@ class CarFuelCalculatorActivity : Activity() {
 
         setContentView(scrollView)
 
-        // ------------------------------------------------------------
-        // CALCULATIONS — UNCHANGED
-        // ------------------------------------------------------------
-
         val updateCalculation = {
             updateResults()
         }
@@ -629,7 +618,7 @@ class CarFuelCalculatorActivity : Activity() {
             input,
             LinearLayout.LayoutParams(
                 0,
-                52,
+                60,
                 1f
             )
         )
@@ -646,7 +635,7 @@ class CarFuelCalculatorActivity : Activity() {
             unitText,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
-                52
+                60
             )
         )
 
