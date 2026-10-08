@@ -965,7 +965,7 @@ val menuCardBorderColor = Color.argb(
         }
 
         val drawerWidth =
-            (resources.displayMetrics.widthPixels * 0.50f).toInt()
+            (resources.displayMetrics.widthPixels * 0.58f).toInt()
 
         val drawerParams = FrameLayout.LayoutParams(
             drawerWidth,
