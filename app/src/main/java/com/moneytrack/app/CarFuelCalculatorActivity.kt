@@ -46,7 +46,7 @@ class CarFuelCalculatorActivity : Activity() {
 
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(24, 70, 24, 34)
+            setPadding(24, 70, 24, 40)
             setBackgroundColor(backgroundColor)
         }
 
@@ -58,7 +58,9 @@ class CarFuelCalculatorActivity : Activity() {
             )
         )
 
+        // ---------------------------------------------------------
         // HEADER
+        // ---------------------------------------------------------
 
         val topRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -125,11 +127,13 @@ class CarFuelCalculatorActivity : Activity() {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                bottomMargin = 28
+                bottomMargin = 30
             }
         )
 
+        // ---------------------------------------------------------
         // TRIP PARAMETERS
+        // ---------------------------------------------------------
 
         val sectionTitle = TextView(this).apply {
             text = "TRIP PARAMETERS"
@@ -149,9 +153,11 @@ class CarFuelCalculatorActivity : Activity() {
             }
         )
 
+        // ---------------------------------------------------------
         // DISTANCE CARD
+        // ---------------------------------------------------------
 
-        val distanceCard = createLargeInputCard()
+        val distanceCard = createTallCard()
 
         distanceCard.addView(
             createFieldLabel("DISTANCE"),
@@ -161,7 +167,7 @@ class CarFuelCalculatorActivity : Activity() {
             )
         )
 
-        val distanceField = createLargeInputWithUnit(
+        val distanceField = createTallInput(
             initialValue = "300",
             unit = "KM"
         )
@@ -172,9 +178,9 @@ class CarFuelCalculatorActivity : Activity() {
             distanceField.second,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                70
+                86
             ).apply {
-                topMargin = 6
+                topMargin = 16
             }
         )
 
@@ -182,19 +188,21 @@ class CarFuelCalculatorActivity : Activity() {
             distanceCard,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                154
+                190
             ).apply {
                 bottomMargin = 14
             }
         )
 
+        // ---------------------------------------------------------
         // FUEL TYPE + PRICE
+        // ---------------------------------------------------------
 
         val fuelRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
         }
 
-        val fuelTypeCard = createLargeInputCard()
+        val fuelTypeCard = createTallCard()
 
         fuelTypeCard.addView(
             createFieldLabel("⛽  FUEL TYPE"),
@@ -207,7 +215,7 @@ class CarFuelCalculatorActivity : Activity() {
         val fuelSpinner = Spinner(this).apply {
             background = roundedBackground(
                 inputColor,
-                14f
+                16f
             )
 
             adapter = ArrayAdapter(
@@ -224,9 +232,9 @@ class CarFuelCalculatorActivity : Activity() {
             fuelSpinner,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                70
+                86
             ).apply {
-                topMargin = 6
+                topMargin = 16
             }
         )
 
@@ -234,14 +242,14 @@ class CarFuelCalculatorActivity : Activity() {
             fuelTypeCard,
             LinearLayout.LayoutParams(
                 0,
-                154,
+                190,
                 1f
             ).apply {
-                marginEnd = 6
+                marginEnd = 7
             }
         )
 
-        val priceCard = createLargeInputCard()
+        val priceCard = createTallCard()
 
         priceCard.addView(
             createFieldLabel("€  PRICE / L"),
@@ -251,7 +259,7 @@ class CarFuelCalculatorActivity : Activity() {
             )
         )
 
-        val priceField = createLargeInputWithUnit(
+        val priceField = createTallInput(
             initialValue = "1.45",
             unit = "€/L"
         )
@@ -262,9 +270,9 @@ class CarFuelCalculatorActivity : Activity() {
             priceField.second,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                70
+                86
             ).apply {
-                topMargin = 6
+                topMargin = 16
             }
         )
 
@@ -272,10 +280,10 @@ class CarFuelCalculatorActivity : Activity() {
             priceCard,
             LinearLayout.LayoutParams(
                 0,
-                154,
+                190,
                 1f
             ).apply {
-                marginStart = 6
+                marginStart = 7
             }
         )
 
@@ -283,15 +291,17 @@ class CarFuelCalculatorActivity : Activity() {
             fuelRow,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                154
+                190
             ).apply {
                 bottomMargin = 14
             }
         )
 
+        // ---------------------------------------------------------
         // CONSUMPTION CARD
+        // ---------------------------------------------------------
 
-        val consumptionCard = createLargeInputCard()
+        val consumptionCard = createTallCard()
 
         consumptionCard.addView(
             createFieldLabel("CONSUMPTION"),
@@ -301,7 +311,7 @@ class CarFuelCalculatorActivity : Activity() {
             )
         )
 
-        val consumptionField = createLargeInputWithUnit(
+        val consumptionField = createTallInput(
             initialValue = "6.5",
             unit = "L / 100 KM"
         )
@@ -312,9 +322,9 @@ class CarFuelCalculatorActivity : Activity() {
             consumptionField.second,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                70
+                86
             ).apply {
-                topMargin = 6
+                topMargin = 16
             }
         )
 
@@ -322,13 +332,15 @@ class CarFuelCalculatorActivity : Activity() {
             consumptionCard,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                154
+                190
             ).apply {
-                bottomMargin = 30
+                bottomMargin = 32
             }
         )
 
-        // TRIP ESTIMATE
+        // ---------------------------------------------------------
+        // TRIP ESTIMATE TITLE
+        // ---------------------------------------------------------
 
         val estimateTitle = TextView(this).apply {
             text = "TRIP ESTIMATE"
@@ -345,11 +357,13 @@ class CarFuelCalculatorActivity : Activity() {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                bottomMargin = 12
+                bottomMargin = 14
             }
         )
 
-        // THEMED HERO CARD
+        // ---------------------------------------------------------
+        // HERO CARD
+        // ---------------------------------------------------------
 
         val theme = AppearanceManager.getTheme(
             this@CarFuelCalculatorActivity
@@ -357,7 +371,7 @@ class CarFuelCalculatorActivity : Activity() {
 
         val heroCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(24, 24, 24, 24)
+            setPadding(26, 24, 26, 26)
 
             background = GradientDrawable(
                 GradientDrawable.Orientation.TL_BR,
@@ -366,12 +380,12 @@ class CarFuelCalculatorActivity : Activity() {
                     theme.endColor
                 )
             ).apply {
-                cornerRadius = 24f
+                cornerRadius = 26f
 
                 setStroke(
                     1,
                     Color.argb(
-                        160,
+                        165,
                         Color.red(theme.startColor),
                         Color.green(theme.startColor),
                         Color.blue(theme.startColor)
@@ -379,7 +393,7 @@ class CarFuelCalculatorActivity : Activity() {
                 )
             }
 
-            elevation = 10f
+            elevation = 12f
         }
 
         val heroLabel = TextView(this).apply {
@@ -396,13 +410,13 @@ class CarFuelCalculatorActivity : Activity() {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                bottomMargin = 6
+                bottomMargin = 8
             }
         )
 
         estimatedCostValue = TextView(this).apply {
             text = "€28.28"
-            textSize = 38f
+            textSize = 40f
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
             includeFontPadding = true
@@ -414,14 +428,14 @@ class CarFuelCalculatorActivity : Activity() {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                bottomMargin = 4
+                bottomMargin = 5
             }
         )
 
         val estimateDescription = TextView(this).apply {
             text = "YOUR TRIP ESTIMATE"
             textSize = 10f
-            setTextColor(Color.argb(215, 235, 242, 252))
+            setTextColor(Color.argb(220, 235, 242, 252))
             typeface = Typeface.DEFAULT_BOLD
             letterSpacing = 0.10f
         }
@@ -432,14 +446,14 @@ class CarFuelCalculatorActivity : Activity() {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                bottomMargin = 22
+                bottomMargin = 28
             }
         )
 
         val heroDivider = View(this).apply {
             setBackgroundColor(
                 Color.argb(
-                    95,
+                    100,
                     255,
                     255,
                     255
@@ -453,11 +467,13 @@ class CarFuelCalculatorActivity : Activity() {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 1
             ).apply {
-                bottomMargin = 18
+                bottomMargin = 26
             }
         )
 
-        // SUPPORTING METRICS
+        // ---------------------------------------------------------
+        // HERO METRICS
+        // ---------------------------------------------------------
 
         val secondaryRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -476,17 +492,29 @@ class CarFuelCalculatorActivity : Activity() {
             letterSpacing = 0.08f
         }
 
-        fuelColumn.addView(fuelLabel)
+        fuelColumn.addView(
+            fuelLabel,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
 
         fuelNeededValue = TextView(this).apply {
             text = "19.50 L"
-            textSize = 19f
+            textSize = 21f
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
-            setPadding(0, 6, 0, 0)
+            setPadding(0, 9, 0, 0)
         }
 
-        fuelColumn.addView(fuelNeededValue)
+        fuelColumn.addView(
+            fuelNeededValue,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
 
         secondaryRow.addView(
             fuelColumn,
@@ -494,6 +522,27 @@ class CarFuelCalculatorActivity : Activity() {
                 0,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 1f
+            ).apply {
+                marginEnd = 16
+            }
+        )
+
+        val metricDivider = View(this).apply {
+            setBackgroundColor(
+                Color.argb(
+                    75,
+                    255,
+                    255,
+                    255
+                )
+            )
+        }
+
+        secondaryRow.addView(
+            metricDivider,
+            LinearLayout.LayoutParams(
+                1,
+                58
             )
         )
 
@@ -509,17 +558,29 @@ class CarFuelCalculatorActivity : Activity() {
             letterSpacing = 0.08f
         }
 
-        costColumn.addView(costLabel)
+        costColumn.addView(
+            costLabel,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
 
         costPer100Value = TextView(this).apply {
             text = "€9.43"
-            textSize = 19f
+            textSize = 21f
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
-            setPadding(0, 6, 0, 0)
+            setPadding(0, 9, 0, 0)
         }
 
-        costColumn.addView(costPer100Value)
+        costColumn.addView(
+            costPer100Value,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
 
         secondaryRow.addView(
             costColumn,
@@ -527,7 +588,9 @@ class CarFuelCalculatorActivity : Activity() {
                 0,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 1f
-            )
+            ).apply {
+                marginStart = 16
+            }
         )
 
         heroCard.addView(
@@ -542,9 +605,9 @@ class CarFuelCalculatorActivity : Activity() {
             heroCard,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                226
+                310
             ).apply {
-                bottomMargin = 8
+                bottomMargin = 10
             }
         )
 
@@ -569,17 +632,21 @@ class CarFuelCalculatorActivity : Activity() {
         updateResults()
     }
 
-    private fun createLargeInputCard(): LinearLayout {
+    // -------------------------------------------------------------
+    // CARD CREATION
+    // -------------------------------------------------------------
+
+    private fun createTallCard(): LinearLayout {
         return LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(20, 18, 20, 18)
+            setPadding(20, 20, 20, 20)
 
             background = roundedBackground(
                 cardColor,
-                20f
+                22f
             )
 
-            elevation = 3f
+            elevation = 4f
         }
     }
 
@@ -588,7 +655,7 @@ class CarFuelCalculatorActivity : Activity() {
     ): TextView {
         return TextView(this).apply {
             this.text = text
-            textSize = 10f
+            textSize = 11f
             setTextColor(muted)
             typeface = Typeface.DEFAULT_BOLD
             letterSpacing = 0.08f
@@ -596,7 +663,7 @@ class CarFuelCalculatorActivity : Activity() {
         }
     }
 
-    private fun createLargeInputWithUnit(
+    private fun createTallInput(
         initialValue: String,
         unit: String
     ): Pair<EditText, LinearLayout> {
@@ -604,11 +671,11 @@ class CarFuelCalculatorActivity : Activity() {
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(16, 0, 16, 0)
+            setPadding(18, 0, 18, 0)
 
             background = roundedBackground(
                 inputColor,
-                14f
+                16f
             )
         }
 
@@ -622,8 +689,9 @@ class CarFuelCalculatorActivity : Activity() {
             setTextColor(white)
             setHintTextColor(muted)
 
-            textSize = 23f
+            textSize = 25f
             typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER_VERTICAL
             setSingleLine(true)
 
             background = null
@@ -640,14 +708,14 @@ class CarFuelCalculatorActivity : Activity() {
             input,
             LinearLayout.LayoutParams(
                 0,
-                70,
+                86,
                 1f
             )
         )
 
         val unitText = TextView(this).apply {
             text = unit
-            textSize = 12f
+            textSize = 13f
             setTextColor(muted)
             gravity = Gravity.CENTER_VERTICAL
             typeface = Typeface.DEFAULT_BOLD
@@ -658,7 +726,7 @@ class CarFuelCalculatorActivity : Activity() {
             unitText,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
-                70
+                86
             )
         )
 
@@ -677,6 +745,10 @@ class CarFuelCalculatorActivity : Activity() {
             cornerRadius = radius
         }
     }
+
+    // -------------------------------------------------------------
+    // CALCULATIONS
+    // -------------------------------------------------------------
 
     private fun updateResults() {
 
@@ -728,6 +800,10 @@ class CarFuelCalculatorActivity : Activity() {
                 estimatedCost
             )
     }
+
+    // -------------------------------------------------------------
+    // TEXT WATCHER
+    // -------------------------------------------------------------
 
     private class SimpleTextWatcher(
         private val onChanged: () -> Unit
