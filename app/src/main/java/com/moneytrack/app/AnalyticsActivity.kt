@@ -1046,56 +1046,9 @@ content.addView(
 
             val colorDot = View(this).apply {
                 setBackgroundColor(
-private fun createCategoryLegend(
-        totals: LinkedHashMap<String, Double>
-    ): LinearLayout {
-
-        val container = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-        }
-
-        if (totals.isEmpty()) {
-
-            val emptyText = TextView(this).apply {
-                text = "No expenses recorded for this period."
-                textSize = 13f
-                setTextColor(muted)
-                gravity = Gravity.CENTER
-                setPadding(
-                    0,
-                    dp(6),
-                    0,
-                    dp(6)
-                )
-            }
-
-            container.addView(emptyText)
-
-            return container
-        }
-
-        val total = totals.values.sum()
-        val colors = donutColors()
-
-        var index = 0
-
-        for ((category, amount) in totals) {
-
-            val row = LinearLayout(this).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-
-                setPadding(
-                    0,
-                    dp(7),
-                    0,
-                    dp(7)
-                )
-            }
-
-            val colorDot = View(this).apply {
-                setBackgroundColor(
-                    colors[index % colors.size]
+                    colors[
+                        index % colors.size
+                    ]
                 )
             }
 
@@ -1107,18 +1060,18 @@ private fun createCategoryLegend(
                 )
             )
 
-            val categoryText = TextView(this).apply {
-                text = category
-                textSize = 13f
-                setTextColor(secondary)
-
-                setPadding(
-                    dp(10),
-                    0,
-                    dp(8),
-                    0
-                )
-            }
+            val categoryText =
+                TextView(this).apply {
+                    text = category
+                    textSize = 13f
+                    setTextColor(secondary)
+                    setPadding(
+                        dp(10),
+                        0,
+                        0,
+                        0
+                    )
+                }
 
             row.addView(
                 categoryText,
@@ -1129,22 +1082,6 @@ private fun createCategoryLegend(
                 )
             )
 
-            val details = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                gravity = Gravity.END
-            }
-
-            val amountText = TextView(this).apply {
-                text = money(amount)
-                textSize = 14f
-                setTextColor(white)
-                typeface = Typeface.DEFAULT_BOLD
-                gravity = Gravity.END
-                maxLines = 1
-            }
-
-            details.addView(amountText)
-
             val percentage =
                 if (total > 0.0) {
                     amount / total * 100.0
@@ -1152,29 +1089,22 @@ private fun createCategoryLegend(
                     0.0
                 }
 
-            val percentageText = TextView(this).apply {
-                text = String.format(
-                    Locale.US,
-                    "%.1f%%",
-                    percentage
-                )
-                textSize = 12f
-                setTextColor(muted)
-                gravity = Gravity.END
-            }
-
-            details.addView(
-                percentageText,
-                LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    topMargin = dp(2)
+            val percentageText =
+                TextView(this).apply {
+                    text = String.format(
+                        Locale.US,
+                        "%.1f%%",
+                        percentage
+                    )
+                    textSize = 13f
+                    setTextColor(white)
+                    typeface =
+                        Typeface.DEFAULT_BOLD
+                    gravity = Gravity.END
                 }
-            )
 
             row.addView(
-                details,
+                percentageText,
                 LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -1188,6 +1118,7 @@ private fun createCategoryLegend(
 
         return container
     }
+
     private fun donutColors(): IntArray {
 
         return intArrayOf(
