@@ -1092,10 +1092,10 @@ content.addView(
             val percentageText =
                 TextView(this).apply {
                     text = String.format(
-                        Locale.US,
-                        "%.1f%%",
-                        percentage
-                    )
+                    Locale.US,
+                    "%.1f%%",
+                    percentage
+                ) + "  " + money(amount)
                     textSize = 13f
                     setTextColor(white)
                     typeface =
