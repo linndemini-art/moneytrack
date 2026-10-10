@@ -1027,7 +1027,7 @@ val progressValue = calculateProgress(
             })
             card.addView(ScheduledProgressView(this, goal.progress, accent, progressBackground),
                 LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(8)
+                    ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(16)
                 ))
             card.addView(TextView(this).apply {
                 text = "+ ADD MONEY"
