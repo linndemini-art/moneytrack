@@ -1091,6 +1091,32 @@ val menuCardBorderColor = Color.argb(
             dividerParams
         )
 
+        val historyScrollView = ScrollView(this).apply {
+        isFillViewport = true
+        overScrollMode = ScrollView.OVER_SCROLL_NEVER
+    }
+
+    val historyContent = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+    }
+
+    historyScrollView.addView(
+        historyContent,
+        ScrollView.LayoutParams(
+            ScrollView.LayoutParams.MATCH_PARENT,
+            ScrollView.LayoutParams.WRAP_CONTENT
+        )
+    )
+
+    historyRoot.addView(
+        historyScrollView,
+        LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            0,
+            1f
+        )
+    )
+
         val monthKeys = prefs.all.keys
             .mapNotNull { key ->
                 when {
@@ -1191,7 +1217,7 @@ val menuCardBorderColor = Color.argb(
                     }
                 }
 
-                historyRoot.addView(
+                historyContent.addView(
                     monthItem,
                     LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
