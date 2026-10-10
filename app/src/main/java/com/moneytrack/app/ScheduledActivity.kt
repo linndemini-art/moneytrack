@@ -18,9 +18,12 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import org.json.JSONArray
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.UUID
 
 class ScheduledActivity : Activity() {
 
@@ -34,8 +37,36 @@ class ScheduledActivity : Activity() {
 
     private val prefsName = "moneytrack_data"
     private val scheduledKey = "scheduled_items"
+    private val savingsKey = "savings_goals_json"
 
     private lateinit var listContainer: LinearLayout
+    private lateinit var savingsContainer: LinearLayout
+    private lateinit var scheduledTab: TextView
+    private lateinit var savingsTab: TextView
+    private lateinit var pageTitle: TextView
+    private lateinit var pageSubtitle: TextView
+    private lateinit var actionButton: TextView
+    private var showingSavings = false
+
+    private data class Contribution(
+        val id: String,
+        val amount: Double,
+        val note: String,
+        val date: Long
+    )
+
+    private data class SavingsGoal(
+        val id: String,
+        val name: String,
+        val target: Double,
+        val starting: Double,
+        val contributions: List<Contribution>
+    ) {
+        val saved: Double get() = starting + contributions.sumOf { it.amount }
+        val remaining: Double get() = (target - saved).coerceAtLeast(0.0)
+        val progress: Float get() =
+            if (target <= 0.0) 0f else (saved / target).toFloat().coerceIn(0f, 1f)
+    }
 
     private val dateFormat = SimpleDateFormat(
         "dd/MM/yyyy",
@@ -47,128 +78,131 @@ class ScheduledActivity : Activity() {
 
         buildScreen()
         loadItems()
+        loadSavingsGoals()
+        updateTabUI()
     }
 
     override fun onResume() {
         super.onResume()
-
         if (::listContainer.isInitialized) {
             loadItems()
+            loadSavingsGoals()
+            updateTabUI()
         }
     }
 
     private fun buildScreen() {
-
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(24, 92, 24, 24)
             setBackgroundColor(backgroundColor)
         }
-
         val topRow = LinearLayout(this).apply {
-    orientation = LinearLayout.HORIZONTAL
-    gravity = Gravity.CENTER_VERTICAL
-}
-
-val backButton = TextView(this).apply {
-    text = "‹"
-    textSize = 36f
-    setTextColor(white)
-    gravity = Gravity.CENTER
-    isClickable = true
-    isFocusable = true
-
-    setOnClickListener {
-        finish()
-    }
-}
-
-topRow.addView(
-    backButton,
-    LinearLayout.LayoutParams(
-        dpToPx(48),
-        dpToPx(48)
-    )
-)
-
-val title = TextView(this).apply {
-    text = "SCHEDULED"
-    textSize = 24f
-    setTextColor(white)
-    typeface = Typeface.DEFAULT_BOLD
-    letterSpacing = 0.04f
-}
-
-topRow.addView(
-    title,
-    LinearLayout.LayoutParams(
-        0,
-        ViewGroup.LayoutParams.WRAP_CONTENT,
-        1f
-    )
-)
-
-root.addView(
-    topRow,
-    LinearLayout.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT,
-        ViewGroup.LayoutParams.WRAP_CONTENT
-    ).apply {
-        bottomMargin = 6
-    }
-)
-
-        val subtitle = TextView(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        val backButton = TextView(this).apply {
+            text = "‹"
+            textSize = 36f
+            setTextColor(white)
+            gravity = Gravity.CENTER
+            isClickable = true
+            isFocusable = true
+            setOnClickListener { finish() }
+        }
+        topRow.addView(backButton, LinearLayout.LayoutParams(dpToPx(48), dpToPx(48)))
+        pageTitle = TextView(this).apply {
+            text = "SCHEDULED"
+            textSize = 24f
+            setTextColor(white)
+            typeface = Typeface.DEFAULT_BOLD
+            letterSpacing = 0.04f
+        }
+        topRow.addView(pageTitle, LinearLayout.LayoutParams(
+            0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
+        ))
+        root.addView(topRow, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { bottomMargin = dpToPx(6) })
+        pageSubtitle = TextView(this).apply {
             text = "Keep track of important future dates"
             textSize = 14f
             setTextColor(muted)
         }
-
-        root.addView(
-            subtitle,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                bottomMargin = 24
-            }
-        )
-
-        listContainer = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
+        root.addView(pageSubtitle, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { bottomMargin = dpToPx(20) })
+        val tabs = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            background = roundedBackground(cardColor, 14f)
+            setPadding(dpToPx(4), dpToPx(4), dpToPx(4), dpToPx(4))
         }
-
-        root.addView(
-            listContainer,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                0,
-                1f
-            )
-        )
-
-        val addButton = TextView(this).apply {
+        scheduledTab = createTab("SCHEDULED")
+        savingsTab = createTab("SAVINGS")
+        scheduledTab.setOnClickListener { showingSavings = false; updateTabUI() }
+        savingsTab.setOnClickListener { showingSavings = true; updateTabUI() }
+        tabs.addView(scheduledTab, LinearLayout.LayoutParams(0, dpToPx(44), 1f))
+        tabs.addView(savingsTab, LinearLayout.LayoutParams(0, dpToPx(44), 1f))
+        root.addView(tabs, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { bottomMargin = dpToPx(18) })
+        listContainer = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        savingsContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            visibility = View.GONE
+        }
+        root.addView(listContainer, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f
+        ))
+        root.addView(savingsContainer, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f
+        ))
+        actionButton = TextView(this).apply {
             text = "+ ADD"
             textSize = 16f
             setTextColor(AppearanceManager.getAccentColor(this@ScheduledActivity))
             typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER
-            setPadding(0, 18, 0, 18)
-
+            setPadding(0, dpToPx(18), 0, dpToPx(18))
             setOnClickListener {
-                showAddDialog()
+                if (showingSavings) showAddSavingsGoalDialog() else showAddDialog()
             }
         }
-
-        root.addView(
-            addButton,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-        )
-
+        root.addView(actionButton, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        ))
         setContentView(root)
+    }
+
+    private fun createTab(label: String): TextView = TextView(this).apply {
+        text = label
+        textSize = 12f
+        gravity = Gravity.CENTER
+        typeface = Typeface.DEFAULT_BOLD
+        isClickable = true
+        isFocusable = true
+        setTextColor(muted)
+        background = roundedBackground(Color.TRANSPARENT, 10f)
+    }
+
+    private fun updateTabUI() {
+        val accent = AppearanceManager.getAccentColor(this)
+        scheduledTab.setTextColor(if (!showingSavings) white else muted)
+        savingsTab.setTextColor(if (showingSavings) white else muted)
+        scheduledTab.background = roundedBackground(
+            if (!showingSavings) accent else Color.TRANSPARENT, 10f
+        )
+        savingsTab.background = roundedBackground(
+            if (showingSavings) accent else Color.TRANSPARENT, 10f
+        )
+        listContainer.visibility = if (showingSavings) View.GONE else View.VISIBLE
+        savingsContainer.visibility = if (showingSavings) View.VISIBLE else View.GONE
+        pageTitle.text = if (showingSavings) "SAVINGS GOALS" else "SCHEDULED"
+        pageSubtitle.text = if (showingSavings) {
+            "Set targets and track money you put aside"
+        } else "Keep track of important future dates"
+        actionButton.text = if (showingSavings) "+ ADD SAVINGS GOAL" else "+ ADD"
+        actionButton.setTextColor(accent)
     }
 
     private fun showAddDialog() {
@@ -476,33 +510,37 @@ current.add(
             return
         }
 
-        items[index] = "$name|$date"
+        val existingParts = items[index].split("|")
+        val createdDate = existingParts.getOrNull(2)
+            ?: dateFormat.format(Calendar.getInstance().time)
+        items[index] = "$name|$date|$createdDate"
 
         saveItems(items)
         loadItems()
     }
 
-    private fun loadItems() {
+        private fun loadItems() {
 
         listContainer.removeAllViews()
 
         val items = getStoredItems()
-
+        val repairedItems = items.toMutableList()
+        var needsSave = false
         for ((index, item) in items.withIndex()) {
-
             val parts = item.split("|")
-
-if (parts.size != 3) {
-    continue
-}
-
-addScheduledItem(
-    name = parts[0],
-    date = parts[1],
-    createdDate = parts[2],
-    index = index
-)
+            if (parts.size < 2) continue
+            val createdDate = parts.getOrNull(2)
+                ?: dateFormat.format(Calendar.getInstance().time)
+            addScheduledItem(
+                name = parts[0], date = parts[1],
+                createdDate = createdDate, index = index
+            )
+            if (parts.size < 3) {
+                repairedItems[index] = "${parts[0]}|${parts[1]}|$createdDate"
+                needsSave = true
+            }
         }
+        if (needsSave) saveItems(repairedItems)
     }
 
     private fun addScheduledItem(
@@ -869,6 +907,323 @@ val progressValue = calculateProgress(
             .apply()
     }
 
+
+    private fun loadSavingsGoals(): List<SavingsGoal> {
+        val raw = getSharedPreferences(prefsName, MODE_PRIVATE)
+            .getString(savingsKey, "[]") ?: "[]"
+        val goals = try {
+            val array = JSONArray(raw)
+            val result = mutableListOf<SavingsGoal>()
+            for (i in 0 until array.length()) {
+                val item = array.optJSONObject(i) ?: continue
+                val entries = item.optJSONArray("contributions") ?: JSONArray()
+                val contributions = mutableListOf<Contribution>()
+                for (j in 0 until entries.length()) {
+                    val entry = entries.optJSONObject(j) ?: continue
+                    val amount = entry.optDouble("amount", 0.0)
+                    if (!amount.isFinite() || amount <= 0.0) continue
+                    contributions.add(Contribution(
+                        id = entry.optString("id", UUID.randomUUID().toString()),
+                        amount = amount, note = entry.optString("note", ""),
+                        date = entry.optLong("date", System.currentTimeMillis())
+                    ))
+                }
+                val name = item.optString("name", "").trim()
+                val target = item.optDouble("target", 0.0)
+                val starting = item.optDouble("starting", 0.0)
+                if (name.isEmpty() || !target.isFinite() || target <= 0.0 ||
+                    !starting.isFinite() || starting < 0.0) continue
+                result.add(SavingsGoal(
+                    id = item.optString("id", UUID.randomUUID().toString()),
+                    name = name, target = target, starting = starting,
+                    contributions = contributions
+                ))
+            }
+            result
+        } catch (_: Exception) {
+            emptyList()
+        }
+        if (::savingsContainer.isInitialized) renderSavingsGoals(goals)
+        return goals
+    }
+
+    private fun saveSavingsGoals(goals: List<SavingsGoal>) {
+        val array = JSONArray()
+        goals.forEach { goal ->
+            val item = JSONObject().put("id", goal.id).put("name", goal.name)
+                .put("target", goal.target).put("starting", goal.starting)
+            val entries = JSONArray()
+            goal.contributions.forEach { entry ->
+                entries.put(JSONObject().put("id", entry.id).put("amount", entry.amount)
+                    .put("note", entry.note).put("date", entry.date))
+            }
+            item.put("contributions", entries)
+            array.put(item)
+        }
+        getSharedPreferences(prefsName, MODE_PRIVATE).edit()
+            .putString(savingsKey, array.toString()).apply()
+        renderSavingsGoals(goals)
+    }
+
+    private fun renderSavingsGoals(goals: List<SavingsGoal>) {
+        if (!::savingsContainer.isInitialized) return
+        savingsContainer.removeAllViews()
+        if (goals.isEmpty()) {
+            savingsContainer.addView(TextView(this).apply {
+                text = "No savings goals yet.\nCreate a goal and start putting money aside."
+                textSize = 15f
+                setTextColor(muted)
+                gravity = Gravity.CENTER
+                setPadding(dpToPx(20), dpToPx(36), dpToPx(20), dpToPx(36))
+            }, LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            ))
+            return
+        }
+        val accent = AppearanceManager.getAccentColor(this)
+        goals.forEach { goal ->
+            val card = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16))
+                background = roundedBackground(cardColor, 16f)
+            }
+            val heading = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+            }
+            heading.addView(TextView(this).apply {
+                text = goal.name
+                textSize = 17f
+                setTextColor(white)
+                typeface = Typeface.DEFAULT_BOLD
+            }, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+            heading.addView(TextView(this).apply {
+                text = "⋮"
+                textSize = 24f
+                gravity = Gravity.CENTER
+                setTextColor(muted)
+                setPadding(dpToPx(12), 0, 0, 0)
+                setOnClickListener { showSavingsGoalOptions(goal.id) }
+            })
+            card.addView(heading)
+            card.addView(TextView(this).apply {
+                text = "€${formatMoney(goal.saved)} saved"
+                textSize = 15f
+                setTextColor(white)
+                setPadding(0, dpToPx(10), 0, dpToPx(4))
+            })
+            card.addView(TextView(this).apply {
+                text = "Target €${formatMoney(goal.target)}  ·  " +
+                    if (goal.remaining > 0.0) "€${formatMoney(goal.remaining)} to go"
+                    else "Goal reached"
+                textSize = 13f
+                setTextColor(muted)
+            })
+            card.addView(TextView(this).apply {
+                text = "${(goal.progress * 100f).toInt()}%"
+                textSize = 12f
+                setTextColor(accent)
+                typeface = Typeface.DEFAULT_BOLD
+                gravity = Gravity.END
+                setPadding(0, dpToPx(10), 0, dpToPx(5))
+            })
+            card.addView(ScheduledProgressView(this, goal.progress, accent, progressBackground),
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(8)
+                ))
+            card.addView(TextView(this).apply {
+                text = "+ ADD MONEY"
+                textSize = 13f
+                setTextColor(accent)
+                typeface = Typeface.DEFAULT_BOLD
+                gravity = Gravity.CENTER
+                setPadding(0, dpToPx(14), 0, dpToPx(8))
+                setOnClickListener { showAddMoneyDialog(goal.id) }
+            })
+                        if (goal.contributions.isNotEmpty()) {
+                card.addView(TextView(this).apply {
+                    text = "CONTRIBUTIONS"
+                    textSize = 11f
+                    letterSpacing = 0.06f
+                    setTextColor(muted)
+                    typeface = Typeface.DEFAULT_BOLD
+                    setPadding(0, dpToPx(8), 0, dpToPx(4))
+                })
+                goal.contributions.sortedByDescending { it.date }.take(4).forEach { entry ->
+                    val row = LinearLayout(this).apply {
+                        orientation = LinearLayout.HORIZONTAL
+                        gravity = Gravity.CENTER_VERTICAL
+                        setPadding(0, dpToPx(4), 0, dpToPx(4))
+                    }
+                    val date = SimpleDateFormat("dd/MM/yyyy", Locale.US)
+                        .format(java.util.Date(entry.date))
+                    row.addView(TextView(this).apply {
+                        text = if (entry.note.isBlank()) date else "$date · ${entry.note}"
+                        textSize = 12f
+                        setTextColor(muted)
+                    }, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+                    row.addView(TextView(this).apply {
+                        text = "+€${formatMoney(entry.amount)}"
+                        textSize = 12f
+                        setTextColor(white)
+                        typeface = Typeface.DEFAULT_BOLD
+                    })
+                    card.addView(row)
+                }
+                if (goal.contributions.size > 4) card.addView(TextView(this).apply {
+                    text = "${goal.contributions.size - 4} earlier contributions"
+                    textSize = 11f
+                    setTextColor(muted)
+                })
+            }
+            savingsContainer.addView(card, LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = dpToPx(12) })
+        }
+    }
+
+    private fun formatMoney(value: Double): String =
+        String.format(Locale.GERMANY, "%,.2f", value)
+
+    private fun showAddSavingsGoalDialog(existingId: String? = null) {
+        val existing = if (existingId == null) null
+            else loadSavingsGoals().firstOrNull { it.id == existingId }
+        val layout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dpToPx(24), dpToPx(16), dpToPx(24), dpToPx(8))
+        }
+        fun field(hintText: String, value: String = "") = EditText(this).apply {
+            hint = hintText
+            setSingleLine(true)
+            setText(value)
+            setTextColor(white)
+            setHintTextColor(muted)
+            background = roundedBackground(inputColor, 10f)
+            setPadding(dpToPx(12), dpToPx(10), dpToPx(12), dpToPx(10))
+        }
+        val nameField = field("Goal name", existing?.name ?: "")
+        val targetField = field("Target amount (€)", existing?.target?.toString() ?: "").apply {
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or
+                android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+        }
+        val startingField = field(
+            "Already saved (€), optional", existing?.starting?.toString() ?: "0"
+        ).apply {
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or
+                android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+        }
+        layout.addView(nameField)
+        layout.addView(targetField, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { topMargin = dpToPx(10) })
+        layout.addView(startingField, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { topMargin = dpToPx(10) })
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(if (existing == null) "Add savings goal" else "Edit savings goal")
+            .setView(layout).setNegativeButton("Cancel", null)
+            .setPositiveButton(if (existing == null) "Create goal" else "Save", null).create()
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val name = nameField.text.toString().trim()
+                val target = targetField.text.toString().trim().replace(",", ".").toDoubleOrNull()
+                val starting = startingField.text.toString().trim().ifEmpty { "0" }
+                    .replace(",", ".").toDoubleOrNull()
+                if (name.isEmpty()) { nameField.error = "Enter a goal name"; return@setOnClickListener }
+                if (target == null || !target.isFinite() || target <= 0.0) {
+                    targetField.error = "Enter a target greater than zero"
+                    return@setOnClickListener
+                }
+                if (starting == null || !starting.isFinite() || starting < 0.0) {
+                    startingField.error = "Enter zero or a positive amount"
+                    return@setOnClickListener
+                }
+                val goals = loadSavingsGoals().toMutableList()
+                if (existing == null) goals.add(SavingsGoal(
+                    id = UUID.randomUUID().toString(), name = name,
+                    target = target, starting = starting, contributions = emptyList()
+                )) else {
+                    val index = goals.indexOfFirst { it.id == existing.id }
+                    if (index >= 0) goals[index] = goals[index].copy(
+                        name = name, target = target, starting = starting
+                    )
+                }
+                saveSavingsGoals(goals)
+                dialog.dismiss()
+            }
+        }
+        dialog.show()
+    }
+
+    private fun showAddMoneyDialog(goalId: String) {
+        val layout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dpToPx(24), dpToPx(16), dpToPx(24), dpToPx(8))
+        }
+        val amountField = EditText(this).apply {
+            hint = "Amount (€)"
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or
+                android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+            setSingleLine(true)
+            setTextColor(white)
+            setHintTextColor(muted)
+            background = roundedBackground(inputColor, 10f)
+            setPadding(dpToPx(12), dpToPx(10), dpToPx(12), dpToPx(10))
+        }
+        val noteField = EditText(this).apply {
+            hint = "Note (optional)"
+            setSingleLine(true)
+            setTextColor(white)
+            setHintTextColor(muted)
+            background = roundedBackground(inputColor, 10f)
+            setPadding(dpToPx(12), dpToPx(10), dpToPx(12), dpToPx(10))
+        }
+        layout.addView(amountField)
+        layout.addView(noteField, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { topMargin = dpToPx(10) })
+        val dialog = AlertDialog.Builder(this).setTitle("Add money")
+            .setView(layout).setNegativeButton("Cancel", null)
+            .setPositiveButton("Add money", null).create()
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val amount = amountField.text.toString().trim()
+                    .replace(",", ".").toDoubleOrNull()
+                if (amount == null || !amount.isFinite() || amount <= 0.0) {
+                    amountField.error = "Enter an amount greater than zero"
+                    return@setOnClickListener
+                }
+                val goals = loadSavingsGoals().toMutableList()
+                val index = goals.indexOfFirst { it.id == goalId }
+                if (index < 0) { dialog.dismiss(); return@setOnClickListener }
+                val goal = goals[index]
+                goals[index] = goal.copy(contributions = goal.contributions + Contribution(
+                    id = UUID.randomUUID().toString(), amount = amount,
+                    note = noteField.text.toString().trim(),
+                    date = System.currentTimeMillis()
+                ))
+                saveSavingsGoals(goals)
+                dialog.dismiss()
+            }
+        }
+        dialog.show()
+    }
+
+    private fun showSavingsGoalOptions(goalId: String) {
+        AlertDialog.Builder(this).setTitle("Savings goal")
+            .setItems(arrayOf("Edit goal", "Delete goal")) { _, which ->
+                when (which) {
+                    0 -> showAddSavingsGoalDialog(goalId)
+                    1 -> AlertDialog.Builder(this).setTitle("Delete savings goal?")
+                        .setMessage("This will delete the goal and its contribution history.")
+                        .setNegativeButton("Cancel", null)
+                        .setPositiveButton("Delete") { _, _ ->
+                            saveSavingsGoals(loadSavingsGoals().filterNot { it.id == goalId })
+                        }.show()
+                }
+            }.show()
+    }
+
     private fun isValidDate(
         date: String
     ): Boolean {
@@ -1034,4 +1389,4 @@ val progressValue = calculateProgress(
         }
     }
 }
-    
+            
