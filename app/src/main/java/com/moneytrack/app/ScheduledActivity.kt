@@ -157,7 +157,7 @@ class ScheduledActivity : Activity() {
         overScrollMode = View.OVER_SCROLL_NEVER
         clipToPadding = false
         setPadding(0, 0, 0, dpToPx(8))
-        addView(listContainer, ScrollView.LayoutParams(
+        addView(listContainer, LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         ))
@@ -171,7 +171,7 @@ class ScheduledActivity : Activity() {
         overScrollMode = View.OVER_SCROLL_NEVER
         clipToPadding = false
         setPadding(0, 0, 0, dpToPx(8))
-        addView(savingsContainer, ScrollView.LayoutParams(
+        addView(savingsContainer, LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         ))
