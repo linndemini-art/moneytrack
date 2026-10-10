@@ -520,28 +520,26 @@ current.add(
     }
 
         private fun loadItems() {
+    listContainer.removeAllViews()
 
-        listContainer.removeAllViews()
+    val items = getStoredItems()
 
-        val items = getStoredItems()
-        val repairedItems = items.toMutableList()
-        var needsSave = false
-        for ((index, item) in items.withIndex()) {
-            val parts = item.split("|")
-            if (parts.size < 2) continue
-            val createdDate = parts.getOrNull(2)
-                ?: dateFormat.format(Calendar.getInstance().time)
-            addScheduledItem(
-                name = parts[0], date = parts[1],
-                createdDate = createdDate, index = index
-            )
-            if (parts.size < 3) {
-                repairedItems[index] = "${parts[0]}|${parts[1]}|$createdDate"
-                needsSave = true
-            }
-        }
-        if (needsSave) saveItems(repairedItems)
+    for ((index, item) in items.withIndex()) {
+        val parts = item.split("|")
+        if (parts.size < 2) continue
+
+        val createdDate = parts.getOrNull(2)
+            ?.takeIf { isValidDate(it) }
+            ?: dateFormat.format(Calendar.getInstance().time)
+
+        addScheduledItem(
+            name = parts[0],
+            date = parts[1],
+            createdDate = createdDate,
+            index = index
+        )
     }
+}
 
     private fun addScheduledItem(
     name: String,
@@ -1037,7 +1035,7 @@ val progressValue = calculateProgress(
                 setTextColor(accent)
                 typeface = Typeface.DEFAULT_BOLD
                 gravity = Gravity.CENTER
-                setPadding(0, dpToPx(14), 0, dpToPx(8))
+                setPadding(0, dpToPx(14), 0, dpToPx(16))
                 setOnClickListener { showAddMoneyDialog(goal.id) }
             })
                         if (goal.contributions.isNotEmpty()) {
