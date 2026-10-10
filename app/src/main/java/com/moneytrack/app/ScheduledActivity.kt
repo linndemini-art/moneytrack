@@ -17,6 +17,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import org.json.JSONArray
 import org.json.JSONObject
@@ -41,6 +42,8 @@ class ScheduledActivity : Activity() {
 
     private lateinit var listContainer: LinearLayout
     private lateinit var savingsContainer: LinearLayout
+    private lateinit var scheduledScrollView: ScrollView
+    private lateinit var savingsScrollView: ScrollView
     private lateinit var scheduledTab: TextView
     private lateinit var savingsTab: TextView
     private lateinit var pageTitle: TextView
@@ -146,17 +149,40 @@ class ScheduledActivity : Activity() {
         root.addView(tabs, LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
         ).apply { bottomMargin = dpToPx(18) })
-        listContainer = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        savingsContainer = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            visibility = View.GONE
-        }
-        root.addView(listContainer, LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f
+        listContainer = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+    }
+    scheduledScrollView = ScrollView(this).apply {
+        isFillViewport = true
+        overScrollMode = View.OVER_SCROLL_NEVER
+        clipToPadding = false
+        setPadding(0, 0, 0, dpToPx(8))
+        addView(listContainer, ScrollView.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
         ))
-        root.addView(savingsContainer, LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f
+    }
+
+    savingsContainer = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+    }
+    savingsScrollView = ScrollView(this).apply {
+        isFillViewport = true
+        overScrollMode = View.OVER_SCROLL_NEVER
+        clipToPadding = false
+        setPadding(0, 0, 0, dpToPx(8))
+        addView(savingsContainer, ScrollView.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
         ))
+    }
+
+    root.addView(scheduledScrollView, LinearLayout.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f
+    ))
+    root.addView(savingsScrollView, LinearLayout.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f
+    ))
         actionButton = TextView(this).apply {
             text = "+ ADD"
             textSize = 16f
@@ -195,14 +221,15 @@ class ScheduledActivity : Activity() {
         savingsTab.background = roundedBackground(
             if (showingSavings) accent else Color.TRANSPARENT, 10f
         )
-        listContainer.visibility = if (showingSavings) View.GONE else View.VISIBLE
-        savingsContainer.visibility = if (showingSavings) View.VISIBLE else View.GONE
+        scheduledScrollView.visibility =
+    if (showingSavings) View.GONE else View.VISIBLE
+        savingsScrollView.visibility =
+    if (showingSavings) View.VISIBLE else View.GONE
         pageTitle.text = if (showingSavings) "SAVINGS GOALS" else "SCHEDULED"
         pageSubtitle.text = if (showingSavings) {
             "Set targets and track money you put aside"
         } else "Keep track of important future dates"
-        actionButton.text = if (showingSavings) "+ ADD SAVINGS GOAL" else "+ ADD"
-        actionButton.setTextColor(accent)
+        actionButton.text = "+ ADD"
     }
 
     private fun showAddDialog() {
