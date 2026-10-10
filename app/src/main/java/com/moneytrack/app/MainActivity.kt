@@ -1100,12 +1100,13 @@ val menuCardBorderColor = Color.argb(
         orientation = LinearLayout.VERTICAL
     }
 
-    historyScrollView.addView(
-        historyContent,
-        FrameLayout.LayoutParams(
-    FrameLayout.LayoutParams.MATCH_PARENT,
-    FrameLayout.LayoutParams.WRAP_CONTENT
-)
+            historyScrollView.addView(
+            historyContent,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
 
     historyRoot.addView(
         historyScrollView,
