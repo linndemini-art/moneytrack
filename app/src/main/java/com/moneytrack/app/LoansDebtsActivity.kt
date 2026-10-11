@@ -38,6 +38,7 @@ class LoansDebtsActivity : Activity() {
 
     private lateinit var borrowedTab: TextView
     private lateinit var lentTab: TextView
+    private lateinit var addButton: Button
     private lateinit var entriesContainer: LinearLayout
     private lateinit var totalText: TextView
 
@@ -161,7 +162,7 @@ class LoansDebtsActivity : Activity() {
 
         content.addView(entriesContainer)
 
-        val addButton = Button(this)
+        addButton = Button(this)
         addButton.textSize = 15f
         addButton.typeface = Typeface.DEFAULT_BOLD
         addButton.setTextColor(backgroundColor)
