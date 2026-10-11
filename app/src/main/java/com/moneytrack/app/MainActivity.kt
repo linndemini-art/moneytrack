@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -583,17 +584,58 @@ incomeCard.addView(
             setPadding(8, 0, 8, 0)
         }
 
-        val adapter = ArrayAdapter(
+        
+        categorySpinner = Spinner(this).apply {
+            background = roundedBackground(
+                surfaceColor,
+                12f
+            )
+            setPadding(8, 0, 8, 0)
+            setPopupBackgroundDrawable(
+                ColorDrawable(surfaceColor)
+            )
+        }
+
+        val adapter = object : ArrayAdapter<String>(
             this,
             android.R.layout.simple_spinner_item,
             categories
-        )
+        ) {
+            override fun getView(
+                position: Int,
+                convertView: View?,
+                parent: android.view.ViewGroup
+            ): View {
+                return super.getView(
+                    position,
+                    convertView,
+                    parent
+                ).apply {
+                    (this as? TextView)?.setTextColor(white)
+                }
+            }
+
+            override fun getDropDownView(
+                position: Int,
+                convertView: View?,
+                parent: android.view.ViewGroup
+            ): View {
+                return super.getDropDownView(
+                    position,
+                    convertView,
+                    parent
+                ).apply {
+                    (this as? TextView)?.setTextColor(white)
+                }
+            }
+        }
 
         adapter.setDropDownViewResource(
             android.R.layout.simple_spinner_dropdown_item
         )
 
         categorySpinner.adapter = adapter
+        
 
         addCard.addView(
             categorySpinner,
@@ -1936,7 +1978,7 @@ val menuCardBorderColor = Color.argb(
                     textSize = 12f
 
                     setTextColor(
-                        secondary
+                        white
                     )
 
                     setPadding(
