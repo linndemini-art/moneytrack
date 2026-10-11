@@ -739,9 +739,9 @@ incomeCard.addView(
         root: FrameLayout
     ) {
         val menuTextColor = Color.rgb(210, 214, 223)
-        val menuFillColor = Color.argb(250, 8, 10, 15)
+        val menuFillColor = Color.argb(240, 8, 10, 15)
         val menuCardColor = Color.argb(
-    200,
+    170,
     Color.red(appearanceTheme.accentColor),
     Color.green(appearanceTheme.accentColor),
     Color.blue(appearanceTheme.accentColor)
