@@ -126,6 +126,7 @@ class LoansDebtsActivity : Activity() {
             if (!showingBorrowed) {
                 showingBorrowed = true
                 updateTabs()
+                updateAddButton(addButton)
                 updateList()
             }
         }
@@ -134,6 +135,7 @@ class LoansDebtsActivity : Activity() {
             if (showingBorrowed) {
                 showingBorrowed = false
                 updateTabs()
+                updateAddButton(addButton)
                 updateList()
             }
         }
