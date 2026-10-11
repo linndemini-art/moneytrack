@@ -923,7 +923,7 @@ val menuCardBorderColor = Color.argb(
         }
 
         createMenuCard(
-            "SCHEDULED",
+            "SCHEDULED & SAVINGS",
             android.R.drawable.ic_menu_today
         ) {
             closeMenu()
