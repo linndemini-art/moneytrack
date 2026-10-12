@@ -247,6 +247,13 @@ class AppearanceActivity : Activity() {
             AppearanceManager.ROSE_SUNSET
         )
 
+        
+         addTheme(
+            "Ocean Teal",
+            AppearanceManager.OCEAN_TEAL
+        )
+
+
         val scrollView = ScrollView(this).apply {
             addView(root)
         }
@@ -595,6 +602,15 @@ class AppearanceActivity : Activity() {
                         138
                     )
                 )
+
+                
+             AppearanceManager.OCEAN_TEAL ->
+                AppearanceManager.Theme(
+               startColor = Color.rgb(42, 157, 143),
+               endColor = Color.rgb(38, 70, 83),
+               accentColor = Color.rgb(42, 157, 143)
+             )
+    
 
             else ->
                 AppearanceManager.Theme(
