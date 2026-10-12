@@ -18,6 +18,8 @@ object AppearanceManager {
     const val ROYAL_LAVENDER = "royal_lavender"
     const val ROSE_SUNSET = "rose_sunset"
     const val OCEAN_TEAL = "ocean_teal"
+    const val FROSTED_LIGHT = "frosted_light"
+    
     
 
     data class Theme(
@@ -218,8 +220,15 @@ object AppearanceManager {
          
            )
 
+              
+          FROSTED_LIGHT -> Theme(
+          startColor = Color.rgb(235, 244, 245),
+          endColor = Color.rgb(181, 198, 224),
+          accentColor = Color.rgb(38, 70, 83)
+        
+           )
 
-            else -> Theme(
+          else -> Theme(
                 startColor = Color.rgb(
                     18,
                     29,
