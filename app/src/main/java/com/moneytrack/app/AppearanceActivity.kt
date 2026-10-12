@@ -253,6 +253,13 @@ class AppearanceActivity : Activity() {
             AppearanceManager.OCEAN_TEAL
         )
 
+         
+         addTheme(
+            "Frosted Light",
+            AppearanceManager.FROSTED_LIGHT
+        )
+
+
 
         val scrollView = ScrollView(this).apply {
             addView(root)
@@ -610,6 +617,15 @@ class AppearanceActivity : Activity() {
                endColor = Color.rgb(38, 70, 83),
                accentColor = Color.rgb(42, 157, 143)
              )
+
+                
+             AppearanceManager.FROSTED_LIGHT ->
+                AppearanceManager.Theme(
+                startColor = Color.rgb(235, 244, 245),
+                endColor = Color.rgb(181, 198, 224),
+                accentColor = Color.rgb(38, 70, 83)
+             )
+    
     
 
             else ->
