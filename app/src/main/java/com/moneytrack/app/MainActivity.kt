@@ -700,6 +700,7 @@ incomeCard.addView(
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
+                                }
 
                                     else -> {
                                         val index = categories.indexOf(oldName)
