@@ -88,6 +88,8 @@ class MainActivity : Activity() {
         "Health",
         "Entertainment",
         "Travel",
+        "Personal Care",
+        "gifts & donations",
         "Other"
     )
 
