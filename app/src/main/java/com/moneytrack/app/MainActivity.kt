@@ -648,6 +648,37 @@ incomeCard.addView(
             spinnerParams()
         )
 
+        val manageCategoriesButton = Button(this).apply {
+            text = "Manage Categories"
+            setTextColor(white)
+            background = roundedBackground(
+                surfaceColor,
+                12f
+            )
+            setOnClickListener {
+                val editableCategories = categories
+                    .filter { it != "Other" }
+                    .toTypedArray()
+
+                AlertDialog.Builder(this@MainActivity)
+                    .setTitle("Manage Categories")
+                    .setItems(editableCategories) { _, position ->
+                        Toast.makeText(
+                            this@MainActivity,
+                            editableCategories[position],
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    .setNegativeButton("Close", null)
+                    .show()
+            }
+        }
+
+        addCard.addView(
+            manageCategoriesButton,
+            buttonParams()
+        )
+
         val addExpenseButton = createGradientButton(
     "Add Expense",
     appearanceTheme.startColor,
