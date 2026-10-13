@@ -708,8 +708,7 @@ incomeCard.addView(
                                             categories[index] = newName
                                             saveCategories()
 
-                                            categorySpinner.adapter
-                                                ?.notifyDataSetChanged()
+                                            adapter.notifyDataSetChanged() 
 
                                             categorySpinner.setSelection(index)
 
