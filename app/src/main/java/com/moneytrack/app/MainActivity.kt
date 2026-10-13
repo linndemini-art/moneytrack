@@ -662,9 +662,29 @@ incomeCard.addView(
                     .filter { it != "Other" }
                     .toTypedArray()
 
-                AlertDialog.Builder(this@MainActivity)
+                                AlertDialog.Builder(this@MainActivity)
                     .setTitle("Manage Categories")
-                    .setItems(editableCategories) { _, position ->
+                    .setAdapter(
+                        object : ArrayAdapter<String>(
+                            this@MainActivity,
+                            android.R.layout.simple_list_item_1,
+                            editableCategories
+                        ) {
+                            override fun getView(
+                                position: Int,
+                                convertView: View?,
+                                parent: android.view.ViewGroup
+                            ): View {
+                                return super.getView(
+                                    position,
+                                    convertView,
+                                    parent
+                                ).apply {
+                                    (this as? TextView)?.setTextColor(white)
+                                }
+                            }
+                        }
+                    ) { _, position ->
                         val oldName = editableCategories[position]
 
                         val input = EditText(this@MainActivity).apply {
