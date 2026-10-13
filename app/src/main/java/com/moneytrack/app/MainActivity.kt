@@ -1513,9 +1513,10 @@ val menuCardBorderColor = Color.argb(
 
     categories.clear()
 
-    if (storedCategories.isNullOrEmpty()) {
-        categories.addAll(defaultCategories)
-    } else {
+   if (storedCategories.isNullOrEmpty()) {
+    categories.addAll(defaultCategories)
+    saveCategories()
+   }  else {
         try {
             val savedArray = JSONArray(storedCategories)
             val savedCategories = mutableListOf<String>()
@@ -1526,8 +1527,7 @@ val menuCardBorderColor = Color.argb(
                 if (name.isNotEmpty() && name != "Other") {
                     savedCategories.add(name)
                 }
-            }
-
+            }led 
             categories.addAll(
                 savedCategories.distinct()
             )
