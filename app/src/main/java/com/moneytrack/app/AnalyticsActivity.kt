@@ -1028,10 +1028,11 @@ content.addView(
             totals.values.sum()
 
         val colors = donutColors()
+        val originalOrder = totals.keys.toList()
+        val sortedEntries = totals.entries.sortedByDescending { it.value }
 
-        var index = 0
-
-        for ((category, amount) in totals) {
+            for ((category, amount) in sortedEntries) {
+        val index = originalOrder.indexOf(category)
 
             val row = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
@@ -1112,8 +1113,6 @@ content.addView(
             )
 
             container.addView(row)
-
-            index++
         }
 
         return container
