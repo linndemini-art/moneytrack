@@ -727,6 +727,7 @@ incomeCard.addView(
                     .setNegativeButton("Close", null)
                     .show()
             }
+        }
 
 
         addCard.addView(
