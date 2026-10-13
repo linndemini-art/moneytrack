@@ -1527,7 +1527,7 @@ val menuCardBorderColor = Color.argb(
                 if (name.isNotEmpty() && name != "Other") {
                     savedCategories.add(name)
                 }
-            }led 
+            } 
             categories.addAll(
                 savedCategories.distinct()
             )
