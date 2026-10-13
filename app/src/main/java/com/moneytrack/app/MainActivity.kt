@@ -656,6 +656,7 @@ incomeCard.addView(
                 surfaceColor,
                 12f
             )
+            
             setOnClickListener {
                 val editableCategories = categories
                     .filter { it != "Other" }
@@ -664,16 +665,69 @@ incomeCard.addView(
                 AlertDialog.Builder(this@MainActivity)
                     .setTitle("Manage Categories")
                     .setItems(editableCategories) { _, position ->
-                        Toast.makeText(
-                            this@MainActivity,
-                            editableCategories[position],
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        val oldName = editableCategories[position]
+
+                        val input = EditText(this@MainActivity).apply {
+                            setText(oldName)
+                            setSelection(text.length)
+                            hint = "Category name"
+                            setSingleLine(true)
+                        }
+
+                        AlertDialog.Builder(this@MainActivity)
+                            .setTitle("Rename Category")
+                            .setView(input)
+                            .setNegativeButton("Cancel", null)
+                            .setPositiveButton("Save") { _, _ ->
+                                val newName = input.text.toString().trim()
+
+                                when {
+                                    newName.isEmpty() -> {
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            "Category name cannot be empty.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+
+                                    categories.any {
+                                        it.equals(newName, ignoreCase = true) &&
+                                            it != oldName
+                                    } -> {
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            "That category already exists.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+
+                                    else -> {
+                                        val index = categories.indexOf(oldName)
+
+                                        if (index >= 0) {
+                                            categories[index] = newName
+                                            saveCategories()
+
+                                            categorySpinner.adapter
+                                                ?.notifyDataSetChanged()
+
+                                            categorySpinner.setSelection(index)
+
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                "Category renamed.",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
+                                }
+                            }
+                            .show()
                     }
                     .setNegativeButton("Close", null)
                     .show()
             }
-        }
+
 
         addCard.addView(
             manageCategoriesButton,
