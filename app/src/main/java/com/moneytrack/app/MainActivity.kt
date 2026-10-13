@@ -1542,6 +1542,21 @@ val menuCardBorderColor = Color.argb(
     categories.add("Other")
     }
 
+    private fun saveCategories() {
+    val savedArray = JSONArray()
+
+    categories.forEach { category ->
+        savedArray.put(category)
+    }
+
+    prefs.edit()
+        .putString(
+            categoriesPreferenceKey,
+            savedArray.toString()
+        )
+        .apply()
+}
+
     private fun loadData() {
 
         income = prefs.getString(
