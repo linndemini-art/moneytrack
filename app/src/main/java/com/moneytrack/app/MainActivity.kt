@@ -741,7 +741,23 @@ incomeCard.addView(
                                     }
                                 }
                             }
-                            .show()
+                                                        .show()
+                            .apply {
+                                window?.setBackgroundDrawable(
+                                    ColorDrawable(surfaceColor)
+                                )
+                                input.setTextColor(white)
+                                input.setHintTextColor(Color.LTGRAY)
+                                findViewById<TextView>(
+                                    android.R.id.title
+                                )?.setTextColor(white)
+                                getButton(
+                                    AlertDialog.BUTTON_POSITIVE
+                                )?.setTextColor(white)
+                                getButton(
+                                    AlertDialog.BUTTON_NEGATIVE
+                                )?.setTextColor(white)
+                            }
                     }
                                         .setNegativeButton("Close", null)
                     .show()
