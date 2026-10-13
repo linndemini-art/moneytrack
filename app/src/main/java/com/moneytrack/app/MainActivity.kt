@@ -743,8 +743,14 @@ incomeCard.addView(
                             }
                             .show()
                     }
-                    .setNegativeButton("Close", null)
+                                        .setNegativeButton("Close", null)
                     .show()
+                    .apply {
+                        window?.setBackgroundDrawable(
+                            ColorDrawable(surfaceColor)
+                        )
+                        listView.setBackgroundColor(surfaceColor)
+                    } 
             }
         }
 
