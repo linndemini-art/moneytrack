@@ -123,6 +123,7 @@ private val categoriesPreferenceKey = "category_names_v1"
         selectedYear = calendar.get(Calendar.YEAR)
         selectedMonth = calendar.get(Calendar.MONTH)
 
+        loadCategories()
         buildInterface()
         loadData()
         updateMonthDisplay()
@@ -133,6 +134,7 @@ private val categoriesPreferenceKey = "category_names_v1"
     override fun onResume() {
     super.onResume()
 
+    loadCategories()
     buildInterface()
     loadData()
     updateMonthDisplay()
@@ -1501,6 +1503,43 @@ val menuCardBorderColor = Color.argb(
                 expensesArray.toString()
             )
             .apply()
+    }
+
+    private fun loadCategories() {
+    val storedCategories = prefs.getString(
+        categoriesPreferenceKey,
+        null
+    )
+
+    categories.clear()
+
+    if (storedCategories.isNullOrEmpty()) {
+        categories.addAll(defaultCategories)
+    } else {
+        try {
+            val savedArray = JSONArray(storedCategories)
+            val savedCategories = mutableListOf<String>()
+
+            for (index in 0 until savedArray.length()) {
+                val name = savedArray.optString(index).trim()
+
+                if (name.isNotEmpty() && name != "Other") {
+                    savedCategories.add(name)
+                }
+            }
+
+            categories.addAll(
+                savedCategories.distinct()
+            )
+        } catch (_: Exception) {
+            categories.addAll(
+                defaultCategories.filter { it != "Other" }
+            )
+        }
+    }
+
+    categories.removeAll { it == "Other" }
+    categories.add("Other")
     }
 
     private fun loadData() {
