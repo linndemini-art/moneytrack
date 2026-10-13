@@ -75,23 +75,25 @@ class MainActivity : Activity() {
         val time: String = ""
     )
 
-    private val categories = arrayOf(
-        "Housing",
-        "Utilities",
-        "Food",
-        "Grocery / Household",
-        "Fuel / Transport",
-        "Car",
-        "Phone / Internet",
-        "Subscriptions",
-        "Shopping",
-        "Health",
-        "Entertainment",
-        "Travel",
-        "Personal Care",
-        "gifts & donations",
-        "Other"
-    )
+    private val defaultCategories = arrayOf(
+    "Housing",
+    "Utilities",
+    "Food",
+    "Fuel / Transport",
+    "Car",
+    "Phone / Internet",
+    "Subscriptions",
+    "Shopping",
+    "Health",
+    "Entertainment",
+    "Travel",
+    "Personal Care",
+    "Gifts & Donations",
+    "Other"
+)
+
+private val categories = defaultCategories.toMutableList()
+private val categoriesPreferenceKey = "category_names_v1"
 
     private val backgroundColor = Color.rgb(7, 8, 12)
     private val cardColor = Color.rgb(20, 22, 29)
