@@ -463,12 +463,12 @@ class MainActivity : Activity() {
                         val deltaX = event.x - swipeStartX
                         val deltaY = event.y - swipeStartY
                         val threshold =
-                            32 * resources.displayMetrics.density
+                            16 * resources.displayMetrics.density
 
                         if (
                             kotlin.math.abs(deltaX) >= threshold &&
                             kotlin.math.abs(deltaX) >
-                                kotlin.math.abs(deltaY) * 1.3f
+                                kotlin.math.abs(deltaY) * 1.1f
                         ) {
                             swipeHandled = true
                             return true
