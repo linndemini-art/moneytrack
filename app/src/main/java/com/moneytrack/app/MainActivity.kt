@@ -185,7 +185,7 @@ class MainActivity : Activity() {
             super.onDraw(canvas)
 
             val size = width.coerceAtMost(height).toFloat()
-            val strokeWidth = 30f
+            val strokeWidth = 40f
             val padding = strokeWidth / 2f
             rect.set(padding, padding, size - padding, size - padding)
 
