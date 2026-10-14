@@ -463,7 +463,7 @@ class MainActivity : Activity() {
                         val deltaX = event.x - swipeStartX
                         val deltaY = event.y - swipeStartY
                         val threshold =
-                            72 * resources.displayMetrics.density
+                            32 * resources.displayMetrics.density
 
                         if (
                             kotlin.math.abs(deltaX) >= threshold &&
