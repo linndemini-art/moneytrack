@@ -344,7 +344,7 @@ class MainActivity : Activity() {
         val circleView = CircularProgressView(this, monthProgress)
         activeCircleView = circleView
 
-        val circleSize = (72 * resources.displayMetrics.density).toInt()
+        val circleSize = (135 * resources.displayMetrics.density).toInt()
         val circleParams = FrameLayout.LayoutParams(circleSize, circleSize).apply {
             gravity = Gravity.CENTER
         }
