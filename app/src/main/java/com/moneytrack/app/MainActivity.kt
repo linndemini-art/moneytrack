@@ -229,6 +229,10 @@ class MainActivity : Activity() {
     }
         }
 
+        activeDayNumberText?.text = displayDayText
+        activeCircleView?.setProgress(monthProgress)
+    }
+
     private fun buildInterface() {
         appearanceTheme = AppearanceManager.getTheme(this)
 
