@@ -215,23 +215,19 @@ class MainActivity : Activity() {
         val monthProgress: Float
 
         when {
-            selectedYear == currentYear && selectedMonth == currentMonth -> {
-                displayDayText = todayDay.toString()
-                monthProgress = todayDay.toFloat() / totalDaysInMonth.toFloat()
-            }
-            selectedYear < currentYear || (selectedYear == currentYear && selectedMonth < currentMonth) -> {
-                displayDayText = totalDaysInMonth.toString()
-                monthProgress = 1f
-            }
-            else -> {
-                displayDayText = "--"
-                monthProgress = 0f
-            }
-        }
-
-        activeDayNumberText?.text = displayDayText
-        activeCircleView?.setProgress(monthProgress)
+    selectedYear == currentYear && selectedMonth == currentMonth -> {
+        displayDayText = todayDay.toString()
+        monthProgress = todayDay.toFloat() / totalDaysInMonth.toFloat()
     }
+    selectedYear < currentYear || (selectedYear == currentYear && selectedMonth < currentMonth) -> {
+        displayDayText = "--"
+        monthProgress = 1f
+    }
+    else -> {
+        displayDayText = "--"
+        monthProgress = 0f
+    }
+        }
 
     private fun buildInterface() {
         appearanceTheme = AppearanceManager.getTheme(this)
@@ -328,18 +324,18 @@ class MainActivity : Activity() {
         val monthProgress: Float
 
         when {
-            selectedYear == currentYear && selectedMonth == currentMonth -> {
-                displayDayText = todayDay.toString()
-                monthProgress = todayDay.toFloat() / totalDaysInMonth.toFloat()
-            }
-            selectedYear < currentYear || (selectedYear == currentYear && selectedMonth < currentMonth) -> {
-                displayDayText = totalDaysInMonth.toString()
-                monthProgress = 1f
-            }
-            else -> {
-                displayDayText = "--"
-                monthProgress = 0f
-            }
+    selectedYear == currentYear && selectedMonth == currentMonth -> {
+        displayDayText = todayDay.toString()
+        monthProgress = todayDay.toFloat() / totalDaysInMonth.toFloat()
+    }
+    selectedYear < currentYear || (selectedYear == currentYear && selectedMonth < currentMonth) -> {
+        displayDayText = "--"
+        monthProgress = 1f
+    }
+    else -> {
+        displayDayText = "--"
+        monthProgress = 0f
+    }
         }
 
         val circleView = CircularProgressView(this, monthProgress)
