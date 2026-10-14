@@ -4,11 +4,16 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.Paint
+import android.graphics.RectF
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.InputType
 import android.view.Gravity
 import android.view.MotionEvent
@@ -52,6 +57,9 @@ class MainActivity : Activity() {
     private lateinit var menuDrawer: LinearLayout
     private lateinit var menuOverlay: View
 
+    private var activeCircleView: CircularProgressView? = null
+    private var activeDayNumberText: TextView? = null
+
     private var isMenuOpen = false
     private var isHistoryOpen = false
 
@@ -68,6 +76,14 @@ class MainActivity : Activity() {
     private var selectedYear = 0
     private var selectedMonth = 0
 
+    private val midnightHandler = Handler(Looper.getMainLooper())
+    private val midnightRunnable = object : Runnable {
+        override fun run() {
+            updateCircleStateOnly()
+            midnightHandler.postDelayed(this, 60000)
+        }
+    }
+
     data class Expense(
         val description: String,
         val category: String,
@@ -77,24 +93,24 @@ class MainActivity : Activity() {
     )
 
     private val defaultCategories = arrayOf(
-    "Housing",
-    "Utilities",
-    "Food",
-    "Fuel / Transport",
-    "Car",
-    "Phone / Internet",
-    "Subscriptions",
-    "Shopping",
-    "Health",
-    "Entertainment",
-    "Travel",
-    "Personal Care",
-    "Gifts & Donations",
-    "Other"
-)
+        "Housing",
+        "Utilities",
+        "Food",
+        "Fuel / Transport",
+        "Car",
+        "Phone / Internet",
+        "Subscriptions",
+        "Shopping",
+        "Health",
+        "Entertainment",
+        "Travel",
+        "Personal Care",
+        "Gifts & Donations",
+        "Other"
+    )
 
-private val categories = defaultCategories.toMutableList()
-private val categoriesPreferenceKey = "category_names_v1"
+    private val categories = defaultCategories.toMutableList()
+    private val categoriesPreferenceKey = "category_names_v1"
 
     private val backgroundColor = Color.rgb(7, 8, 12)
     private val cardColor = Color.rgb(20, 22, 29)
@@ -132,20 +148,92 @@ private val categoriesPreferenceKey = "category_names_v1"
         refreshExpenses()
     }
 
-    override fun onResume() {
-    super.onResume()
+    override fun onStart() {
+        super.onStart()
+        midnightHandler.removeCallbacks(midnightRunnable)
+        midnightHandler.postDelayed(midnightRunnable, 60000)
+    }
 
-    loadCategories()
-    buildInterface()
-    loadData()
-    updateMonthDisplay()
-    updateTotals()
-    refreshExpenses()
+    override fun onStop() {
+        super.onStop()
+        midnightHandler.removeCallbacks(midnightRunnable)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        loadCategories()
+        buildInterface()
+        loadData()
+        updateMonthDisplay()
+        updateTotals()
+        refreshExpenses()
+    }
+
+    private class CircularProgressView(context: Context, private var progressPercent: Float) : View(context) {
+        private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        private val rect = RectF()
+
+        fun setProgress(newProgress: Float) {
+            if (this.progressPercent != newProgress) {
+                this.progressPercent = newProgress
+                invalidate()
+            }
+        }
+
+        override fun onDraw(canvas: Canvas) {
+            super.onDraw(canvas)
+
+            val size = width.coerceAtMost(height).toFloat()
+            val strokeWidth = 10f
+            val padding = strokeWidth / 2f
+            rect.set(padding, padding, size - padding, size - padding)
+
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = strokeWidth
+            paint.color = Color.rgb(50, 50, 50)
+            canvas.drawArc(rect, 0f, 360f, false, paint)
+
+            paint.color = Color.rgb(120, 120, 120)
+            paint.strokeCap = Paint.Cap.ROUND
+            val sweepAngle = 360f * progressPercent.coerceIn(0f, 1f)
+            canvas.drawArc(rect, -90f, sweepAngle, false, paint)
+        }
+    }
+    private fun updateCircleStateOnly() {
+        val calInstance = Calendar.getInstance()
+        val currentYear = calInstance.get(Calendar.YEAR)
+        val currentMonth = calInstance.get(Calendar.MONTH)
+        val todayDay = calInstance.get(Calendar.DAY_OF_MONTH)
+
+        val totalDaysInMonth = Calendar.getInstance().apply {
+            set(selectedYear, selectedMonth, 1)
+        }.getActualMaximum(Calendar.DAY_OF_MONTH)
+
+        val displayDayText: String
+        val monthProgress: Float
+
+        when {
+            selectedYear == currentYear && selectedMonth == currentMonth -> {
+                displayDayText = todayDay.toString()
+                monthProgress = todayDay.toFloat() / totalDaysInMonth.toFloat()
+            }
+            selectedYear < currentYear || (selectedYear == currentYear && selectedMonth < currentMonth) -> {
+                displayDayText = totalDaysInMonth.toString()
+                monthProgress = 1f
+            }
+            else -> {
+                displayDayText = "--"
+                monthProgress = 0f
+            }
+        }
+
+        activeDayNumberText?.text = displayDayText
+        activeCircleView?.setProgress(monthProgress)
     }
 
     private fun buildInterface() {
-        appearanceTheme =
-    AppearanceManager.getTheme(this)
+        appearanceTheme = AppearanceManager.getTheme(this)
 
         isHistoryOpen = false
 
@@ -173,10 +261,10 @@ private val categoriesPreferenceKey = "category_names_v1"
             orientation = LinearLayout.VERTICAL
             setPadding(20, 18, 20, 18)
             background = gradientBackground(
-            appearanceTheme.startColor,
-            appearanceTheme.endColor,
-            22f
-        )
+                appearanceTheme.startColor,
+                appearanceTheme.endColor,
+                22f
+            )
         }
 
         val cardTopRow = LinearLayout(this).apply {
@@ -220,34 +308,88 @@ private val categoriesPreferenceKey = "category_names_v1"
 
         bankCard.addView(cardTopRow)
 
-        val smartMoney = TextView(this).apply {
-            text = "SMART MONEY"
-            textSize = 27f
-            setTextColor(white)
-            typeface = Typeface.create(
-                Typeface.DEFAULT,
-                Typeface.BOLD
-            )
-            gravity = Gravity.CENTER
-            letterSpacing = 0.04f
-
+        val centerContainer = FrameLayout(this).apply {
             setOnClickListener {
                 openMenu()
             }
         }
 
-        val smartMoneyParams = LinearLayout.LayoutParams(
+        val calInstance = Calendar.getInstance()
+        val currentYear = calInstance.get(Calendar.YEAR)
+        val currentMonth = calInstance.get(Calendar.MONTH)
+        val todayDay = calInstance.get(Calendar.DAY_OF_MONTH)
+
+        val totalDaysInMonth = Calendar.getInstance().apply {
+            set(selectedYear, selectedMonth, 1)
+        }.getActualMaximum(Calendar.DAY_OF_MONTH)
+
+        val displayDayText: String
+        val monthProgress: Float
+
+        when {
+            selectedYear == currentYear && selectedMonth == currentMonth -> {
+                displayDayText = todayDay.toString()
+                monthProgress = todayDay.toFloat() / totalDaysInMonth.toFloat()
+            }
+            selectedYear < currentYear || (selectedYear == currentYear && selectedMonth < currentMonth) -> {
+                displayDayText = totalDaysInMonth.toString()
+                monthProgress = 1f
+            }
+            else -> {
+                displayDayText = "--"
+                monthProgress = 0f
+            }
+        }
+
+        val circleView = CircularProgressView(this, monthProgress)
+        activeCircleView = circleView
+
+        val circleSize = (72 * resources.displayMetrics.density).toInt()
+        val circleParams = FrameLayout.LayoutParams(circleSize, circleSize).apply {
+            gravity = Gravity.CENTER
+        }
+        centerContainer.addView(circleView, circleParams)
+
+        val textLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+        }
+
+        val dayNumberText = TextView(this).apply {
+            text = displayDayText
+            textSize = 20f
+            setTextColor(white)
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+        }
+        activeDayNumberText = dayNumberText
+
+        val dayLabelText = TextView(this).apply {
+            text = "Day"
+            textSize = 10f
+            setTextColor(white)
+            typeface = Typeface.DEFAULT
+            gravity = Gravity.CENTER
+        }
+
+        textLayout.addView(dayNumberText)
+        textLayout.addView(dayLabelText)
+
+        val textParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            gravity = Gravity.CENTER
+        }
+        centerContainer.addView(textLayout, textParams)
+
+        val centerContainerParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             0,
             1f
         )
-
-        smartMoneyParams.setMargins(0, 4, 0, 4)
-
-        bankCard.addView(
-            smartMoney,
-            smartMoneyParams
-        )
+        centerContainerParams.setMargins(0, 4, 0, 4)
+        bankCard.addView(centerContainer, centerContainerParams)
 
         val cardBottomRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -390,7 +532,6 @@ private val categoriesPreferenceKey = "category_names_v1"
             monthCard,
             monthCardParams
         )
-
         val overviewTitle = sectionTitle(
             "OVERVIEW",
             white
@@ -502,35 +643,34 @@ private val categoriesPreferenceKey = "category_names_v1"
             inputParams()
         )
 
-       val clearIncomeButton = createGradientButton(
-    "Clear Income",
-    Color.rgb(70, 40, 40),
-    Color.rgb(125, 55, 55)
+        val clearIncomeButton = createGradientButton(
+            "Clear Income",
+            Color.rgb(70, 40, 40),
+            Color.rgb(125, 55, 55)
+        )
 
-    )
+        clearIncomeButton.setOnClickListener {
+            income = 0.0
+            saveData()
+            updateTotals()
 
-clearIncomeButton.setOnClickListener {
-    income = 0.0
-    saveData()
-    updateTotals()
+            Toast.makeText(
+                this,
+                "Income cleared.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
 
-    Toast.makeText(
-        this,
-        "Income cleared.",
-        Toast.LENGTH_SHORT
-    ).show()
-}
-
-incomeCard.addView(
-    clearIncomeButton,
-    buttonParams()
-) 
+        incomeCard.addView(
+            clearIncomeButton,
+            buttonParams()
+        ) 
 
         val saveIncomeButton = createGradientButton(
-    "Save Income",
-    appearanceTheme.startColor,
-    appearanceTheme.endColor
-)
+            "Save Income",
+            appearanceTheme.startColor,
+            appearanceTheme.endColor
+        )
 
         saveIncomeButton.setOnClickListener {
             saveIncome()
@@ -553,7 +693,7 @@ incomeCard.addView(
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
 
-                addTitleParams.setMargins(2, 24, 0, 10)
+        addTitleParams.setMargins(2, 24, 0, 10)
 
         content.addView(
             addTitle,
@@ -583,15 +723,6 @@ incomeCard.addView(
             inputParams()
         )
 
-        categorySpinner = Spinner(this).apply {
-            background = roundedBackground(
-                surfaceColor,
-                12f
-            )
-            setPadding(8, 0, 8, 0)
-        }
-
-        
         categorySpinner = Spinner(this).apply {
             background = roundedBackground(
                 surfaceColor,
@@ -642,7 +773,6 @@ incomeCard.addView(
         )
 
         categorySpinner.adapter = adapter
-        
 
         addCard.addView(
             categorySpinner,
@@ -662,7 +792,7 @@ incomeCard.addView(
                     .filter { it != "Other" }
                     .toTypedArray()
 
-                                AlertDialog.Builder(this@MainActivity)
+                AlertDialog.Builder(this@MainActivity)
                     .setTitle("Manage Categories")
                     .setAdapter(
                         object : ArrayAdapter<String>(
@@ -741,7 +871,7 @@ incomeCard.addView(
                                     }
                                 }
                             }
-                                                        .show()
+                            .show()
                             .apply {
                                 window?.setBackgroundDrawable(
                                     ColorDrawable(surfaceColor)
@@ -759,7 +889,7 @@ incomeCard.addView(
                                 )?.setTextColor(white)
                             }
                     }
-                                        .setNegativeButton("Close", null)
+                    .setNegativeButton("Close", null)
                     .show()
                     .apply {
                         window?.setBackgroundDrawable(
@@ -770,17 +900,16 @@ incomeCard.addView(
             }
         }
 
-
         addCard.addView(
             manageCategoriesButton,
             buttonParams()
         )
 
         val addExpenseButton = createGradientButton(
-    "Add Expense",
-    appearanceTheme.startColor,
-    appearanceTheme.endColor
-)
+            "Add Expense",
+            appearanceTheme.startColor,
+            appearanceTheme.endColor
+        )
 
         addExpenseButton.setOnClickListener {
             addExpense()
@@ -909,26 +1038,24 @@ incomeCard.addView(
         updateTotals()
         refreshExpenses()
     }
-        
-
     private fun createMenuDrawer(
         root: FrameLayout
     ) {
         val menuTextColor = Color.rgb(210, 214, 223)
         val menuFillColor = Color.argb(240, 8, 10, 15)
         val menuCardColor = Color.argb(
-    170,
-    Color.red(appearanceTheme.accentColor),
-    Color.green(appearanceTheme.accentColor),
-    Color.blue(appearanceTheme.accentColor)
-)
+            170,
+            Color.red(appearanceTheme.accentColor),
+            Color.green(appearanceTheme.accentColor),
+            Color.blue(appearanceTheme.accentColor)
+        )
 
-val menuCardBorderColor = Color.argb(
-    90,
-    Color.red(appearanceTheme.accentColor),
-    Color.green(appearanceTheme.accentColor),
-    Color.blue(appearanceTheme.accentColor)
-)
+        val menuCardBorderColor = Color.argb(
+            90,
+            Color.red(appearanceTheme.accentColor),
+            Color.green(appearanceTheme.accentColor),
+            Color.blue(appearanceTheme.accentColor)
+        )
 
         fun dp(value: Int): Int {
             return (value * resources.displayMetrics.density).toInt()
@@ -969,15 +1096,14 @@ val menuCardBorderColor = Color.argb(
             elevation = dp(18).toFloat()
 
             background = GradientDrawable().apply {
-            setColor(menuFillColor)
-            setStroke(
-            dp(2),
-            appearanceTheme.accentColor
-            )
-            cornerRadius = dp(22).toFloat()
+                setColor(menuFillColor)
+                setStroke(
+                    dp(2),
+                    appearanceTheme.accentColor
+                )
+                cornerRadius = dp(22).toFloat()
+            }
         }
-        }
-            
 
         val menuTitle = TextView(this).apply {
             text = "MONEY TRACK"
@@ -1162,59 +1288,29 @@ val menuCardBorderColor = Color.argb(
     }
 
     private fun openMenu() {
-
         if (isMenuOpen) {
             return
         }
-
         isMenuOpen = true
-
         menuOverlay.visibility = View.VISIBLE
-
-                menuOverlay.animate()
-            .alpha(1f)
-            .setDuration(220)
-            .start()
-
-        menuDrawer.animate()
-            .translationX(0f)
-            .setDuration(220)
-            .setInterpolator(
-                AccelerateDecelerateInterpolator()
-            )
-            .start()
+        menuOverlay.animate().alpha(1f).setDuration(220).start()
+        menuDrawer.animate().translationX(0f).setDuration(220)
+            .setInterpolator(AccelerateDecelerateInterpolator()).start()
     }
 
     private fun closeMenu() {
-
         if (!isMenuOpen) {
             return
         }
-
         isMenuOpen = false
-
-        menuOverlay.animate()
-            .alpha(0f)
-            .setDuration(180)
-            .withEndAction {
-                menuOverlay.visibility = View.GONE
-            }
-            .start()
-
-        menuDrawer.animate()
-            .translationX(
-                -menuDrawer.width.toFloat()
-            )
-            .setDuration(180)
-            .setInterpolator(
-                AccelerateDecelerateInterpolator()
-            )
-            .start()
+        menuOverlay.animate().alpha(0f).setDuration(180)
+            .withEndAction { menuOverlay.visibility = View.GONE }.start()
+        menuDrawer.animate().translationX(-menuDrawer.width.toFloat()).setDuration(180)
+            .setInterpolator(AccelerateDecelerateInterpolator()).start()
     }
-        private fun openHistory() {
 
+    private fun openHistory() {
         closeMenu()
-
         isHistoryOpen = true
 
         val historyRoot = LinearLayout(this).apply {
@@ -1229,7 +1325,6 @@ val menuCardBorderColor = Color.argb(
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
             setPadding(0, 0, 0, 10)
-
             setOnClickListener {
                 isHistoryOpen = false
                 buildInterface()
@@ -1245,38 +1340,26 @@ val menuCardBorderColor = Color.argb(
         )
 
         val divider = View(this).apply {
-            setBackgroundColor(
-                Color.rgb(45, 49, 60)
-            )
+            setBackgroundColor(Color.rgb(45, 49, 60))
         }
 
         val dividerParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             1
         )
-
-        dividerParams.setMargins(
-            0,
-            8,
-            0,
-            0
-        )
-
-        historyRoot.addView(
-            divider,
-            dividerParams
-        )
+        dividerParams.setMargins(0, 8, 0, 0)
+        historyRoot.addView(divider, dividerParams)
 
         val historyScrollView = ScrollView(this).apply {
-        isFillViewport = true
-        overScrollMode = ScrollView.OVER_SCROLL_NEVER
-    }
+            isFillViewport = true
+            overScrollMode = ScrollView.OVER_SCROLL_NEVER
+        }
 
-    val historyContent = LinearLayout(this).apply {
-        orientation = LinearLayout.VERTICAL
-    }
+        val historyContent = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+        }
 
-            historyScrollView.addView(
+        historyScrollView.addView(
             historyContent,
             FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
@@ -1284,64 +1367,35 @@ val menuCardBorderColor = Color.argb(
             )
         )
 
-    historyRoot.addView(
-        historyScrollView,
-        LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            0,
-            1f
+        historyRoot.addView(
+            historyScrollView,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
         )
-    )
 
         val monthKeys = prefs.all.keys
             .mapNotNull { key ->
                 when {
-                    key.startsWith("income_") ->
-                        key.removePrefix("income_")
-
-                    key.startsWith("expenses_") ->
-                        key.removePrefix("expenses_")
-
+                    key.startsWith("income_") -> key.removePrefix("income_")
+                    key.startsWith("expenses_") -> key.removePrefix("expenses_")
                     else -> null
                 }
             }
-
-                        .filter {
-                it.matches(
-                    Regex("\\d{4}-\\d{2}")
-                )
-            }
+            .filter { it.matches(Regex("\\d{4}-\\d{2}")) }
             .distinct()
             .filter { key ->
-
-                val incomeValue =
-                    prefs.getString(
-                        "income_$key",
-                        "0"
-                    )?.toDoubleOrNull() ?: 0.0
-
-                val expensesValue =
-                    prefs.getString(
-                        "expenses_$key",
-                        null
-                    )
-
-                val hasExpenses =
-                    !expensesValue.isNullOrEmpty() &&
-                        try {
-                            JSONArray(
-                                expensesValue
-                            ).length() > 0
-                        } catch (_: Exception) {
-                            false
-                        }
-
+                val incomeValue = prefs.getString("income_$key", "0")?.toDoubleOrNull() ?: 0.0
+                val expensesValue = prefs.getString("expenses_$key", null)
+                val hasExpenses = !expensesValue.isNullOrEmpty() &&
+                    try { JSONArray(expensesValue).length() > 0 } catch (_: Exception) { false }
                 incomeValue != 0.0 || hasExpenses
             }
             .sortedDescending()
 
         if (monthKeys.isEmpty()) {
-
             val emptyText = TextView(this).apply {
                 text = "No history yet"
                 textSize = 20f
@@ -1349,7 +1403,6 @@ val menuCardBorderColor = Color.argb(
                 gravity = Gravity.CENTER
                 setPadding(0, 80, 0, 12)
             }
-
             historyRoot.addView(
                 emptyText,
                 LinearLayout.LayoutParams(
@@ -1359,32 +1412,19 @@ val menuCardBorderColor = Color.argb(
             )
         } else {
             for (key in monthKeys) {
-
                 val parts = key.split("-")
-
                 val year = parts[0].toInt()
                 val month = parts[1].toInt() - 1
 
-                val monthName =
-                    SimpleDateFormat(
-                        "MMMM yyyy",
-                        Locale.ENGLISH
-                    ).format(
-                        Calendar.getInstance().apply {
-                            set(
-                                year,
-                                month,
-                                1
-                            )
-                        }.time
-                    )
+                val monthName = SimpleDateFormat("MMMM yyyy", Locale.ENGLISH).format(
+                    Calendar.getInstance().apply { set(year, month, 1) }.time
+                )
 
                 val monthItem = TextView(this).apply {
                     text = monthName
                     textSize = 18f
                     setTextColor(white)
                     setPadding(0, 22, 0, 22)
-
                     setOnClickListener {
                         selectedYear = year
                         selectedMonth = month
@@ -1407,92 +1447,44 @@ val menuCardBorderColor = Color.argb(
     }
 
     override fun onBackPressed() {
-
         if (isMenuOpen) {
             closeMenu()
             return
         }
-
         if (isHistoryOpen) {
             isHistoryOpen = false
             buildInterface()
             return
         }
-
         super.onBackPressed()
     }
 
     private fun saveIncome() {
-
-        val value = incomeInput.text
-            .toString()
-            .replace(",", ".")
-            .toDoubleOrNull()
-
+        val value = incomeInput.text.toString().replace(",", ".").toDoubleOrNull()
         if (value == null || value < 0) {
-            Toast.makeText(
-                this,
-                "Please enter a valid income.",
-                Toast.LENGTH_SHORT
-            ).show()
-
+            Toast.makeText(this, "Please enter a valid income.", Toast.LENGTH_SHORT).show()
             return
         }
-
         income += value
-
         saveData()
         updateTotals()
-
         incomeInput.text.clear()
-
-        Toast.makeText(
-            this,
-        "Income saved.",
-        Toast.LENGTH_SHORT
-        ).show()
+        Toast.makeText(this, "Income saved.", Toast.LENGTH_SHORT).show()
     }
 
     private fun addExpense() {
-
-        val description = descriptionInput.text
-            .toString()
-            .trim()
-            .ifEmpty {
-                "No description"
-            }
-
-        val amount = amountInput.text
-            .toString()
-            .replace(",", ".")
-            .toDoubleOrNull()
-
-        val category = categorySpinner
-            .selectedItem
-            ?.toString()
-            ?: "Other"
+        val description = descriptionInput.text.toString().trim().ifEmpty { "No description" }
+        val amount = amountInput.text.toString().replace(",", ".").toDoubleOrNull()
+        val category = categorySpinner.selectedItem?.toString() ?: "Other"
 
         if (amount == null || amount <= 0) {
-            Toast.makeText(
-                this,
-                "Please enter a valid amount.",
-                Toast.LENGTH_SHORT
-            ).show()
-
+            Toast.makeText(this, "Please enter a valid amount.", Toast.LENGTH_SHORT).show()
             return
         }
 
         val now = Calendar.getInstance().time
-
-        val dateFormat = SimpleDateFormat(
-            "dd MMM yyyy",
-            Locale.ENGLISH
-        )
-
-        val timeFormat = SimpleDateFormat(
-            "HH:mm",
-            Locale.ENGLISH
-        )
+        val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH)
+        val timeFormat = SimpleDateFormat("HH:mm", Locale.ENGLISH)
 
         expenses.add(
             Expense(
@@ -1507,1562 +1499,585 @@ val menuCardBorderColor = Color.argb(
         saveData()
         updateTotals()
         refreshExpenses()
-
         descriptionInput.text.clear()
         amountInput.text.clear()
-
-        Toast.makeText(
-            this,
-            "Expense added.",
-            Toast.LENGTH_SHORT
-        ).show()
+        Toast.makeText(this, "Expense added.", Toast.LENGTH_SHORT).show()
     }
 
-    private fun deleteExpense(
-        index: Int
-    ) {
-
-        if (
-            index < 0 ||
-            index >= expenses.size
-        ) {
-            return
-        }
-
+    private fun deleteExpense(index: Int) {
+        if (index < 0 || index >= expenses.size) return
         expenses.removeAt(index)
-
         saveData()
         updateTotals()
         refreshExpenses()
     }
 
     private fun updateTotals() {
+        val totalExpenses = expenses.sumOf { it.amount }
+        val remaining = income - totalExpenses
 
-        val totalExpenses =
-            expenses.sumOf {
-                it.amount
-            }
-
-        val remaining =
-            income - totalExpenses
-
-        monthlyText.text =
-            money(totalExpenses)
-
-        remainingText.text =
-            money(remaining)
-
-        incomeDisplay.text =
-            money(income)
+        monthlyText.text = money(totalExpenses)
+        remainingText.text = money(remaining)
+        incomeDisplay.text = money(income)
 
         remainingText.setTextColor(
-            if (remaining < 0) {
-                Color.rgb(
-                    255,
-                    95,
-                    95
-                )
-            } else {
-                appearanceTheme.accentColor
-            }
-        )
-    }
-        private fun currentMonthKey(): String {
-
-        return String.format(
-            Locale.US,
-            "%04d-%02d",
-            selectedYear,
-            selectedMonth + 1
+            if (remaining < 0) Color.rgb(255, 95, 95) else appearanceTheme.accentColor
         )
     }
 
-    private fun incomeKey(): String {
-        return "income_${currentMonthKey()}"
+    private fun currentMonthKey(): String {
+        return String.format(Locale.US, "%04d-%02d", selectedYear, selectedMonth + 1)
     }
 
-    private fun expensesKey(): String {
-        return "expenses_${currentMonthKey()}"
-    }
+    private fun incomeKey(): String = "income_${currentMonthKey()}"
+    private fun expensesKey(): String = "expenses_${currentMonthKey()}"
 
     private fun saveData() {
-
         val expensesArray = JSONArray()
-
         for (expense in expenses) {
-
-            val item = JSONObject()
-
-            item.put(
-                "description",
-                expense.description
-            )
-
-            item.put(
-                "category",
-                expense.category
-            )
-
-            item.put(
-                "amount",
-                expense.amount
-            )
-
-            item.put(
-                "date",
-                expense.date
-            )
-
-            item.put(
-                "time",
-                expense.time
-            )
-
+            val item = JSONObject().apply {
+                put("description", expense.description)
+                put("category", expense.category)
+                put("amount", expense.amount)
+                put("date", expense.date)
+                put("time", expense.time)
+            }
             expensesArray.put(item)
         }
 
         prefs.edit()
-            .putString(
-                incomeKey(),
-                income.toString()
-            )
-            .putString(
-                expensesKey(),
-                expensesArray.toString()
-            )
+            .putString(incomeKey(), income.toString())
+            .putString(expensesKey(), expensesArray.toString())
             .apply()
     }
 
     private fun loadCategories() {
-    val storedCategories = prefs.getString(
-        categoriesPreferenceKey,
-        null
-    )
+        val storedCategories = prefs.getString(categoriesPreferenceKey, null)
+        categories.clear()
 
-    categories.clear()
-
-   if (storedCategories.isNullOrEmpty()) {
-    categories.addAll(defaultCategories)
-    saveCategories()
-   }  else {
-        try {
-            val savedArray = JSONArray(storedCategories)
-            val savedCategories = mutableListOf<String>()
-
-            for (index in 0 until savedArray.length()) {
-                val name = savedArray.optString(index).trim()
-
-                if (name.isNotEmpty() && name != "Other") {
-                    savedCategories.add(name)
+        if (storedCategories.isNullOrEmpty()) {
+            categories.addAll(defaultCategories)
+            saveCategories()
+        } else {
+            try {
+                val savedArray = JSONArray(storedCategories)
+                val savedCategories = mutableListOf<String>()
+                for (index in 0 until savedArray.length()) {
+                    val name = savedArray.optString(index).trim()
+                    if (name.isNotEmpty() && name != "Other") {
+                        savedCategories.add(name)
+                    }
                 }
-            } 
-            categories.addAll(
-                savedCategories.distinct()
-            )
-        } catch (_: Exception) {
-            categories.addAll(
-                defaultCategories.filter { it != "Other" }
-            )
+                categories.addAll(savedCategories.distinct())
+            } catch (_: Exception) {
+                categories.addAll(defaultCategories.filter { it != "Other" })
+            }
         }
-    }
 
-    categories.removeAll { it == "Other" }
-    categories.add("Other")
+        categories.removeAll { it == "Other" }
+        categories.add("Other")
     }
 
     private fun saveCategories() {
-    val savedArray = JSONArray()
-
-    categories.forEach { category ->
-        savedArray.put(category)
+        val savedArray = JSONArray()
+        categories.forEach { savedArray.put(it) }
+        prefs.edit().putString(categoriesPreferenceKey, savedArray.toString()).apply()
     }
 
-    prefs.edit()
-        .putString(
-            categoriesPreferenceKey,
-            savedArray.toString()
-        )
-        .apply()
-}
-
     private fun loadData() {
-
-        income = prefs.getString(
-            incomeKey(),
-            "0"
-        )?.toDoubleOrNull() ?: 0.0
-
+        income = prefs.getString(incomeKey(), "0")?.toDoubleOrNull() ?: 0.0
         expenses.clear()
 
-        val storedExpenses = prefs.getString(
-            expensesKey(),
-            null
-        )
-
+        val storedExpenses = prefs.getString(expensesKey(), null)
         if (!storedExpenses.isNullOrEmpty()) {
-
             try {
-
-                val array =
-                    JSONArray(storedExpenses)
-
-                for (
-                    index in 0 until array.length()
-                ) {
-
-                    val item =
-                        array.getJSONObject(index)
-
+                val array = JSONArray(storedExpenses)
+                for (index in 0 until array.length()) {
+                    val item = array.getJSONObject(index)
                     expenses.add(
                         Expense(
-                            description =
-                                item.optString(
-                                    "description",
-                                    "No description"
-                                ),
-                            category =
-                                item.optString(
-                                    "category",
-                                    "Other"
-                                ),
-                            amount =
-                                item.optDouble(
-                                    "amount",
-                                    0.0
-                                ),
-                            date =
-                                item.optString(
-                                    "date",
-                                    ""
-                                ),
-                            time =
-                                item.optString(
-                                    "time",
-                                    ""
-                                )
+                            description = item.optString("description", "No description"),
+                            category = item.optString("category", "Other"),
+                            amount = item.optDouble("amount", 0.0),
+                            date = item.optString("date", ""),
+                            time = item.optString("time", "")
                         )
                     )
                 }
-
-            } catch (
-                exception: Exception
-            ) {
-
-                                expenses.clear()
+            } catch (_: Exception) {
+                expenses.clear()
             }
-
             return
         }
 
-        val migrationDone =
-            prefs.getBoolean(
-                "legacy_data_migrated",
-                false
-            )
-
+        val migrationDone = prefs.getBoolean("legacy_data_migrated", false)
         if (!migrationDone) {
+            val legacyIncome = prefs.getString("income", null)
+            val legacyExpenses = prefs.getString("expenses", null)
 
-            val legacyIncome =
-                prefs.getString(
-                    "income",
-                    null
-                )
-
-            val legacyExpenses =
-                prefs.getString(
-                    "expenses",
-                    null
-                )
-
-            if (
-                !legacyIncome.isNullOrEmpty() ||
-                !legacyExpenses.isNullOrEmpty()
-            ) {
-
-                income =
-                    legacyIncome
-                        ?.toDoubleOrNull()
-                        ?: 0.0
-
+            if (!legacyIncome.isNullOrEmpty() || !legacyExpenses.isNullOrEmpty()) {
+                income = legacyIncome?.toDoubleOrNull() ?: 0.0
                 if (!legacyExpenses.isNullOrEmpty()) {
-
                     try {
-
-                        val array =
-                            JSONArray(
-                                legacyExpenses
-                            )
-
-                        for (
-                            index in 0 until array.length()
-                        ) {
-
-                            val item =
-                                array.getJSONObject(
-                                    index
-                                )
-
+                        val array = JSONArray(legacyExpenses)
+                        for (index in 0 until array.length()) {
+                            val item = array.getJSONObject(index)
                             expenses.add(
                                 Expense(
-                                    description =
-                                        item.optString(
-                                            "description",
-                                            "No description"
-                                        ),
-                                    category =
-                                        item.optString(
-                                            "category",
-                                            "Other"
-                                        ),
-                                    amount =
-                                        item.optDouble(
-                                            "amount",
-                                            0.0
-                                        ),
-                                    date =
-                                        item.optString(
-                                            "date",
-                                            ""
-                                        ),
-                                    time =
-                                        item.optString(
-                                            "time",
-                                            ""
-                                        )
+                                    description = item.optString("description", "No description"),
+                                    category = item.optString("category", "Other"),
+                                    amount = item.optDouble("amount", 0.0),
+                                    date = item.optString("date", ""),
+                                    time = item.optString("time", "")
                                 )
                             )
                         }
-
-                    } catch (
-                        exception: Exception
-                    ) {
-
+                    } catch (_: Exception) {
                         expenses.clear()
                     }
                 }
-
                 saveData()
             }
-
-            prefs.edit()
-                .putBoolean(
-                    "legacy_data_migrated",
-                    true
-                )
-                .apply()
+            prefs.edit().putBoolean("legacy_data_migrated", true).apply()
         }
     }
+    private fun changeMonth(direction: Int) {
+        val calendar = Calendar.getInstance()
+        calendar.set(selectedYear, selectedMonth, 1)
+        calendar.add(Calendar.MONTH, direction)
 
-    private fun changeMonth(
-        direction: Int
-    ) {
+        selectedYear = calendar.get(Calendar.YEAR)
+        selectedMonth = calendar.get(Calendar.MONTH)
 
-        val calendar =
-            Calendar.getInstance()
-
-        calendar.set(
-            selectedYear,
-            selectedMonth,
-            1
-        )
-
-        calendar.add(
-            Calendar.MONTH,
-            direction
-        )
-
-        selectedYear =
-            calendar.get(
-                Calendar.YEAR
-            )
-
-        selectedMonth =
-            calendar.get(
-                Calendar.MONTH
-            )
-
-        loadData()
-        updateMonthDisplay()
-        updateTotals()
-        refreshExpenses()
+        buildInterface()
     }
 
     private fun updateMonthDisplay() {
+        val calendar = Calendar.getInstance()
+        calendar.set(selectedYear, selectedMonth, 1)
 
-                val calendar =
-            Calendar.getInstance()
-
-        calendar.set(
-            selectedYear,
-            selectedMonth,
-            1
-        )
-
-        val formatter =
-            SimpleDateFormat(
-                "MMMM yyyy",
-                Locale.ENGLISH
-            )
-
-        monthText.text =
-            formatter.format(
-                calendar.time
-            ).replaceFirstChar {
-                it.uppercase()
-            }
+        val formatter = SimpleDateFormat("MMMM yyyy", Locale.ENGLISH)
+        monthText.text = formatter.format(calendar.time).replaceFirstChar { it.uppercase() }
     }
 
     private fun showMonthPicker() {
+        val dialogLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(24, 8, 24, 8)
+        }
 
-        val dialogLayout =
-            LinearLayout(this).apply {
-                orientation =
-                    LinearLayout.VERTICAL
+        val yearPicker = NumberPicker(this).apply {
+            minValue = 2000
+            maxValue = 2100
+            value = selectedYear
+        }
 
-                setPadding(
-                    24,
-                    8,
-                    24,
-                    8
-                )
-            }
-
-        val yearPicker =
-            NumberPicker(this).apply {
-                minValue = 2000
-                maxValue = 2100
-                value = selectedYear
-            }
-
-        val monthPicker =
-            NumberPicker(this).apply {
-                minValue = 0
-                maxValue = 11
-                value = selectedMonth
-
-                displayedValues =
-                    arrayOf(
-                        "January",
-                        "February",
-                        "March",
-                        "April",
-                        "May",
-                        "June",
-                        "July",
-                        "August",
-                        "September",
-                        "October",
-                        "November",
-                        "December"
-                    )
-            }
-
-        dialogLayout.addView(
-            yearPicker,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+        val monthPicker = NumberPicker(this).apply {
+            minValue = 0
+            maxValue = 11
+            value = selectedMonth
+            displayedValues = arrayOf(
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
             )
-        )
+        }
 
-        dialogLayout.addView(
-            monthPicker,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        )
+        dialogLayout.addView(yearPicker, LinearLayout.LayoutParams(-1, -2))
+        dialogLayout.addView(monthPicker, LinearLayout.LayoutParams(-1, -2))
 
         AlertDialog.Builder(this)
             .setTitle("Select month")
             .setView(dialogLayout)
-            .setNegativeButton(
-                "Cancel",
-                null
-            )
-            .setPositiveButton(
-                "OK"
-            ) { _, _ ->
-
-                selectedYear =
-                    yearPicker.value
-
-                selectedMonth =
-                    monthPicker.value
-
-                loadData()
-                updateMonthDisplay()
-                updateTotals()
-                refreshExpenses()
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("OK") { _, _ ->
+                selectedYear = yearPicker.value
+                selectedMonth = monthPicker.value
+                buildInterface()
             }
             .show()
     }
 
     private fun refreshExpenses() {
-
         expensesContainer.removeAllViews()
 
         if (expenses.isEmpty()) {
+            val emptyCard = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.CENTER
+                setPadding(20, 22, 20, 22)
+                background = roundedBackground(cardColor, 16f)
+            }
 
-            val emptyCard =
-                LinearLayout(this).apply {
-                    orientation =
-                        LinearLayout.VERTICAL
+            val emptyTitle = TextView(this).apply {
+                text = "No expenses this month"
+                textSize = 15f
+                setTextColor(white)
+                typeface = Typeface.DEFAULT_BOLD
+                gravity = Gravity.CENTER
+            }
 
-                    gravity =
-                        Gravity.CENTER
+            val emptySubtitle = TextView(this).apply {
+                text = "Your spending will appear here"
+                textSize = 12f
+                setTextColor(muted)
+                gravity = Gravity.CENTER
+                setPadding(0, 5, 0, 0)
+            }
 
-                    setPadding(
-                        20,
-                        22,
-                        20,
-                        22
-                    )
-
-                    background =
-                        roundedBackground(
-                            cardColor,
-                            16f
-                        )
-                }
-
-            val emptyTitle =
-                TextView(this).apply {
-                    text =
-                        "No expenses this month"
-
-                    textSize = 15f
-
-                    setTextColor(
-                        white
-                    )
-
-                    typeface =
-                        Typeface.DEFAULT_BOLD
-
-                    gravity =
-                        Gravity.CENTER
-                }
-
-            val emptySubtitle =
-                TextView(this).apply {
-                    text =
-                        "Your spending will appear here"
-
-                    textSize = 12f
-
-                    setTextColor(
-                        muted
-                    )
-
-                    gravity =
-                        Gravity.CENTER
-
-                    setPadding(
-                        0,
-                        5,
-                        0,
-                        0
-                    )
-                }
-
-            emptyCard.addView(
-                emptyTitle
-            )
-
-            emptyCard.addView(
-                emptySubtitle
-            )
+            emptyCard.addView(emptyTitle)
+            emptyCard.addView(emptySubtitle)
 
             expensesContainer.addView(
                 emptyCard,
-                LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
+                LinearLayout.LayoutParams(-1, -2)
             )
-
             return
         }
-                for (
-            index in expenses.indices.reversed()
-        ) {
 
-            val expense =
-                expenses[index]
+        for (index in expenses.indices.reversed()) {
+            val expense = expenses[index]
 
-            val expenseCard =
-                LinearLayout(this).apply {
-                    orientation =
-                        LinearLayout.HORIZONTAL
+            val expenseCard = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(16, 15, 12, 15)
+                background = roundedBackground(cardColor, 16f)
+            }
 
-                    gravity =
-                        Gravity.CENTER_VERTICAL
+            val accent = View(this).apply {
+                setBackgroundColor(appearanceTheme.accentColor)
+            }
+            expenseCard.addView(accent, LinearLayout.LayoutParams(3, 48))
 
-                    setPadding(
-                        16,
-                        15,
-                        12,
-                        15
-                    )
+            val details = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(12, 0, 8, 0)
+            }
 
-                    background =
-                        roundedBackground(
-                            cardColor,
-                            16f
-                        )
-                }
+            val description = TextView(this).apply {
+                text = expense.description
+                textSize = 16f
+                setTextColor(white)
+                typeface = Typeface.DEFAULT_BOLD
+            }
 
-            val accent =
-                View(this).apply {
-                    setBackgroundColor(
-                        appearanceTheme.accentColor
-                    )
-                }
+            val category = TextView(this).apply {
+                text = expense.category
+                textSize = 12f
+                setTextColor(white)
+                setPadding(0, 4, 0, 0)
+            }
 
-            expenseCard.addView(
-                accent,
-                LinearLayout.LayoutParams(
-                    3,
-                    48
-                )
-            )
+            details.addView(description)
+            details.addView(category)
 
-            val details =
-                LinearLayout(this).apply {
-                    orientation =
-                        LinearLayout.VERTICAL
-
-                    setPadding(
-                        12,
-                        0,
-                        8,
-                        0
-                    )
-                }
-
-            val description =
-                TextView(this).apply {
-                    text =
-                        expense.description
-
-                    textSize = 16f
-
-                    setTextColor(
-                        white
-                    )
-
-                    typeface =
-                        Typeface.DEFAULT_BOLD
-                }
-
-            val category =
-                TextView(this).apply {
-                    text =
-                        expense.category
-
-                    textSize = 12f
-
-                    setTextColor(
-                        white
-                    )
-
-                    setPadding(
-                        0,
-                        4,
-                        0,
-                        0
-                    )
-                }
-
-            details.addView(
-                description
-            )
-
-            details.addView(
-                category
-            )
-
-            if (
-                expense.date.isNotEmpty() ||
-                expense.time.isNotEmpty()
-            ) {
+            if (expense.date.isNotEmpty() || expense.time.isNotEmpty()) {
                 val timestamp = TextView(this).apply {
-                    text = listOf(
-                        expense.date,
-                        expense.time
-                    )
-                        .filter { it.isNotEmpty() }
-                        .joinToString(" • ")
-
+                    text = listOf(expense.date, expense.time).filter { it.isNotEmpty() }.joinToString(" • ")
                     textSize = 11f
                     setTextColor(muted)
-
-                    setPadding(
-                        0,
-                        4,
-                        0,
-                        0
-                    )
+                    setPadding(0, 4, 0, 0)
                 }
-
                 details.addView(timestamp)
             }
 
             expenseCard.addView(
                 details,
-                LinearLayout.LayoutParams(
-                    0,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    1f
-                )
+                LinearLayout.LayoutParams(0, -2, 1f)
             )
 
-            val rightColumn =
-                LinearLayout(this).apply {
-                    orientation =
-                        LinearLayout.VERTICAL
+            val rightColumn = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.END
+            }
 
-                    gravity =
-                        Gravity.END
-                }
-
-            val amountText =
-                TextView(this).apply {
-                    text =
-                        money(
-                            expense.amount
-                        )
-
-                    textSize = 16f
-
-                    setTextColor(
-                        white
-                    )
-
-                    typeface =
-                        Typeface.DEFAULT_BOLD
-
-                    gravity =
-                        Gravity.END
-                }
-
-            rightColumn.addView(
-
-                                amountText
-            )
-
-            expenseCard.addView(
-                rightColumn,
-                LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-            )
-
-            val params =
-                LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-
-            params.setMargins(
-                0,
-                0,
-                0,
-                10
-            )
-
-                    val swipeLayout =
-            SwipeDeleteLayout(this)
-
-        swipeLayout.addView(
-            TextView(this).apply {
-                text = "Delete"
-                textSize = 13f
+            val amountText = TextView(this).apply {
+                text = money(expense.amount)
+                textSize = 16f
                 setTextColor(white)
-                gravity = Gravity.CENTER
                 typeface = Typeface.DEFAULT_BOLD
+                gravity = Gravity.END
+            }
 
-                background =
-                    roundedBackground(
-                        Color.rgb(190, 50, 55),
-                        16f
-                    )
+            rightColumn.addView(amountText)
+            expenseCard.addView(rightColumn, LinearLayout.LayoutParams(-2, -2))
 
-                setOnClickListener {
-                    deleteExpense(index)
-                }
-            },
-            FrameLayout.LayoutParams(
-                (
-                    92 *
-                        resources.displayMetrics.density
-                    ).toInt(),
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                Gravity.END
+            val params = LinearLayout.LayoutParams(-1, -2)
+            params.setMargins(0, 0, 0, 10)
+
+            val swipeLayout = SwipeDeleteLayout(this)
+
+            swipeLayout.addView(
+                TextView(this).apply {
+                    text = "Delete"
+                    textSize = 13f
+                    setTextColor(white)
+                    gravity = Gravity.CENTER
+                    typeface = Typeface.DEFAULT_BOLD
+                    background = roundedBackground(Color.rgb(190, 50, 55), 16f)
+                    setOnClickListener { deleteExpense(index) }
+                },
+                FrameLayout.LayoutParams(
+                    (92 * resources.displayMetrics.density).toInt(),
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    Gravity.END
+                )
             )
-        )
 
-        swipeLayout.addView(
-            expenseCard,
-            FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT
+            swipeLayout.addView(
+                expenseCard,
+                FrameLayout.LayoutParams(-1, -2)
             )
-        )
 
-        swipeLayout.setDeleteWidth(
-            (
-                92 *
-                    resources.displayMetrics.density
-                ).toInt()
-        )
-
-        expensesContainer.addView(
-            swipeLayout,
-            params
-        )
+            swipeLayout.setDeleteWidth((92 * resources.displayMetrics.density).toInt())
+            expensesContainer.addView(swipeLayout, params)
         }
     }
 
-    private inner class SwipeDeleteLayout(
-    context: Context
-) : FrameLayout(context) {
+    private inner class SwipeDeleteLayout(context: Context) : FrameLayout(context) {
+        private var downX = 0f
+        private var downY = 0f
+        private var deleteWidth = 0
+        private var dragging = false
 
-    private var downX = 0f
-    private var downY = 0f
-    private var deleteWidth = 0
-    private var dragging = false
+        fun setDeleteWidth(width: Int) {
+            deleteWidth = width
+        }
 
-    fun setDeleteWidth(width: Int) {
-        deleteWidth = width
-    }
-
-    override fun onTouchEvent(
-        event: MotionEvent
-    ): Boolean {
-
-        when (event.actionMasked) {
-
-            MotionEvent.ACTION_DOWN -> {
-                downX = event.x
-                downY = event.y
-                dragging = false
-                return true
-            }
-
-            MotionEvent.ACTION_MOVE -> {
-
-                val dx =
-                    event.x - downX
-
-                val dy =
-                    event.y - downY
-
-                if (
-                    !dragging &&
-                    kotlin.math.abs(dx) > 12 &&
-                    kotlin.math.abs(dx) >
-                        kotlin.math.abs(dy)
-                ) {
-
-                    dragging = true
-
-                    parent.requestDisallowInterceptTouchEvent(
-                        true
-                    )
-                }
-
-                if (dragging) {
-
-                    val translation =
-                        dx.coerceIn(
-                            -deleteWidth.toFloat(),
-                            0f
-                        )
-
-                    getChildAt(1).translationX =
-                        translation
-
+        override fun onTouchEvent(event: MotionEvent): Boolean {
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    downX = event.x
+                    downY = event.y
+                    dragging = false
                     return true
                 }
+                MotionEvent.ACTION_MOVE -> {
+                    val dx = event.x - downX
+                    val dy = event.y - downY
 
-                return true
-            }
+                    if (!dragging && kotlin.math.abs(dx) > 12 && kotlin.math.abs(dx) > kotlin.math.abs(dy)) {
+                        dragging = true
+                        parent.requestDisallowInterceptTouchEvent(true)
+                    }
 
-            MotionEvent.ACTION_UP,
-            MotionEvent.ACTION_CANCEL -> {
-
-                if (dragging) {
-
-                    parent.requestDisallowInterceptTouchEvent(
-                        false
-                    )
-
-                    val front =
-                        getChildAt(1)
-
-                    val shouldOpen =
-                        front.translationX <=
-                            -deleteWidth * 0.45f
-
-                    front.animate()
-                        .translationX(
-                            if (shouldOpen) {
-                                -deleteWidth.toFloat()
-                            } else {
-                                0f
-                            }
-                        )
-                        .setDuration(180)
-                        .setInterpolator(
-                            AccelerateDecelerateInterpolator()
-                        )
-                        .start()
+                    if (dragging) {
+                        val translation = dx.coerceIn(-deleteWidth.toFloat(), 0f)
+                        getChildAt(1).translationX = translation
+                        return true
+                    }
+                    return true
                 }
-
-                dragging = false
-                return true
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    if (dragging) {
+                        parent.requestDisallowInterceptTouchEvent(false)
+                        val front = getChildAt(1)
+                        val shouldOpen = front.translationX <= -deleteWidth * 0.45f
+                        front.animate()
+                            .translationX(if (shouldOpen) -deleteWidth.toFloat() else 0f)
+                            .setDuration(180)
+                            .setInterpolator(AccelerateDecelerateInterpolator())
+                            .start()
+                    }
+                    dragging = false
+                    return true
+                }
             }
-        }
-
-        return true
-    }
-}
-
-    private fun sectionTitle(
-        text: String,
-        color: Int
-    ): TextView {
-
-        return TextView(this).apply {
-            this.text = text
-            textSize = 17f
-            setTextColor(color)
-            typeface = Typeface.DEFAULT_BOLD
-            letterSpacing = 0.04f
+            return true
         }
     }
 
-    private fun smallLabel(
-        text: String
-    ): TextView {
-
-        return TextView(this).apply {
-            this.text = text
-            textSize = 13f
-            setTextColor(secondary)
-        }
+    private fun sectionTitle(text: String, color: Int): TextView = TextView(this).apply {
+        this.text = text
+        textSize = 17f
+        setTextColor(color)
+        typeface = Typeface.DEFAULT_BOLD
+        letterSpacing = 0.04f
     }
 
-    private fun createSmallCard():
-        LinearLayout {
-
-        return LinearLayout(this).apply {
-            orientation =
-                LinearLayout.VERTICAL
-
-            setPadding(
-                16,
-                16,
-                16,
-                16
-            )
-
-            background =
-                roundedBackground(
-                    cardColor,
-                    16f
-                )
-        }
+    private fun smallLabel(text: String): TextView = TextView(this).apply {
+        this.text = text
+        textSize = 13f
+        setTextColor(secondary)
     }
 
-    private fun createMainCard():
-        LinearLayout {
-
-        return LinearLayout(this).apply {
-            orientation =
-                LinearLayout.VERTICAL
-
-            setPadding(
-                16,
-                16,
-                16,
-                16
-            )
-
-            background =
-                gradientBackground(
-                    Color.rgb(
-                        18,
-                        20,
-                        27
-                    ),
-                    Color.rgb(
-                        24,
-                        31,
-                        45
-                    ),
-                    16f
-                )
-        }
+    private fun createSmallCard(): LinearLayout = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        setPadding(16, 16, 16, 16)
+        background = roundedBackground(cardColor, 16f)
     }
 
-    private fun createInput(
-        hint: String,
-        inputType: Int
-    ): EditText {
-
-        return EditText(this).apply {
-            this.hint = hint
-            this.inputType = inputType
-            textSize = 15f
-            setTextColor(white)
-            setHintTextColor(muted)
-
-            setPadding(
-                14,
-                12,
-                14,
-                12
-            )
-
-            background =
-                roundedBackground(
-                    surfaceColor,
-                    12f
-                )
-        }
+    private fun createMainCard(): LinearLayout = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        setPadding(16, 16, 16, 16)
+        background = gradientBackground(Color.rgb(18, 20, 27), Color.rgb(24, 31, 45), 16f)
     }
 
-    private fun createGradientButton(
-        text: String,
-        startColor: Int,
-                endColor: Int
-    ): TextView {
-
-        return TextView(this).apply {
-            this.text = text
-            textSize = 15f
-            setTextColor(Color.WHITE)
-            typeface = Typeface.DEFAULT_BOLD
-            gravity = Gravity.CENTER
-
-            setPadding(
-                16,
-                13,
-                16,
-                13
-            )
-
-            background =
-                gradientBackground(
-                    startColor,
-                    endColor,
-                    12f
-                )
-        }
+    private fun createInput(hint: String, inputType: Int): EditText = EditText(this).apply {
+        this.hint = hint
+        this.inputType = inputType
+        textSize = 15f
+        setTextColor(white)
+        setHintTextColor(muted)
+        setPadding(14, 12, 14, 12)
+        background = roundedBackground(surfaceColor, 12f)
     }
 
-    private fun createNavigationButton(
-        text: String
-    ): TextView {
-
-        return TextView(this).apply {
-            this.text = text
-            textSize = 31f
-            setTextColor(blueBright)
-            gravity = Gravity.CENTER
-            typeface = Typeface.DEFAULT
-            setPadding(
-                4,
-                0,
-                4,
-                2
-            )
-
-            background =
-                roundedBackground(
-                    Color.rgb(
-                        24,
-                        35,
-                        54
-                    ),
-                    12f
-                )
-        }
+    private fun createGradientButton(text: String, startColor: Int, endColor: Int): TextView = TextView(this).apply {
+        this.text = text
+        textSize = 15f
+        setTextColor(Color.WHITE)
+        typeface = Typeface.DEFAULT_BOLD
+        gravity = Gravity.CENTER
+        setPadding(16, 13, 16, 13)
+        background = gradientBackground(startColor, endColor, 12f)
     }
 
-    private fun roundedBackground(
-        color: Int,
-        radius: Float
-    ): GradientDrawable {
-
-        return GradientDrawable().apply {
-            setColor(color)
-            cornerRadius = radius
-        }
+    private fun createNavigationButton(text: String): TextView = TextView(this).apply {
+        this.text = text
+        textSize = 31f
+        setTextColor(blueBright)
+        gravity = Gravity.CENTER
+        typeface = Typeface.DEFAULT
+        setPadding(4, 0, 4, 2)
+        background = roundedBackground(Color.rgb(24, 35, 54), 12f)
     }
 
-    private fun gradientBackground(
-        startColor: Int,
-        endColor: Int,
-        radius: Float
-    ): GradientDrawable {
-
-        return GradientDrawable(
-            GradientDrawable.Orientation.TL_BR,
-            intArrayOf(
-                startColor,
-                endColor
-            )
-        ).apply {
-            cornerRadius = radius
-        }
+    private fun roundedBackground(color: Int, radius: Float): GradientDrawable = GradientDrawable().apply {
+        setColor(color)
+        cornerRadius = radius
     }
 
-    private fun inputParams():
-        LinearLayout.LayoutParams {
-
-        val params =
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-
-        params.setMargins(
-            0,
-            0,
-            0,
-            10
-        )
-
-        return params
+    private fun gradientBackground(startColor: Int, endColor: Int, radius: Float): GradientDrawable = GradientDrawable(
+        GradientDrawable.Orientation.TL_BR,
+        intArrayOf(startColor, endColor)
+    ).apply {
+        cornerRadius = radius
     }
 
-    private fun spinnerParams():
-        LinearLayout.LayoutParams {
-
-        val params =
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-
-        params.setMargins(
-            0,
-            0,
-            0,
-            10
-        )
-
-        return params
+    private fun inputParams(): LinearLayout.LayoutParams = LinearLayout.LayoutParams(-1, -2).apply {
+        setMargins(0, 0, 0, 10)
     }
 
-    private fun buttonParams():
-        LinearLayout.LayoutParams {
-
-        val params =
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-
-        params.setMargins(
-            0,
-            4,
-            0,
-            0
-        )
-
-        return params
+    private fun spinnerParams(): LinearLayout.LayoutParams = LinearLayout.LayoutParams(-1, -2).apply {
+        setMargins(0, 0, 0, 10)
     }
 
-    private fun weightParams():
-        LinearLayout.LayoutParams {
-
-        return LinearLayout.LayoutParams(
-            0,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            1f
-        )
+    private fun buttonParams(): LinearLayout.LayoutParams = LinearLayout.LayoutParams(-1, -2).apply {
+        setMargins(0, 4, 0, 0)
     }
 
-    private fun money(
-        value: Double
-    ): String {
+    private fun weightParams(): LinearLayout.LayoutParams = LinearLayout.LayoutParams(0, -2, 1f)
 
-        return NumberFormat
-            .getCurrencyInstance(
-                Locale.GERMANY
-            )
-            .format(value)
-    }
+    private fun money(value: Double): String = NumberFormat.getCurrencyInstance(Locale.GERMANY).format(value)
 
     private fun exportBackup() {
-
-        val intent =
-            Intent(
-                Intent.ACTION_CREATE_DOCUMENT
-            ).apply {
-                addCategory(
-                    Intent.CATEGORY_OPENABLE
-                )
-
-                type =
-                    "application/json"
-
-                putExtra(
-                    Intent.EXTRA_TITLE,
-                    "MoneyTrack_Backup.json"
-                )
-            }
-
-        startActivityForResult(
-            intent,
-            REQUEST_EXPORT_BACKUP
-        )
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "application/json"
+            putExtra(Intent.EXTRA_TITLE, "MoneyTrack_Backup.json")
+        }
+        startActivityForResult(intent, REQUEST_EXPORT_BACKUP)
     }
 
     private fun importBackup() {
-
-        val intent =
-            Intent(
-                Intent.ACTION_OPEN_DOCUMENT
-            ).apply {
-                addCategory(
-                    Intent.CATEGORY_OPENABLE
-                )
-
-                type =
-                    "application/json"
-            }
-
-        startActivityForResult(
-            intent,
-            REQUEST_IMPORT_BACKUP
-        )
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "application/json"
+        }
+        startActivityForResult(intent, REQUEST_IMPORT_BACKUP)
     }
 
-    private fun createBackupJson():
-        JSONObject {
-            
-                    val root =
-            JSONObject()
+    private fun createBackupJson(): JSONObject {
+        val root = JSONObject()
+        root.put("format", "MoneyTrack Backup")
+        root.put("version", 1)
 
-        root.put(
-            "format",
-            "MoneyTrack Backup"
-        )
-
-        root.put(
-            "version",
-            1
-        )
-
-        val data =
-            JSONObject()
-
-        for (
-            (key, value) in prefs.all
-        ) {
-
+        val data = JSONObject()
+        for ((key, value) in prefs.all) {
             when (value) {
-
-                is String -> {
-                    data.put(
-                        key,
-                        value
-                    )
-                }
-
-                is Boolean -> {
-                    data.put(
-                        key,
-                        value
-                    )
-                }
-
-                is Int -> {
-                    data.put(
-                        key,
-                        value
-                    )
-                }
-
-                is Long -> {
-                    data.put(
-                        key,
-                        value
-                    )
-                }
-
-                is Float -> {
-                    data.put(
-                        key,
-                        value
-                    )
-                }
-
-                is Double -> {
-                    data.put(
-                        key,
-                        value
-                    )
-                }
+                is String -> data.put(key, value)
+                is Boolean -> data.put(key, value)
+                is Int -> data.put(key, value)
+                is Long -> data.put(key, value)
+                is Float -> data.put(key, value)
+                is Double -> data.put(key, value)
             }
         }
-
-        root.put(
-            "data",
-            data
-        )
-
+        root.put("data", data)
         return root
     }
 
-    private fun restoreBackupJson(
-        jsonText: String
-    ) {
-
+    private fun restoreBackupJson(jsonText: String) {
         try {
-
-            val root =
-                JSONObject(jsonText)
-
-            if (
-                root.optString(
-                    "format"
-                ) != "MoneyTrack Backup"
-            ) {
-
-                Toast.makeText(
-                    this,
-                    "Invalid MoneyTrack backup.",
-                    Toast.LENGTH_SHORT
-                ).show()
-
+            val root = JSONObject(jsonText)
+            if (root.optString("format") != "MoneyTrack Backup") {
+                Toast.makeText(this, "Invalid MoneyTrack backup.", Toast.LENGTH_SHORT).show()
+                return
+            }
+            if (root.optInt("version", 0) != 1) {
+                Toast.makeText(this, "Unsupported backup version.", Toast.LENGTH_SHORT).show()
+                return
+            }
+            val data = root.optJSONObject("data") ?: run {
+                Toast.makeText(this, "Backup contains no data.", Toast.LENGTH_SHORT).show()
                 return
             }
 
-            val version =
-                root.optInt(
-                    "version",
-                    0
-                )
-
-            if (version != 1) {
-
-                Toast.makeText(
-                    this,
-                    "Unsupported backup version.",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                return
-            }
-
-            val data =
-                root.optJSONObject(
-                    "data"
-                )
-
-            if (data == null) {
-
-                Toast.makeText(
-                    this,
-                    "Backup contains no data.",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                return
-            }
-
-            val editor =
-                prefs.edit()
-
+            val editor = prefs.edit()
             editor.clear()
-
-            val keys =
-                data.keys()
-
+            val keys = data.keys()
             while (keys.hasNext()) {
-
-                val key =
-                    keys.next()
-
-                val value =
-                    data.get(key)
-
-                when (value) {
-
-                    is String -> {
-                        editor.putString(
-                            key,
-                            value
-                        )
-                    }
-
-                    is Boolean -> {
-                        editor.putBoolean(
-                            key,
-                            value
-                        )
-                    }
-
-                    is Int -> {
-                        editor.putInt(
-                            key,
-                            value
-                        )
-                    }
-
-                    is Long -> {
-                        editor.putLong(
-                            key,
-                            value
-                        )
-                    }
-
-                    is Double -> {
-                        editor.putFloat(
-                            key,
-                            value.toFloat()
-                        )
-                    }
+                val key = keys.next()
+                when (val value = data.get(key)) {
+                    is String -> editor.putString(key, value)
+                    is Boolean -> editor.putBoolean(key, value)
+                    is Int -> editor.putInt(key, value)
+                    is Long -> editor.putLong(key, value)
+                    is Double -> editor.putFloat(key, value.toFloat())
                 }
             }
-
             editor.apply()
 
             loadData()
             updateMonthDisplay()
             updateTotals()
             refreshExpenses()
-
-            Toast.makeText(
-                this,
-                "Backup imported successfully.",
-                Toast.LENGTH_LONG
-            ).show()
-
-        } catch (
-            exception: Exception
-        ) {
-
-            Toast.makeText(
-                this,
-                "Could not import backup.",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(this, "Backup imported successfully.", Toast.LENGTH_LONG).show()
+        } catch (_: Exception) {
+            Toast.makeText(this, "Could not import backup.", Toast.LENGTH_SHORT).show()
         }
     }
 
-    override fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?
-    ) {
-
-        super.onActivityResult(
-            requestCode,
-            resultCode,
-            data
-        )
-
-        if (
-            resultCode != RESULT_OK ||
-            data?.data == null
-        ) {
-            return
-        }
-
-        val uri =
-            data.data ?: return
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode != RESULT_OK || data?.data == null) return
+        val uri = data.data ?: return
 
         when (requestCode) {
-
             REQUEST_EXPORT_BACKUP -> {
-
                 try {
-
-                    val backup =
-                        createBackupJson()
-
-                    contentResolver
-                        .openOutputStream(uri)
-                        ?.use { outputStream ->
-
-                            outputStream.write(
-                                backup
-                                    .toString(2)
-                                    .toByteArray(
-                                        Charsets.UTF_8
-                                    )
-                            )
-                        }
-
-                    Toast.makeText(
-                        this,
-                        "Backup exported successfully.",
-                        Toast.LENGTH_LONG
-                    ).show()
-
-                } catch (
-                    exception: Exception
-                ) {
-
-                    Toast.makeText(
-                        this,
-                        "Could not export backup.",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    val backup = createBackupJson()
+                    contentResolver.openOutputStream(uri)?.use { outputStream ->
+                        outputStream.write(backup.toString(2).toByteArray(Charsets.UTF_8))
+                    }
+                    Toast.makeText(this, "Backup exported successfully.", Toast.LENGTH_LONG).show()
+                } catch (_: Exception) {
+                    Toast.makeText(this, "Could not export backup.", Toast.LENGTH_SHORT).show()
                 }
             }
-
             REQUEST_IMPORT_BACKUP -> {
-
                 try {
-
-                    val jsonText =
-                        contentResolver
-                            .openInputStream(uri)
-                            ?.use { inputStream ->
-
-                                inputStream
-                                    .bufferedReader()
-                                    .use {
-                                        it.readText()
-                                    }
-                            }
-
-                    if (
-                        jsonText.isNullOrEmpty()
-                    ) {
-
-                        Toast.makeText(
-                            this,
-                            "Backup file is empty.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
+                    val jsonText = contentResolver.openInputStream(uri)?.use { inputStream ->
+                        inputStream.bufferedReader().use { it.readText() }
+                    }
+                    if (jsonText.isNullOrEmpty()) {
+                        Toast.makeText(this, "Backup file is empty.", Toast.LENGTH_SHORT).show()
                         return
                     }
-
-                    restoreBackupJson(
-                        jsonText
-                    )
-
-                } catch (
-                    exception: Exception
-                ) {
-
-                    Toast.makeText(
-                        this,
-                        "Could not read backup.",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    restoreBackupJson(jsonText)
+                } catch (_: Exception) {
+                    Toast.makeText(this, "Could not read backup.", Toast.LENGTH_SHORT).show()
                 }
             }
         }
