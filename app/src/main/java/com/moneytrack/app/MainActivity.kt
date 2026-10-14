@@ -443,7 +443,68 @@ class MainActivity : Activity() {
             )
         )
 
-        val monthCard = LinearLayout(this).apply {
+        
+        val monthCard = object : LinearLayout(this) {
+            private var swipeStartX = 0f
+            private var swipeStartY = 0f
+            private var swipeHandled = false
+
+            override fun onInterceptTouchEvent(
+                event: MotionEvent
+            ): Boolean {
+                when (event.actionMasked) {
+                    MotionEvent.ACTION_DOWN -> {
+                        swipeStartX = event.x
+                        swipeStartY = event.y
+                        swipeHandled = false
+                    }
+
+                    MotionEvent.ACTION_MOVE -> {
+                        val deltaX = event.x - swipeStartX
+                        val deltaY = event.y - swipeStartY
+                        val threshold =
+                            72 * resources.displayMetrics.density
+
+                        if (
+                            kotlin.math.abs(deltaX) >= threshold &&
+                            kotlin.math.abs(deltaX) >
+                                kotlin.math.abs(deltaY) * 1.3f
+                        ) {
+                            swipeHandled = true
+                            return true
+                        }
+                    }
+                }
+
+                return super.onInterceptTouchEvent(event)
+            }
+
+            override fun onTouchEvent(event: MotionEvent): Boolean {
+                when (event.actionMasked) {
+                    MotionEvent.ACTION_UP -> {
+                        if (swipeHandled) {
+                            val deltaX = event.x - swipeStartX
+                            swipeHandled = false
+
+                            this@MainActivity.changeMonth(
+                                if (deltaX < 0) 1 else -1
+                            )
+                            return true
+                        }
+                    }
+
+                    MotionEvent.ACTION_CANCEL -> {
+                        swipeHandled = false
+                    }
+                }
+
+                return if (swipeHandled) {
+                    true
+                } else {
+                    super.onTouchEvent(event)
+                }
+            }
+        }.apply {
             orientation = LinearLayout.VERTICAL
             setPadding(14, 14, 14, 14)
             background = roundedBackground(
