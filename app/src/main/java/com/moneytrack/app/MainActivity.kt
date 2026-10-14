@@ -194,7 +194,7 @@ class MainActivity : Activity() {
             paint.color = Color.rgb(50, 50, 50)
             canvas.drawArc(rect, 0f, 360f, false, paint)
 
-            paint.color = Color.rgb(120, 120, 120)
+            paint.color = Color.rgb(255, 109, 0)
             paint.strokeCap = Paint.Cap.ROUND
             val sweepAngle = 360f * progressPercent.coerceIn(0f, 1f)
             canvas.drawArc(rect, -90f, sweepAngle, false, paint)
