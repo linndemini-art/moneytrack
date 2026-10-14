@@ -852,24 +852,31 @@ class MainActivity : Activity() {
                                         ).show()
                                     }
 
-                                    else -> {
-                                        val index = categories.indexOf(oldName)
+                                 
+else -> {
+    val index = categories.indexOf(oldName)
 
-                                        if (index >= 0) {
-                                            categories[index] = newName
-                                            saveCategories()
+    if (index >= 0) {
+        categories[index] = newName
+        renameSavedExpenseCategories(oldName, newName)
+        saveCategories()
 
-                                            adapter.notifyDataSetChanged() 
+        adapter.notifyDataSetChanged()
 
-                                            categorySpinner.setSelection(index)
+        categorySpinner.setSelection(index)
 
-                                            Toast.makeText(
-                                                this@MainActivity,
-                                                "Category renamed.",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    }
+        Toast.makeText(
+            this@MainActivity,
+            "Category renamed.",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+}
+
+
+
+ 
+
                                 }
                             }
                             .show()
@@ -1588,6 +1595,54 @@ class MainActivity : Activity() {
 
     saveCategories()
 } 
+
+    
+private fun renameSavedExpenseCategories(
+    oldName: String,
+    newName: String
+) {
+    val editor = prefs.edit()
+
+    for ((key, value) in prefs.all) {
+        if (!key.startsWith("expenses_") ||
+            value !is String ||
+            value.isEmpty()
+        ) {
+            continue
+        }
+
+        try {
+            val array = JSONArray(value)
+            var changed = false
+
+            for (index in 0 until array.length()) {
+                val item = array.optJSONObject(index) ?: continue
+
+                if (item.optString("category") == oldName) {
+                    item.put("category", newName)
+                    changed = true
+                }
+            }
+
+            if (changed) {
+                editor.putString(key, array.toString())
+            }
+        } catch (_: Exception) {
+            // Leave unparseable saved data unchanged.
+        }
+    }
+
+    editor.apply()
+
+    for (index in expenses.indices) {
+        if (expenses[index].category == oldName) {
+            expenses[index] =
+                expenses[index].copy(category = newName)
+        }
+    }
+
+    saveData()
+}
 
     private fun saveCategories() {
         val savedArray = JSONArray()
