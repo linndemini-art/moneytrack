@@ -96,6 +96,7 @@ class MainActivity : Activity() {
         "Housing",
         "Utilities",
         "Food",
+        "Grocery / household",
         "Fuel / Transport",
         "Car",
         "Phone / Internet",
@@ -1552,31 +1553,41 @@ class MainActivity : Activity() {
     }
 
     private fun loadCategories() {
-        val storedCategories = prefs.getString(categoriesPreferenceKey, null)
-        categories.clear()
+    val storedCategories = prefs.getString(categoriesPreferenceKey, null)
+    categories.clear()
 
-        if (storedCategories.isNullOrEmpty()) {
-            categories.addAll(defaultCategories)
-            saveCategories()
-        } else {
-            try {
-                val savedArray = JSONArray(storedCategories)
-                val savedCategories = mutableListOf<String>()
-                for (index in 0 until savedArray.length()) {
-                    val name = savedArray.optString(index).trim()
-                    if (name.isNotEmpty() && name != "Other") {
-                        savedCategories.add(name)
-                    }
+    if (storedCategories.isNullOrEmpty()) {
+        categories.addAll(defaultCategories)
+    } else {
+        try {
+            val savedArray = JSONArray(storedCategories)
+            val savedCategories = mutableListOf<String>()
+            for (index in 0 until savedArray.length()) {
+                val name = savedArray.optString(index).trim()
+                if (name.isNotEmpty() && name != "Other") {
+                    savedCategories.add(name)
                 }
-                categories.addAll(savedCategories.distinct())
-            } catch (_: Exception) {
-                categories.addAll(defaultCategories.filter { it != "Other" })
             }
+            categories.addAll(savedCategories.distinct())
+        } catch (_: Exception) {
+            categories.addAll(defaultCategories.filter { it != "Other" })
         }
-
-        categories.removeAll { it == "Other" }
-        categories.add("Other")
     }
+
+    categories.removeAll { it == "Grocery / Household" }
+
+    val foodIndex = categories.indexOf("Food")
+    if (foodIndex >= 0) {
+        categories.add(foodIndex + 1, "Grocery / Household")
+    } else {
+        categories.add("Grocery / Household")
+    }
+
+    categories.removeAll { it == "Other" }
+    categories.add("Other")
+
+    saveCategories()
+} 
 
     private fun saveCategories() {
         val savedArray = JSONArray()
