@@ -185,7 +185,7 @@ class MainActivity : Activity() {
             super.onDraw(canvas)
 
             val size = width.coerceAtMost(height).toFloat()
-            val strokeWidth = 10f
+            val strokeWidth = 30f
             val padding = strokeWidth / 2f
             rect.set(padding, padding, size - padding, size - padding)
 
@@ -357,7 +357,7 @@ class MainActivity : Activity() {
 
         val dayNumberText = TextView(this).apply {
             text = displayDayText
-            textSize = 20f
+            textSize = 40f
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER
@@ -366,7 +366,7 @@ class MainActivity : Activity() {
 
         val dayLabelText = TextView(this).apply {
             text = "Day"
-            textSize = 10f
+            textSize = 20f
             setTextColor(white)
             typeface = Typeface.DEFAULT
             gravity = Gravity.CENTER
