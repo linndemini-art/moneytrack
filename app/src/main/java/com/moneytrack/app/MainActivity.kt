@@ -462,15 +462,14 @@ class MainActivity : Activity() {
                     MotionEvent.ACTION_MOVE -> {
                         val deltaX = event.x - swipeStartX
                         val deltaY = event.y - swipeStartY
-                        val threshold =
-                            16 * resources.displayMetrics.density
 
                         if (
-                            kotlin.math.abs(deltaX) >= threshold &&
+                            kotlin.math.abs(deltaX) > 12f &&
                             kotlin.math.abs(deltaX) >
-                                kotlin.math.abs(deltaY) * 1.1f
+                                kotlin.math.abs(deltaY)
                         ) {
                             swipeHandled = true
+                            parent?.requestDisallowInterceptTouchEvent(true)
                             return true
                         }
                     }
@@ -484,7 +483,9 @@ class MainActivity : Activity() {
                     MotionEvent.ACTION_UP -> {
                         if (swipeHandled) {
                             val deltaX = event.x - swipeStartX
+
                             swipeHandled = false
+                            parent?.requestDisallowInterceptTouchEvent(false)
 
                             this@MainActivity.changeMonth(
                                 if (deltaX < 0) 1 else -1
@@ -495,6 +496,8 @@ class MainActivity : Activity() {
 
                     MotionEvent.ACTION_CANCEL -> {
                         swipeHandled = false
+                        parent?.requestDisallowInterceptTouchEvent(false)
+                        return true
                     }
                 }
 
