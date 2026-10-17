@@ -696,11 +696,8 @@ class MainActivity : Activity() {
             incomeDisplay
         )
 
-        val clearIncomeButton = createGradientButton(
-            "Clear Income",
-            Color.rgb(70, 40, 40),
-            Color.rgb(125, 55, 55)
-        )
+        val clearIncomeButton =
+    createLiquidGlassButton("Clear Income")
 
         clearIncomeButton.setOnClickListener {
             income = 0.0
@@ -909,21 +906,15 @@ else -> {
             orientation = LinearLayout.HORIZONTAL
         }
 
-        val addIncomeButton = createGradientButton(
-            "Add Income",
-            appearanceTheme.startColor,
-            appearanceTheme.endColor
-        )
+        val addIncomeButton =
+    createLiquidGlassButton("Add Income")
 
         addIncomeButton.setOnClickListener {
             showAddIncomeDialog()
         }
 
-        val addExpenseButton = createGradientButton(
-            "Add Expense",
-            appearanceTheme.startColor,
-            appearanceTheme.endColor
-        )
+        val addExpenseButton =
+    createLiquidGlassButton("Add Expense")
 
         addExpenseButton.setOnClickListener {
             showAddExpenseDialog()
