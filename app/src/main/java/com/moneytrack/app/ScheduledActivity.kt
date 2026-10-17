@@ -136,10 +136,12 @@ class ScheduledActivity : Activity() {
         root.addView(pageSubtitle, LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
         ).apply { bottomMargin = dpToPx(20) })
-        val tabs = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            background = roundedBackground(cardColor, 14f)
-            setPadding(dpToPx(4), dpToPx(4), dpToPx(4), dpToPx(4))
+        
+val tabs = LinearLayout(this).apply {
+    orientation = LinearLayout.HORIZONTAL
+    setPadding(dpToPx(4), dpToPx(4), dpToPx(4), dpToPx(4))
+}
+
         }
         scheduledTab = createTab("SCHEDULED")
         savingsTab = createTab("SAVINGS")
