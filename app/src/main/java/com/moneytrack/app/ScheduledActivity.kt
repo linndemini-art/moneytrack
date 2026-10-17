@@ -11,6 +11,7 @@ import android.graphics.Paint
 import android.graphics.Shader
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -208,29 +209,114 @@ class ScheduledActivity : Activity() {
         isClickable = true
         isFocusable = true
         setTextColor(muted)
-        background = roundedBackground(Color.TRANSPARENT, 10f)
+        background = createGlassTabBackground(false)
     }
 
-    private fun updateTabUI() {
-        val accent = AppearanceManager.getAccentColor(this)
-        scheduledTab.setTextColor(if (!showingSavings) white else muted)
-        savingsTab.setTextColor(if (showingSavings) white else muted)
-        scheduledTab.background = roundedBackground(
-            if (!showingSavings) accent else Color.TRANSPARENT, 10f
+    
+private fun createGlassTabBackground(
+    selected: Boolean
+): LayerDrawable {
+    val theme = AppearanceManager.getTheme(this)
+    val accent = theme.accentColor
+
+    val startColor: Int
+    val endColor: Int
+
+    if (selected) {
+        startColor = Color.argb(
+            165,
+            Color.red(theme.startColor),
+            Color.green(theme.startColor),
+            Color.blue(theme.startColor)
         )
-        savingsTab.background = roundedBackground(
-            if (showingSavings) accent else Color.TRANSPARENT, 10f
+        endColor = Color.argb(
+            115,
+            Color.red(theme.endColor),
+            Color.green(theme.endColor),
+            Color.blue(theme.endColor)
         )
-        scheduledScrollView.visibility =
-    if (showingSavings) View.GONE else View.VISIBLE
-        savingsScrollView.visibility =
-    if (showingSavings) View.VISIBLE else View.GONE
-        pageTitle.text = if (showingSavings) "SAVINGS GOALS" else "SCHEDULED"
-        pageSubtitle.text = if (showingSavings) {
-            "Set targets and track money you put aside"
-        } else "Keep track of important future dates"
-        actionButton.text = "+ ADD"
+    } else {
+        startColor = Color.argb(
+            38,
+            Color.red(accent),
+            Color.green(accent),
+            Color.blue(accent)
+        )
+        endColor = Color.argb(
+            18,
+            Color.red(accent),
+            Color.green(accent),
+            Color.blue(accent)
+        )
     }
+
+    val base = GradientDrawable(
+        GradientDrawable.Orientation.TOP_BOTTOM,
+        intArrayOf(startColor, endColor)
+    ).apply {
+        cornerRadius = 10f
+        setStroke(
+            dpToPx(1),
+            Color.argb(
+                if (selected) 190 else 75,
+                Color.red(accent),
+                Color.green(accent),
+                Color.blue(accent)
+            )
+        )
+    }
+
+    val gloss = GradientDrawable(
+        GradientDrawable.Orientation.TOP_BOTTOM,
+        intArrayOf(
+            Color.argb(42, 255, 255, 255),
+            Color.argb(5, 255, 255, 255)
+        )
+    ).apply {
+        cornerRadius = 10f
+    }
+
+    return LayerDrawable(arrayOf(base, gloss)).apply {
+        setLayerInset(
+            1,
+            dpToPx(1),
+            dpToPx(1),
+            dpToPx(1),
+            dpToPx(1)
+        )
+    }
+}
+
+
+     
+private fun updateTabUI() {
+    scheduledTab.setTextColor(if (!showingSavings) white else muted)
+    savingsTab.setTextColor(if (showingSavings) white else muted)
+
+    scheduledTab.background =
+        createGlassTabBackground(!showingSavings)
+
+    savingsTab.background =
+        createGlassTabBackground(showingSavings)
+
+    scheduledScrollView.visibility =
+        if (showingSavings) View.GONE else View.VISIBLE
+
+    savingsScrollView.visibility =
+        if (showingSavings) View.VISIBLE else View.GONE
+
+    pageTitle.text =
+        if (showingSavings) "SAVINGS GOALS" else "SCHEDULED"
+
+    pageSubtitle.text = if (showingSavings) {
+        "Set targets and track money you put aside"
+    } else {
+        "Keep track of important future dates"
+    }
+
+    actionButton.text = "+ ADD"
+}
+
 
     private fun showAddDialog() {
 
