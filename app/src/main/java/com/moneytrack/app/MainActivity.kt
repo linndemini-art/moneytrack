@@ -718,6 +718,8 @@ class MainActivity : Activity() {
             buttonParams()
         )
 
+        content.addView(incomeCard)
+
         val addCard = createMainCard()
 
         categorySpinner = Spinner(this).apply {
