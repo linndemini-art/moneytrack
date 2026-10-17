@@ -288,17 +288,97 @@ private fun createGlassTabBackground(
 }
 
 
+private fun createLiquidGlassTabBackground(
+    selected: Boolean
+): LayerDrawable {
+    val theme = AppearanceManager.getTheme(this)
+    val accent = theme.accentColor
+
+    val base = GradientDrawable(
+        GradientDrawable.Orientation.TOP_BOTTOM,
+        intArrayOf(
+            Color.argb(
+                if (selected) 185 else 55,
+                Color.red(theme.startColor),
+                Color.green(theme.startColor),
+                Color.blue(theme.startColor)
+            ),
+            Color.argb(
+                if (selected) 125 else 25,
+                Color.red(theme.endColor),
+                Color.green(theme.endColor),
+                Color.blue(theme.endColor)
+            )
+        )
+    ).apply {
+        cornerRadius = dpToPx(12).toFloat()
+        setStroke(
+            dpToPx(1),
+            Color.argb(
+                if (selected) 220 else 90,
+                Color.red(accent),
+                Color.green(accent),
+                Color.blue(accent)
+            )
+        )
+    }
+
+    val depth = GradientDrawable(
+        GradientDrawable.Orientation.TOP_BOTTOM,
+        intArrayOf(
+            Color.TRANSPARENT,
+            Color.argb(65, 0, 0, 0)
+        )
+    ).apply {
+        cornerRadius = dpToPx(12).toFloat()
+    }
+
+    val reflection = GradientDrawable(
+        GradientDrawable.Orientation.TOP_BOTTOM,
+        intArrayOf(
+            Color.argb(105, 255, 255, 255),
+            Color.argb(32, 255, 255, 255),
+            Color.TRANSPARENT
+        )
+    ).apply {
+        cornerRadius = dpToPx(12).toFloat()
+        setStroke(
+            dpToPx(1),
+            Color.argb(55, 255, 255, 255)
+        )
+    }
+
+    val lowerEdge = GradientDrawable(
+        GradientDrawable.Orientation.TOP_BOTTOM,
+        intArrayOf(
+            Color.TRANSPARENT,
+            Color.argb(90, 255, 255, 255)
+        )
+    ).apply {
+        cornerRadius = dpToPx(12).toFloat()
+    }
+
+    return LayerDrawable(
+        arrayOf(base, depth, reflection, lowerEdge)
+    ).apply {
+        setLayerInset(1, dpToPx(1), dpToPx(1), dpToPx(1), dpToPx(1))
+        setLayerInset(2, dpToPx(1), dpToPx(1), dpToPx(1), dpToPx(1))
+        setLayerInset(3, dpToPx(2), dpToPx(2), dpToPx(2), dpToPx(2))
+    }
+}
+
      
 private fun updateTabUI() {
     scheduledTab.setTextColor(if (!showingSavings) white else muted)
     savingsTab.setTextColor(if (showingSavings) white else muted)
 
-    scheduledTab.background =
-        createGlassTabBackground(!showingSavings)
+    
+scheduledTab.background =
+    createLiquidGlassTabBackground(!showingSavings)
 
-    savingsTab.background =
-        createGlassTabBackground(showingSavings)
-
+savingsTab.background =
+    createLiquidGlassTabBackground(showingSavings)
+    
     scheduledScrollView.visibility =
         if (showingSavings) View.GONE else View.VISIBLE
 
