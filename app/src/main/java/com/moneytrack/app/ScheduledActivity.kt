@@ -288,34 +288,37 @@ private fun createGlassTabBackground(
 }
 
 
+
 private fun createLiquidGlassTabBackground(
     selected: Boolean
 ): LayerDrawable {
     val theme = AppearanceManager.getTheme(this)
     val accent = theme.accentColor
+    val radius = dpToPx(12).toFloat()
 
-    val base = GradientDrawable(
+    // Main surface: keep the MoneyTrack theme colour visible.
+    val surface = GradientDrawable(
         GradientDrawable.Orientation.TOP_BOTTOM,
         intArrayOf(
             Color.argb(
-                if (selected) 185 else 55,
+                if (selected) 245 else 210,
                 Color.red(theme.startColor),
                 Color.green(theme.startColor),
                 Color.blue(theme.startColor)
             ),
             Color.argb(
-                if (selected) 125 else 25,
+                if (selected) 225 else 185,
                 Color.red(theme.endColor),
                 Color.green(theme.endColor),
                 Color.blue(theme.endColor)
             )
         )
     ).apply {
-        cornerRadius = dpToPx(12).toFloat()
+        cornerRadius = radius
         setStroke(
             dpToPx(1),
             Color.argb(
-                if (selected) 220 else 90,
+                if (selected) 240 else 150,
                 Color.red(accent),
                 Color.green(accent),
                 Color.blue(accent)
@@ -323,49 +326,57 @@ private fun createLiquidGlassTabBackground(
         )
     }
 
-    val depth = GradientDrawable(
+    // Dark lower shading creates depth.
+    val shadow = GradientDrawable(
         GradientDrawable.Orientation.TOP_BOTTOM,
         intArrayOf(
             Color.TRANSPARENT,
-            Color.argb(65, 0, 0, 0)
+            Color.argb(if (selected) 35 else 55, 0, 0, 0),
+            Color.argb(if (selected) 100 else 115, 0, 0, 0)
         )
     ).apply {
-        cornerRadius = dpToPx(12).toFloat()
+        cornerRadius = radius
     }
 
+    // Soft upper reflection: glossy, not icy white.
     val reflection = GradientDrawable(
         GradientDrawable.Orientation.TOP_BOTTOM,
         intArrayOf(
-            Color.argb(105, 255, 255, 255),
-            Color.argb(32, 255, 255, 255),
+            Color.argb(if (selected) 75 else 45, 255, 255, 255),
+            Color.argb(if (selected) 25 else 15, 255, 255, 255),
+            Color.TRANSPARENT,
             Color.TRANSPARENT
         )
     ).apply {
-        cornerRadius = dpToPx(12).toFloat()
-        setStroke(
-            dpToPx(1),
-            Color.argb(55, 255, 255, 255)
-        )
+        cornerRadius = radius
     }
 
-    val lowerEdge = GradientDrawable(
+    // Fine inner rim catches the light.
+    val innerRim = GradientDrawable(
         GradientDrawable.Orientation.TOP_BOTTOM,
         intArrayOf(
+            Color.argb(if (selected) 115 else 65, 255, 255, 255),
             Color.TRANSPARENT,
-            Color.argb(90, 255, 255, 255)
+            Color.TRANSPARENT,
+            Color.argb(75, 0, 0, 0)
         )
     ).apply {
-        cornerRadius = dpToPx(12).toFloat()
+        cornerRadius = radius
+        setStroke(
+            dpToPx(1),
+            Color.argb(if (selected) 75 else 40, 255, 255, 255)
+        )
     }
 
     return LayerDrawable(
-        arrayOf(base, depth, reflection, lowerEdge)
+        arrayOf(surface, shadow, reflection, innerRim)
     ).apply {
         setLayerInset(1, dpToPx(1), dpToPx(1), dpToPx(1), dpToPx(1))
         setLayerInset(2, dpToPx(1), dpToPx(1), dpToPx(1), dpToPx(1))
-        setLayerInset(3, dpToPx(2), dpToPx(2), dpToPx(2), dpToPx(2))
+        setLayerInset(3, dpToPx(1), dpToPx(1), dpToPx(1), dpToPx(1))
     }
 }
+
 
      
 private fun updateTabUI() {
