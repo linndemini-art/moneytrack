@@ -300,22 +300,22 @@ private fun createLiquidGlassTabBackground(
 
     // Main surface: same opacity values as Debt & Loan.
     val surface = GradientDrawable(
-        GradientDrawable.Orientation.TOP_BOTTOM,
-        intArrayOf(
-            Color.argb(
-                if (selected) 245 else 205,
-                Color.red(theme.startColor),
-                Color.green(theme.startColor),
-                Color.blue(theme.startColor)
-            ),
-            Color.argb(
-                if (selected) 220 else 175,
-                Color.red(theme.endColor),
-                Color.green(theme.endColor),
-                Color.blue(theme.endColor)
-            )
+    GradientDrawable.Orientation.TOP_BOTTOM,
+    intArrayOf(
+        Color.argb(
+            if (selected) 245 else 205,
+            Color.red(accent),
+            Color.green(accent),
+            Color.blue(accent)
+        ),
+        Color.argb(
+            if (selected) 220 else 175,
+            Color.red(accent),
+            Color.green(accent),
+            Color.blue(accent)
         )
-    ).apply {
+    )
+).apply {
         cornerRadius = radius
         setStroke(
             dpToPx(1),
