@@ -43,10 +43,8 @@ class MainActivity : Activity() {
         private const val REQUEST_IMPORT_BACKUP = 1002
     }
 
-    private lateinit var incomeInput: EditText
-    private lateinit var descriptionInput: EditText
-    private lateinit var amountInput: EditText
     private lateinit var categorySpinner: Spinner
+    private lateinit var categoryAdapter: ArrayAdapter<String>
     private lateinit var expensesContainer: LinearLayout
 
     private lateinit var monthlyText: TextView
@@ -697,17 +695,6 @@ class MainActivity : Activity() {
             incomeDisplay
         )
 
-        incomeInput = createInput(
-            "Enter monthly income",
-            InputType.TYPE_CLASS_NUMBER or
-                InputType.TYPE_NUMBER_FLAG_DECIMAL
-        )
-
-        incomeCard.addView(
-            incomeInput,
-            inputParams()
-        )
-
         val clearIncomeButton = createGradientButton(
             "Clear Income",
             Color.rgb(70, 40, 40),
@@ -726,67 +713,7 @@ class MainActivity : Activity() {
             ).show()
         }
 
-        incomeCard.addView(
-            clearIncomeButton,
-            buttonParams()
-        ) 
-
-        val saveIncomeButton = createGradientButton(
-            "Save Income",
-            appearanceTheme.startColor,
-            appearanceTheme.endColor
-        )
-
-        saveIncomeButton.setOnClickListener {
-            saveIncome()
-        }
-
-        incomeCard.addView(
-            saveIncomeButton,
-            buttonParams()
-        )
-
-        content.addView(incomeCard)
-
-        val addTitle = sectionTitle(
-            "ADD EXPENSE",
-            white
-        )
-
-        val addTitleParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-
-        addTitleParams.setMargins(2, 24, 0, 10)
-
-        content.addView(
-            addTitle,
-            addTitleParams
-        )
-
         val addCard = createMainCard()
-
-        descriptionInput = createInput(
-            "Description",
-            InputType.TYPE_CLASS_TEXT
-        )
-
-        addCard.addView(
-            descriptionInput,
-            inputParams()
-        )
-
-        amountInput = createInput(
-            "Amount",
-            InputType.TYPE_CLASS_NUMBER or
-                InputType.TYPE_NUMBER_FLAG_DECIMAL
-        )
-
-        addCard.addView(
-            amountInput,
-            inputParams()
-        )
 
         categorySpinner = Spinner(this).apply {
             background = roundedBackground(
@@ -799,7 +726,7 @@ class MainActivity : Activity() {
             )
         }
 
-        val adapter = object : ArrayAdapter<String>(
+        categoryadapter = object : ArrayAdapter<String>(
             this,
             android.R.layout.simple_spinner_item,
             categories
@@ -833,16 +760,11 @@ class MainActivity : Activity() {
             }
         }
 
-        adapter.setDropDownViewResource(
+                categoryAdapter.setDropDownViewResource(
             android.R.layout.simple_spinner_dropdown_item
         )
 
-        categorySpinner.adapter = adapter
-
-        addCard.addView(
-            categorySpinner,
-            spinnerParams()
-        )
+        categorySpinner.adapter = categoryAdapter
 
         val manageCategoriesButton = Button(this).apply {
             text = "Manage Categories"
