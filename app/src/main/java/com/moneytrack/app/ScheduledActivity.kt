@@ -142,7 +142,6 @@ val tabs = LinearLayout(this).apply {
     setPadding(dpToPx(4), dpToPx(4), dpToPx(4), dpToPx(4))
 }
 
-        }
         scheduledTab = createTab("SCHEDULED")
         savingsTab = createTab("SAVINGS")
         scheduledTab.setOnClickListener { showingSavings = false; updateTabUI() }
