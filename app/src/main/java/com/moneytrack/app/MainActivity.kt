@@ -849,7 +849,7 @@ else -> {
 
         adapter.notifyDataSetChanged()
 
-        categorySpinner.setSelection(index)
+        categoryAdapter.notifyDataSetChanged()
 
         Toast.makeText(
             this@MainActivity,
@@ -899,6 +899,20 @@ else -> {
             buttonParams()
         )
 
+                val actionRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+        }
+
+        val addIncomeButton = createGradientButton(
+            "Add Income",
+            appearanceTheme.startColor,
+            appearanceTheme.endColor
+        )
+
+        addIncomeButton.setOnClickListener {
+            showAddIncomeDialog()
+        }
+
         val addExpenseButton = createGradientButton(
             "Add Expense",
             appearanceTheme.startColor,
@@ -906,13 +920,24 @@ else -> {
         )
 
         addExpenseButton.setOnClickListener {
-            addExpense()
+            showAddExpenseDialog()
         }
 
-        addCard.addView(
-            addExpenseButton,
-            buttonParams()
+        actionRow.addView(
+            addIncomeButton,
+            LinearLayout.LayoutParams(0, -2, 1f).apply {
+                setMargins(0, 8, 5, 0)
+            }
         )
+
+        actionRow.addView(
+            addExpenseButton,
+            LinearLayout.LayoutParams(0, -2, 1f).apply {
+                setMargins(5, 8, 0, 0)
+            }
+        )
+
+        addCard.addView(actionRow)
 
         content.addView(addCard)
 
