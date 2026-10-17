@@ -2134,6 +2134,112 @@ private fun renameSavedExpenseCategories(
         cornerRadius = radius
     }
 
+        private fun createLiquidGlassButton(text: String): TextView =
+        TextView(this).apply {
+            this.text = text
+            textSize = 15f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(backgroundColor)
+            gravity = Gravity.CENTER
+            isClickable = true
+            isFocusable = true
+            minHeight = (52 * resources.displayMetrics.density).toInt()
+            setPadding(16, 0, 16, 0)
+
+            background = createLiquidGlassBackground(
+                AppearanceManager.getAccentColor(this@MainActivity),
+                true,
+                14
+            )
+        }
+
+    private fun createLiquidGlassBackground(
+        color: Int,
+        selected: Boolean,
+        radiusDp: Int
+    ): LayerDrawable {
+        val density = resources.displayMetrics.density
+        fun dp(value: Int): Int = (value * density).toInt()
+
+        val radius = dp(radiusDp).toFloat()
+
+        val surface = GradientDrawable(
+            GradientDrawable.Orientation.TOP_BOTTOM,
+            intArrayOf(
+                Color.argb(
+                    if (selected) 245 else 205,
+                    Color.red(color),
+                    Color.green(color),
+                    Color.blue(color)
+                ),
+                Color.argb(
+                    if (selected) 220 else 175,
+                    Color.red(color),
+                    Color.green(color),
+                    Color.blue(color)
+                )
+            )
+        ).apply {
+            cornerRadius = radius
+            setStroke(
+                dp(1),
+                Color.argb(
+                    if (selected) 235 else 145,
+                    Color.red(color),
+                    Color.green(color),
+                    Color.blue(color)
+                )
+            )
+        }
+
+        val depth = GradientDrawable(
+            GradientDrawable.Orientation.TOP_BOTTOM,
+            intArrayOf(
+                Color.TRANSPARENT,
+                Color.argb(35, 0, 0, 0),
+                Color.argb(if (selected) 95 else 115, 0, 0, 0)
+            )
+        ).apply {
+            cornerRadius = radius
+        }
+
+        val reflection = GradientDrawable(
+            GradientDrawable.Orientation.TOP_BOTTOM,
+            intArrayOf(
+                Color.argb(if (selected) 80 else 55, 255, 255, 255),
+                Color.argb(25, 255, 255, 255),
+                Color.TRANSPARENT,
+                Color.TRANSPARENT
+            )
+        ).apply {
+            cornerRadius = radius
+        }
+
+        val rim = GradientDrawable(
+            GradientDrawable.Orientation.TOP_BOTTOM,
+            intArrayOf(
+                Color.argb(if (selected) 110 else 65, 255, 255, 255),
+                Color.TRANSPARENT,
+                Color.TRANSPARENT,
+                Color.argb(65, 0, 0, 0)
+            )
+        ).apply {
+            cornerRadius = radius
+            setStroke(
+                dp(1),
+                Color.argb(if (selected) 75 else 40, 255, 255, 255)
+            )
+        }
+
+        return LayerDrawable(
+            arrayOf(surface, depth, reflection, rim)
+        ).apply {
+            setLayerInset(1, dp(1), dp(1), dp(1), dp(1))
+            setLayerInset(2, dp(1), dp(1), dp(1), dp(1))
+            setLayerInset(3, dp(1), dp(1), dp(1), dp(1))
+        }
+    }
+
     private fun inputParams(): LinearLayout.LayoutParams = LinearLayout.LayoutParams(-1, -2).apply {
         setMargins(0, 0, 0, 10)
     }
