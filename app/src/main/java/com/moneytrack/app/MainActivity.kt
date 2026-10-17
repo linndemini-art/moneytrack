@@ -713,6 +713,11 @@ class MainActivity : Activity() {
             ).show()
         }
 
+                incomeCard.addView(
+            clearIncomeButton,
+            buttonParams()
+        )
+
         val addCard = createMainCard()
 
         categorySpinner = Spinner(this).apply {
@@ -846,8 +851,6 @@ else -> {
         categories[index] = newName
         renameSavedExpenseCategories(oldName, newName)
         saveCategories()
-
-        adapter.notifyDataSetChanged()
 
         categoryAdapter.notifyDataSetChanged()
 
