@@ -289,6 +289,7 @@ private fun createGlassTabBackground(
 
 
 
+
 private fun createLiquidGlassTabBackground(
     selected: Boolean
 ): LayerDrawable {
@@ -296,18 +297,18 @@ private fun createLiquidGlassTabBackground(
     val accent = theme.accentColor
     val radius = dpToPx(12).toFloat()
 
-    // Main surface: keep the MoneyTrack theme colour visible.
+    // Main surface: same opacity values as Debt & Loan.
     val surface = GradientDrawable(
         GradientDrawable.Orientation.TOP_BOTTOM,
         intArrayOf(
             Color.argb(
-                if (selected) 245 else 210,
+                if (selected) 245 else 205,
                 Color.red(theme.startColor),
                 Color.green(theme.startColor),
                 Color.blue(theme.startColor)
             ),
             Color.argb(
-                if (selected) 225 else 185,
+                if (selected) 220 else 175,
                 Color.red(theme.endColor),
                 Color.green(theme.endColor),
                 Color.blue(theme.endColor)
@@ -318,7 +319,7 @@ private fun createLiquidGlassTabBackground(
         setStroke(
             dpToPx(1),
             Color.argb(
-                if (selected) 240 else 150,
+                if (selected) 235 else 145,
                 Color.red(accent),
                 Color.green(accent),
                 Color.blue(accent)
@@ -326,24 +327,24 @@ private fun createLiquidGlassTabBackground(
         )
     }
 
-    // Dark lower shading creates depth.
+    // Dark lower shading: same values as Debt & Loan.
     val shadow = GradientDrawable(
         GradientDrawable.Orientation.TOP_BOTTOM,
         intArrayOf(
             Color.TRANSPARENT,
-            Color.argb(if (selected) 35 else 55, 0, 0, 0),
-            Color.argb(if (selected) 100 else 115, 0, 0, 0)
+            Color.argb(35, 0, 0, 0),
+            Color.argb(if (selected) 95 else 115, 0, 0, 0)
         )
     ).apply {
         cornerRadius = radius
     }
 
-    // Soft upper reflection: glossy, not icy white.
+    // Glossy reflection: same values as Debt & Loan.
     val reflection = GradientDrawable(
         GradientDrawable.Orientation.TOP_BOTTOM,
         intArrayOf(
-            Color.argb(if (selected) 75 else 45, 255, 255, 255),
-            Color.argb(if (selected) 25 else 15, 255, 255, 255),
+            Color.argb(if (selected) 80 else 55, 255, 255, 255),
+            Color.argb(25, 255, 255, 255),
             Color.TRANSPARENT,
             Color.TRANSPARENT
         )
@@ -351,14 +352,14 @@ private fun createLiquidGlassTabBackground(
         cornerRadius = radius
     }
 
-    // Fine inner rim catches the light.
+    // Inner rim: same values as Debt & Loan.
     val innerRim = GradientDrawable(
         GradientDrawable.Orientation.TOP_BOTTOM,
         intArrayOf(
-            Color.argb(if (selected) 115 else 65, 255, 255, 255),
+            Color.argb(if (selected) 110 else 65, 255, 255, 255),
             Color.TRANSPARENT,
             Color.TRANSPARENT,
-            Color.argb(75, 0, 0, 0)
+            Color.argb(65, 0, 0, 0)
         )
     ).apply {
         cornerRadius = radius
@@ -376,6 +377,7 @@ private fun createLiquidGlassTabBackground(
         setLayerInset(3, dpToPx(1), dpToPx(1), dpToPx(1), dpToPx(1))
     }
 }
+
 
 
      
