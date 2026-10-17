@@ -1481,27 +1481,132 @@ else -> {
         super.onBackPressed()
     }
 
-    private fun saveIncome() {
-        val value = incomeInput.text.toString().replace(",", ".").toDoubleOrNull()
-        if (value == null || value < 0) {
-            Toast.makeText(this, "Please enter a valid income.", Toast.LENGTH_SHORT).show()
-            return
+    
+    private fun showAddIncomeDialog() {
+        val input = createInput(
+            "Enter income amount",
+            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        )
+
+        val dialogContent = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(20, 8, 20, 8)
+            addView(input, inputParams())
         }
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Add Income")
+            .setView(dialogContent)
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Save", null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.window?.setBackgroundDrawable(ColorDrawable(surfaceColor))
+            dialog.findViewById<TextView>(android.R.id.title)?.setTextColor(white)
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                ?.setTextColor(appearanceTheme.startColor)
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(white)
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener {
+                if (saveIncome(input)) dialog.dismiss()
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun showAddExpenseDialog() {
+        val dialogSpinner = Spinner(this).apply {
+            background = roundedBackground(surfaceColor, 12f)
+            setPadding(8, 0, 8, 0)
+            setPopupBackgroundDrawable(ColorDrawable(surfaceColor))
+            adapter = categoryAdapter
+
+            if (categories.isNotEmpty()) {
+                setSelection(
+                    categorySpinner.selectedItemPosition.coerceIn(
+                        0, categories.lastIndex
+                    )
+                )
+            }
+        }
+
+        val descriptionField = createInput(
+            "Description (optional)",
+            InputType.TYPE_CLASS_TEXT
+        )
+
+        val amountField = createInput(
+            "Amount",
+            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        )
+
+        val dialogContent = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(20, 8, 20, 8)
+            addView(dialogSpinner, spinnerParams())
+            addView(descriptionField, inputParams())
+            addView(amountField, inputParams())
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Add Expense")
+            .setView(dialogContent)
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Add Expense", null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.window?.setBackgroundDrawable(ColorDrawable(surfaceColor))
+            dialog.findViewById<TextView>(android.R.id.title)?.setTextColor(white)
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                ?.setTextColor(appearanceTheme.startColor)
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(white)
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener {
+                if (addExpense(descriptionField, amountField, dialogSpinner)) {
+                    dialog.dismiss()
+                }
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun saveIncome(input: EditText): Boolean {
+        val value = input.text.toString().replace(",", ".").toDoubleOrNull()
+
+        if (value == null || value < 0) {
+            Toast.makeText(
+                this, "Please enter a valid income.", Toast.LENGTH_SHORT
+            ).show()
+            return false
+        }
+
         income += value
         saveData()
         updateTotals()
-        incomeInput.text.clear()
         Toast.makeText(this, "Income saved.", Toast.LENGTH_SHORT).show()
+        return true
     }
 
-    private fun addExpense() {
-        val description = descriptionInput.text.toString().trim().ifEmpty { "No description" }
-        val amount = amountInput.text.toString().replace(",", ".").toDoubleOrNull()
+    private fun addExpense(
+        descriptionInput: EditText,
+        amountInput: EditText,
+        categorySpinner: Spinner
+    ): Boolean {
+        val description = descriptionInput.text.toString()
+            .trim().ifEmpty { "No description" }
+        val amount = amountInput.text.toString()
+            .replace(",", ".").toDoubleOrNull()
         val category = categorySpinner.selectedItem?.toString() ?: "Other"
 
         if (amount == null || amount <= 0) {
-            Toast.makeText(this, "Please enter a valid amount.", Toast.LENGTH_SHORT).show()
-            return
+            Toast.makeText(
+                this, "Please enter a valid amount.", Toast.LENGTH_SHORT
+            ).show()
+            return false
         }
 
         val now = Calendar.getInstance().time
@@ -1521,10 +1626,10 @@ else -> {
         saveData()
         updateTotals()
         refreshExpenses()
-        descriptionInput.text.clear()
-        amountInput.text.clear()
         Toast.makeText(this, "Expense added.", Toast.LENGTH_SHORT).show()
+        return true
     }
+
 
     private fun deleteExpense(index: Int) {
         if (index < 0 || index >= expenses.size) return
