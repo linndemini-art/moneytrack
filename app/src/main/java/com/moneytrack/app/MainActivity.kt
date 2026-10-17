@@ -726,7 +726,7 @@ class MainActivity : Activity() {
             )
         }
 
-        categoryadapter = object : ArrayAdapter<String>(
+        categoryAdapter = object : ArrayAdapter<String>(
             this,
             android.R.layout.simple_spinner_item,
             categories
