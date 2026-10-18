@@ -434,13 +434,24 @@ val padding = strokeWidth / 2f
 
         bankCard.addView(cardBottomRow)
 
-        content.addView(
-            bankCard,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                (190 * resources.displayMetrics.density).toInt()
-            )
-        )
+        val density = resources.displayMetrics.density
+val isTablet = resources.configuration.smallestScreenWidthDp >= 600
+
+val cardWidth = if (isTablet) {
+    (440 * density).toInt()
+} else {
+    LinearLayout.LayoutParams.MATCH_PARENT
+}
+
+content.addView(
+    bankCard,
+    LinearLayout.LayoutParams(
+        cardWidth,
+        (190 * density).toInt()
+    ).apply {
+        gravity = Gravity.CENTER_HORIZONTAL
+    }
+)
 
         
         val monthCard = object : LinearLayout(this) {
