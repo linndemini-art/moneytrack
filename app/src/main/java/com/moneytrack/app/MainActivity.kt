@@ -729,8 +729,14 @@ clearIncomeButton.setOnClickListener {
         .create()
 
     dialog.setOnShowListener {
-        dialog.findViewById<TextView>(android.R.id.message)
-            ?.setTextColor(Color.WHITE)
+    dialog.window?.setBackgroundDrawable(
+        android.graphics.drawable.ColorDrawable(
+            Color.rgb(20, 22, 29)
+        )
+    )
+
+    dialog.findViewById<TextView>(android.R.id.message)
+        ?.setTextColor(Color.WHITE)
 
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             ?.setTextColor(Color.WHITE)
