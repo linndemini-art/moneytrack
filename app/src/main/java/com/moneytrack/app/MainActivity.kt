@@ -710,7 +710,12 @@ content.addView(
         val clearIncomeButton =
     createLiquidGlassButton("Clear Income")
 
-        clearIncomeButton.setOnClickListener {
+        
+clearIncomeButton.setOnClickListener {
+    val dialog = AlertDialog.Builder(this)
+        .setMessage("Do you want to clear all income?")
+        .setNegativeButton("CANCEL", null)
+        .setPositiveButton("YES") { _, _ ->
             income = 0.0
             saveData()
             updateTotals()
@@ -721,6 +726,22 @@ content.addView(
                 Toast.LENGTH_SHORT
             ).show()
         }
+        .create()
+
+    dialog.setOnShowListener {
+        dialog.findViewById<TextView>(android.R.id.message)
+            ?.setTextColor(Color.WHITE)
+
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            ?.setTextColor(Color.WHITE)
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            ?.setTextColor(Color.RED)
+    }
+
+    dialog.show()
+}
+
 
                 incomeCard.addView(
             clearIncomeButton,
