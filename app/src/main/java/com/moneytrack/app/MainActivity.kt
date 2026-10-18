@@ -1499,7 +1499,7 @@ else -> {
             dialog.window?.setBackgroundDrawable(ColorDrawable(surfaceColor))
             dialog.findViewById<TextView>(android.R.id.title)?.setTextColor(white)
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                ?.setTextColor(appearanceTheme.startColor)
+                                ?.setTextColor(white)
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(white)
 
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener {
@@ -1555,7 +1555,7 @@ else -> {
             dialog.window?.setBackgroundDrawable(ColorDrawable(surfaceColor))
             dialog.findViewById<TextView>(android.R.id.title)?.setTextColor(white)
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                ?.setTextColor(appearanceTheme.startColor)
+                                ?.setTextColor(white)
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(white)
 
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener {
