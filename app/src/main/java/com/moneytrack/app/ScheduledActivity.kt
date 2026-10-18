@@ -446,7 +446,7 @@ savingsTab.background =
             nameInput,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                52
+                dpToPx(60)
             ).apply {
                 topMargin = 8
                 bottomMargin = 18
@@ -486,7 +486,7 @@ savingsTab.background =
             dateInput,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                52
+                dpToPx(60)
             ).apply {
                 topMargin = 8
             }
