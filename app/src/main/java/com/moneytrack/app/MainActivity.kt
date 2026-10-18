@@ -2143,7 +2143,7 @@ private fun renameSavedExpenseCategories(
             gravity = Gravity.CENTER
             isClickable = true
             isFocusable = true
-            minHeight = (52 * resources.displayMetrics.density).toInt()
+            minHeight = (42 * resources.displayMetrics.density).toInt()
             setPadding(16, 0, 16, 0)
 
             background = createLiquidGlassBackground(
