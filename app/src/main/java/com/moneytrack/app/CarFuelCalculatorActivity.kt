@@ -75,6 +75,7 @@ class CarFuelCalculatorActivity : Activity() {
             textSize = 36f
             setTextColor(white)
             gravity = Gravity.CENTER
+            translationY = -10f
             isClickable = true
             isFocusable = true
 
