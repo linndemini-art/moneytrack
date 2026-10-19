@@ -710,11 +710,42 @@ content.addView(
 
         updateYearlyOverview()
 
-        content.addView(
-            yearlyCard,
-            cardParams()
+        
+        val yearlyCardWrapper = FrameLayout(this).apply {
+            clipToOutline = true
+            background = android.graphics.drawable.GradientDrawable().apply {
+                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                cornerRadius = 18f * resources.displayMetrics.density
+            }
+        }
+
+        val yearlyBlurView = BlurView(this).apply {
+            setupWith(wallpaperBlurTarget)
+                .setBlurRadius(3f)
+                .setOverlayColor(Color.TRANSPARENT)
+        }
+
+        yearlyCardWrapper.addView(
+            yearlyBlurView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
         )
 
+        yearlyCardWrapper.addView(
+            yearlyCard,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        content.addView(
+            yearlyCardWrapper,
+            cardParams()
+        )
+        
         val yearlyBreakdownTitle = sectionTitle(
     "YEARLY SPENDING BREAKDOWN"
 )
