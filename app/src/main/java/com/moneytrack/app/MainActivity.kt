@@ -2134,11 +2134,31 @@ private fun renameSavedExpenseCategories(
         setTextColor(secondary)
     }
 
-    private fun createSmallCard(): LinearLayout = LinearLayout(this).apply {
-        orientation = LinearLayout.VERTICAL
-        setPadding(16, 16, 16, 16)
-        background = roundedBackground(cardColor, 16f)
+    
+private fun createSmallCard(): LinearLayout = LinearLayout(this).apply {
+    orientation = LinearLayout.VERTICAL
+    setPadding(16, 16, 16, 16)
+
+    val density = resources.displayMetrics.density
+
+    background = GradientDrawable().apply {
+        shape = GradientDrawable.RECTANGLE
+        cornerRadius = 16f * density
+
+        // Same translucent gray glass as the month menu
+        setColor(Color.argb(64, 150, 155, 165))
+
+        // Same thin, semi-transparent outline
+        setStroke(
+            density.toInt().coerceAtLeast(1),
+            Color.argb(110, 220, 225, 235)
+        )
     }
+
+    // Same raised 3D effect
+    elevation = 8f * density
+}
+
 
     private fun createMainCard(): LinearLayout = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
