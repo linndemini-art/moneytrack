@@ -15,6 +15,8 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.FrameLayout
+import android.widget.ImageView
 import org.json.JSONArray
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
