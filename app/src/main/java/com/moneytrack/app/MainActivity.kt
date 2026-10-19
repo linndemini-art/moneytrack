@@ -243,12 +243,28 @@ val padding = strokeWidth / 2f
         isHistoryOpen = false
 
         val root = FrameLayout(this).apply {
-    setBackgroundResource(R.drawable.moneytrack_background)
+        setBackgroundColor(Color.TRANSPARENT)
+    }
+
+    val wallpaperBlurTarget = BlurTarget(this).apply {
+        val wallpaper = ImageView(this@MainActivity).apply {
+            setImageResource(R.drawable.moneytrack_background)
+            scaleType = ImageView.ScaleType.CENTER_CROP
         }
-        val mainContent = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.TRANSPARENT)
-        }
+
+        addView(
+            wallpaper,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+    }
+
+    val mainContent = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        setBackgroundColor(Color.TRANSPARENT)
+    }
 
         val scrollView = ScrollView(this).apply {
             isFillViewport = true
@@ -1111,12 +1127,20 @@ else -> {
         )
 
         root.addView(
-            mainContent,
-            FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
-        )
+wallpaperBlurTarget,
+FrameLayout.LayoutParams(
+FrameLayout.LayoutParams.MATCH_PARENT,
+FrameLayout.LayoutParams.MATCH_PARENT
+)
+)
+
+root.addView(
+mainContent,
+FrameLayout.LayoutParams(
+FrameLayout.LayoutParams.MATCH_PARENT,
+FrameLayout.LayoutParams.MATCH_PARENT
+)
+)
 
         createMenuDrawer(root)
 
