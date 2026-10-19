@@ -242,12 +242,12 @@ val padding = strokeWidth / 2f
         }
         val mainContent = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(backgroundColor)
+            setBackgroundColor(Color.TRANSPARENT).
         }
 
         val scrollView = ScrollView(this).apply {
             isFillViewport = true
-            setBackgroundColor(backgroundColor)
+            setBackgroundColor(Color.TRANSPARENT).
             overScrollMode = ScrollView.OVER_SCROLL_NEVER
         }
 
