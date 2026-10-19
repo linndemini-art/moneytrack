@@ -685,6 +685,11 @@ content.addView(
             monthCardParams
         )
 
+        content.addView(
+    overviewTitle,
+    overviewTitleParams
+)
+
         val overviewRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
         }
