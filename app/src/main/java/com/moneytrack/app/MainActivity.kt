@@ -660,7 +660,7 @@ content.addView(
 
         val monthBlurView = BlurView(this).apply {
             setupWith(wallpaperBlurTarget)
-                .setBlurRadius(10f)
+                .setBlurRadius(6f)
                 .setOverlayColor(Color.TRANSPARENT)
         }
 
