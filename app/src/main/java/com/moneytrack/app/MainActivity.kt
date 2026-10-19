@@ -238,9 +238,8 @@ val padding = strokeWidth / 2f
         isHistoryOpen = false
 
         val root = FrameLayout(this).apply {
-            setBackgroundColor(backgroundColor)
+    setBackgroundResource(R.drawable.moneytrack_background)
         }
-
         val mainContent = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(backgroundColor)
