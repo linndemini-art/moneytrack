@@ -475,7 +475,8 @@ card.elevation = dp(8).toFloat()
             )
         )
 
-        return wrapper
+                return wrapper
+    }
 
     private data class DebtEntry(
         val id: Long,
