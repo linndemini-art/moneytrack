@@ -16,6 +16,10 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.FrameLayout
+import android.widget.ImageView
+import eightbitlab.com.blurview.BlurTarget
+import eightbitlab.com.blurview.BlurView
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -35,6 +39,7 @@ class LoansDebtsActivity : Activity() {
     private val amberColor = Color.rgb(255, 166, 52)
 
     private lateinit var prefs: android.content.SharedPreferences
+    private lateinit var wallpaperBlurTarget: BlurTarget
 
     private var showingBorrowed = true
 
@@ -59,10 +64,36 @@ class LoansDebtsActivity : Activity() {
 
     private fun buildInterface() {
 
-        val root = LinearLayout(this)
-        root.orientation = LinearLayout.VERTICAL
-        root.setBackgroundColor(backgroundColor)
+        val root = FrameLayout(this)
 
+val wallpaperBlurTarget = BlurTarget(this).apply {
+    val wallpaper = ImageView(this@LoansDebtsActivity).apply {
+        setImageResource(R.drawable.moneytrack_background)
+        scaleType = ImageView.ScaleType.CENTER_CROP
+    }
+
+    addView(
+        wallpaper,
+        FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        )
+    )
+}
+
+this@LoansDebtsActivity.wallpaperBlurTarget = wallpaperBlurTarget
+
+root.addView(
+    wallpaperBlurTarget,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
+
+val screenContent = LinearLayout(this).apply {
+    orientation = LinearLayout.VERTICAL
+}
         val header = LinearLayout(this)
         header.orientation = LinearLayout.HORIZONTAL
         header.gravity = Gravity.CENTER_VERTICAL
