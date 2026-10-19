@@ -517,13 +517,29 @@ content.addView(
                     super.onTouchEvent(event)
                 }
             }
+        
         }.apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(14, 14, 14, 14)
-            background = roundedBackground(
-                cardColor,
-                18f
-            )
+    orientation = LinearLayout.VERTICAL
+    setPadding(14, 14, 14, 14)
+
+    val density = resources.displayMetrics.density
+
+    background = GradientDrawable().apply {
+        shape = GradientDrawable.RECTANGLE
+        cornerRadius = 18f * density
+
+        // Translucent gray glass: 25% opaque
+        setColor(Color.argb(64, 150, 155, 165))
+
+        // Thin, semi-transparent outline
+        setStroke(
+            (density).toInt().coerceAtLeast(1),
+            Color.argb(110, 220, 225, 235)
+        )
+    }
+
+    // Raised 3D effect
+    elevation = 8f * density
         }
 
         val monthNavigation = LinearLayout(this).apply {
