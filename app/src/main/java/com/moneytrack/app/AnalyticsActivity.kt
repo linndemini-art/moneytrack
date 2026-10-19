@@ -17,6 +17,8 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.FrameLayout
 import android.widget.ImageView
+import eightbitlab.com.blurview.BlurTarget
+import eightbitlab.com.blurview.BlurView
 import org.json.JSONArray
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -82,18 +84,28 @@ class AnalyticsActivity : Activity() {
             setBackgroundColor(Color.TRANSPARENT)
         }
 
-        val wallpaper = ImageView(this).apply {
-            setImageResource(R.drawable.moneytrack_background)
-            scaleType = ImageView.ScaleType.CENTER_CROP
-        }
+        val wallpaperBlurTarget = BlurTarget(this).apply {
+    val wallpaper = ImageView(this@AnalyticsActivity).apply {
+        setImageResource(R.drawable.moneytrack_background)
+        scaleType = ImageView.ScaleType.CENTER_CROP
+    }
 
-        root.addView(
-            wallpaper,
-            FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
+    addView(
+        wallpaper,
+        FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
         )
+    )
+}
+
+root.addView(
+    wallpaperBlurTarget,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
 
         val scrollView = ScrollView(this).apply {
             setBackgroundColor(Color.TRANSPARENT)
@@ -206,6 +218,7 @@ class AnalyticsActivity : Activity() {
 
         
 val breakdownCard = createCard()
+applyGlassCard(breakdownCard)
 
 val density = resources.displayMetrics.density
 
@@ -256,10 +269,40 @@ breakdownCard.elevation = 8f * density
             )
         )
 
-        content.addView(
-            breakdownCard,
-            cardParams()
-        )
+        val breakdownCardWrapper = FrameLayout(this).apply {
+    clipToOutline = true
+    background = android.graphics.drawable.GradientDrawable().apply {
+        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+        cornerRadius = 18f * resources.displayMetrics.density
+    }
+}
+
+val breakdownBlurView = BlurView(this).apply {
+    setupWith(wallpaperBlurTarget)
+        .setBlurRadius(2f)
+        .setOverlayColor(Color.TRANSPARENT)
+}
+
+breakdownCardWrapper.addView(
+    breakdownBlurView,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
+
+breakdownCardWrapper.addView(
+    breakdownCard,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.WRAP_CONTENT
+    )
+)
+
+content.addView(
+    breakdownCardWrapper,
+    cardParams()
+)
 
         val ratioTitle = sectionTitle(
             "INCOME VS EXPENSES"
