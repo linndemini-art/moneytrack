@@ -382,6 +382,7 @@ content.addView(
             sectionTitleParams()
         )
 
+        
         val trendCard = createCard()
         applyGlassCard(trendCard)
 
@@ -399,10 +400,41 @@ content.addView(
             )
         )
 
-        content.addView(
+        val trendCardWrapper = FrameLayout(this).apply {
+            clipToOutline = true
+            background = android.graphics.drawable.GradientDrawable().apply {
+                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                cornerRadius = 18f * resources.displayMetrics.density
+            }
+        }
+
+        val trendBlurView = BlurView(this).apply {
+            setupWith(wallpaperBlurTarget)
+                .setBlurRadius(3f)
+                .setOverlayColor(Color.TRANSPARENT)
+        }
+
+        trendCardWrapper.addView(
+            trendBlurView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        trendCardWrapper.addView(
             trendCard,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        content.addView(
+            trendCardWrapper,
             cardParams()
         )
+        
 
         val statsRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
