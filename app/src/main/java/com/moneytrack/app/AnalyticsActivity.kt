@@ -262,6 +262,7 @@ breakdownCard.elevation = 8f * density
         )
 
         val ratioCard = createCard()
+        applyGlassCard(ratioCard)
 
         val ratioView = RatioProgressView(this)
 
@@ -293,6 +294,7 @@ breakdownCard.elevation = 8f * density
         )
 
         val trendCard = createCard()
+        applyGlassCard(trendCard)
 
         val trendData = loadSixMonthTrend()
 
@@ -353,6 +355,7 @@ breakdownCard.elevation = 8f * density
             "Daily Average",
             money(dailyAverage)
         )
+        applyGlassCard(dailyCard)
 
         statsRow.addView(
             dailyCard,
@@ -367,6 +370,7 @@ breakdownCard.elevation = 8f * density
                 savingsRate
             )
         )
+        applyGlassCard(savingsCard)
 
         val savingsParams = statCardParams()
 
@@ -402,6 +406,7 @@ breakdownCard.elevation = 8f * density
         var yearlyYear = selectedYear
 
         val yearlyCard = createCard()
+        applyGlassCard(yearlyCard)
 
         val yearlySelector = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -539,6 +544,7 @@ content.addView(
 var breakdownYear = selectedYear
 
 val yearlyBreakdownCard = createCard()
+applyGlassCard(yearlyBreakdownCard)
 
 val breakdownYearSelector =
     LinearLayout(this).apply {
@@ -759,6 +765,27 @@ content.addView(
             )
         }
     }
+
+        
+private fun applyGlassCard(card: LinearLayout) {
+    val density = resources.displayMetrics.density
+
+    card.background =
+        android.graphics.drawable.GradientDrawable().apply {
+            shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+            cornerRadius = 18f * density
+
+            setColor(Color.argb(64, 150, 155, 165))
+
+            setStroke(
+                density.toInt().coerceAtLeast(1),
+                Color.argb(110, 220, 225, 235)
+            )
+        }
+
+    card.elevation = 8f * density
+}
+
 
     private fun cardParams():
         LinearLayout.LayoutParams {
