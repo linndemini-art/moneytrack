@@ -129,7 +129,7 @@ val screenContent = LinearLayout(this).apply {
             )
         )
 
-        root.addView(header)
+        screenContent.addView(header)
 
         val tabs = LinearLayout(this)
         tabs.orientation = LinearLayout.HORIZONTAL
@@ -174,7 +174,7 @@ val screenContent = LinearLayout(this).apply {
             }
         }
 
-        root.addView(tabs)
+        screenContent.addView(tabs)
 
         val scrollView = ScrollView(this)
         scrollView.isFillViewport = true
@@ -224,14 +224,21 @@ addButton.background = createLiquidGlassBackground(
 
         scrollView.addView(content)
 
+        screenContent.addView(
+    scrollView,
+    LinearLayout.LayoutParams(
+        -1,
+        0,
+        1f
+    )
+)
         root.addView(
-            scrollView,
-            LinearLayout.LayoutParams(
-                -1,
-                0,
-                1f
-            )
-        )
+    screenContent,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
 
         setContentView(root)
 
