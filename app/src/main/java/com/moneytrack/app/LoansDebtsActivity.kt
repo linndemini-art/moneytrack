@@ -335,7 +335,7 @@ lentTab.background = createLiquidGlassBackground(
         }
     }
 
-    private fun createEntryCard(entry: DebtEntry): LinearLayout {
+    private fun createEntryCard(entry: DebtEntry): FrameLayout {
 
         val card = LinearLayout(this)
         card.orientation = LinearLayout.VERTICAL
@@ -430,15 +430,45 @@ card.elevation = dp(8).toFloat()
             }
         )
 
-        card.layoutParams = LinearLayout.LayoutParams(
-            -1,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        ).apply {
-            bottomMargin = dp(12)
+        
+                val wrapper = FrameLayout(this).apply {
+            clipToOutline = true
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = dp(18).toFloat()
+            }
+
+            layoutParams = LinearLayout.LayoutParams(
+                -1,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin = dp(12)
+            }
         }
 
-        return card
-    }
+        val blurView = BlurView(this).apply {
+            setupWith(wallpaperBlurTarget)
+                .setBlurRadius(3f)
+                .setOverlayColor(Color.TRANSPARENT)
+        }
+
+        wrapper.addView(
+            blurView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        wrapper.addView(
+            card,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        return wrapper
 
     private data class DebtEntry(
         val id: Long,
