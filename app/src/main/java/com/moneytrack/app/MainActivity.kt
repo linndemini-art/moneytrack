@@ -641,10 +641,6 @@ content.addView(
 
         monthCardParams.setMargins(0, 10, 0, 0)
 
-        content.addView(
-            monthCard,
-            monthCardParams
-        )
         val overviewTitle = sectionTitle(
             "OVERVIEW",
             white
@@ -676,7 +672,13 @@ content.addView(
             )
         )
 
-        monthCardWrapper.addView(monthCard, monthCardParams)
+        monthCardWrapper.addView(
+    monthCard,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.WRAP_CONTENT
+    )
+)
 
         content.addView(
             monthCardWrapper,
