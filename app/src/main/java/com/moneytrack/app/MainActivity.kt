@@ -2099,8 +2099,13 @@ elevation = 8f * density
                 FrameLayout.LayoutParams(-1, -2)
             )
 
+            
             swipeLayout.setDeleteWidth(deleteWidth)
+            swipeLayout.setOnSwipeDelete {
+                deleteExpense(index)
+            }
             expensesContainer.addView(swipeLayout, params)
+            
             
 
     
