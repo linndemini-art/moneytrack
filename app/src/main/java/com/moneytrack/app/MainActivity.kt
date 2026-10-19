@@ -2070,7 +2070,12 @@ elevation = 8f * density
             val params = LinearLayout.LayoutParams(-1, -2)
             params.setMargins(0, 0, 0, 10)
 
-            val swipeLayout = SwipeDeleteLayout(this)
+            val deleteWidth = (92 * resources.displayMetrics.density).toInt()
+
+            val swipeLayout = SwipeDeleteLayout(this).apply {
+                clipChildren = true
+                clipToPadding = true
+            }
 
             swipeLayout.addView(
                 TextView(this).apply {
@@ -2083,7 +2088,7 @@ elevation = 8f * density
                     setOnClickListener { deleteExpense(index) }
                 },
                 FrameLayout.LayoutParams(
-                    (92 * resources.displayMetrics.density).toInt(),
+                    deleteWidth,
                     FrameLayout.LayoutParams.MATCH_PARENT,
                     Gravity.END
                 )
@@ -2094,19 +2099,28 @@ elevation = 8f * density
                 FrameLayout.LayoutParams(-1, -2)
             )
 
-            swipeLayout.setDeleteWidth((92 * resources.displayMetrics.density).toInt())
+            swipeLayout.setDeleteWidth(deleteWidth)
             expensesContainer.addView(swipeLayout, params)
-        }
-    }
+            
 
+    
     private inner class SwipeDeleteLayout(context: Context) : FrameLayout(context) {
         private var downX = 0f
         private var downY = 0f
         private var deleteWidth = 0
         private var dragging = false
+        private var onSwipeDelete: (() -> Unit)? = null
 
         fun setDeleteWidth(width: Int) {
             deleteWidth = width
+
+            post {
+                getChildAt(0)?.translationX = deleteWidth.toFloat()
+            }
+        }
+
+        fun setOnSwipeDelete(action: () -> Unit) {
+            onSwipeDelete = action
         }
 
         override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -2117,40 +2131,94 @@ elevation = 8f * density
                     dragging = false
                     return true
                 }
+
                 MotionEvent.ACTION_MOVE -> {
                     val dx = event.x - downX
                     val dy = event.y - downY
 
-                    if (!dragging && kotlin.math.abs(dx) > 12 && kotlin.math.abs(dx) > kotlin.math.abs(dy)) {
+                    if (!dragging &&
+                        kotlin.math.abs(dx) > 12 &&
+                        kotlin.math.abs(dx) > kotlin.math.abs(dy)
+                    ) {
                         dragging = true
-                        parent.requestDisallowInterceptTouchEvent(true)
+                        parent?.requestDisallowInterceptTouchEvent(true)
                     }
 
                     if (dragging) {
-                        val translation = dx.coerceIn(-deleteWidth.toFloat(), 0f)
-                        getChildAt(1).translationX = translation
-                        return true
+                        val translation = dx.coerceIn(
+                            -deleteWidth * 2f,
+                            0f
+                        )
+
+                        getChildAt(0)?.translationX =
+                            deleteWidth + translation
+
+                        getChildAt(1)?.translationX = translation
                     }
+
                     return true
                 }
+
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     if (dragging) {
-                        parent.requestDisallowInterceptTouchEvent(false)
-                        val front = getChildAt(1)
-                        val shouldOpen = front.translationX <= -deleteWidth * 0.45f
-                        front.animate()
-                            .translationX(if (shouldOpen) -deleteWidth.toFloat() else 0f)
-                            .setDuration(180)
-                            .setInterpolator(AccelerateDecelerateInterpolator())
-                            .start()
+                        parent?.requestDisallowInterceptTouchEvent(false)
+
+                        val dx = event.x - downX
+                        val button = getChildAt(0)
+                        val card = getChildAt(1)
+
+                        when {
+                            event.actionMasked == MotionEvent.ACTION_UP &&
+                                dx <= -deleteWidth * 1.5f -> {
+                                card?.animate()
+                                    ?.translationX(-deleteWidth * 2f)
+                                    ?.setDuration(140)
+                                    ?.withEndAction {
+                                        onSwipeDelete?.invoke()
+                                    }
+                                    ?.start()
+                            }
+
+                            event.actionMasked == MotionEvent.ACTION_UP &&
+                                dx <= -deleteWidth * 0.45f -> {
+                                button?.animate()
+                                    ?.translationX(0f)
+                                    ?.setDuration(180)
+                                    ?.setInterpolator(AccelerateDecelerateInterpolator())
+                                    ?.start()
+
+                                card?.animate()
+                                    ?.translationX(-deleteWidth.toFloat())
+                                    ?.setDuration(180)
+                                    ?.setInterpolator(AccelerateDecelerateInterpolator())
+                                    ?.start()
+                            }
+
+                            else -> {
+                                button?.animate()
+                                    ?.translationX(deleteWidth.toFloat())
+                                    ?.setDuration(180)
+                                    ?.setInterpolator(AccelerateDecelerateInterpolator())
+                                    ?.start()
+
+                                card?.animate()
+                                    ?.translationX(0f)
+                                    ?.setDuration(180)
+                                    ?.setInterpolator(AccelerateDecelerateInterpolator())
+                                    ?.start()
+                            }
+                        }
                     }
+
                     dragging = false
                     return true
                 }
             }
+
             return true
         }
     }
+    
 
     private fun sectionTitle(text: String, color: Int): TextView = TextView(this).apply {
         this.text = text
