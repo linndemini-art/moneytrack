@@ -472,14 +472,45 @@ content.addView(
                 0.0
             }
 
+        
         val dailyCard = createStatCard(
             "Daily Average",
             money(dailyAverage)
         )
         applyGlassCard(dailyCard)
 
-        statsRow.addView(
+        val dailyCardWrapper = FrameLayout(this).apply {
+            clipToOutline = true
+            background = android.graphics.drawable.GradientDrawable().apply {
+                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                cornerRadius = 18f * resources.displayMetrics.density
+            }
+        }
+
+        val dailyBlurView = BlurView(this).apply {
+            setupWith(wallpaperBlurTarget)
+                .setBlurRadius(3f)
+                .setOverlayColor(Color.TRANSPARENT)
+        }
+
+        dailyCardWrapper.addView(
+            dailyBlurView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        dailyCardWrapper.addView(
             dailyCard,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        statsRow.addView(
+            dailyCardWrapper,
             statCardParams()
         )
 
@@ -492,6 +523,51 @@ content.addView(
             )
         )
         applyGlassCard(savingsCard)
+
+        val savingsCardWrapper = FrameLayout(this).apply {
+            clipToOutline = true
+            background = android.graphics.drawable.GradientDrawable().apply {
+                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                cornerRadius = 18f * resources.displayMetrics.density
+            }
+        }
+
+        val savingsBlurView = BlurView(this).apply {
+            setupWith(wallpaperBlurTarget)
+                .setBlurRadius(3f)
+                .setOverlayColor(Color.TRANSPARENT)
+        }
+
+        savingsCardWrapper.addView(
+            savingsBlurView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        savingsCardWrapper.addView(
+            savingsCard,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        val savingsParams = statCardParams()
+
+        savingsParams.setMargins(
+            dp(10),
+            0,
+            0,
+            0
+        )
+
+        statsRow.addView(
+            savingsCardWrapper,
+            savingsParams
+        )
+        
 
         val savingsParams = statCardParams()
 
