@@ -657,9 +657,30 @@ content.addView(
 
         overviewTitleParams.setMargins(2, 24, 0, 10)
 
+                val monthCardWrapper = FrameLayout(this).apply {
+            background = roundedBackground(Color.TRANSPARENT, 18f)
+            clipToOutline = true
+        }
+
+        val monthBlurView = BlurView(this).apply {
+            setupWith(wallpaperBlurTarget)
+                .setBlurRadius(18f)
+                .setOverlayColor(Color.TRANSPARENT)
+        }
+
+        monthCardWrapper.addView(
+            monthBlurView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        monthCardWrapper.addView(monthCard, monthCardParams)
+
         content.addView(
-            overviewTitle,
-            overviewTitleParams
+            monthCardWrapper,
+            monthCardParams
         )
 
         val overviewRow = LinearLayout(this).apply {
