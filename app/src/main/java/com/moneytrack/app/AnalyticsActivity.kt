@@ -318,6 +318,7 @@ content.addView(
             selectedMonth
         )
 
+        
         val ratioCard = createCard()
         applyGlassCard(ratioCard)
 
@@ -336,10 +337,41 @@ content.addView(
             )
         )
 
-        content.addView(
+        val ratioCardWrapper = FrameLayout(this).apply {
+            clipToOutline = true
+            background = android.graphics.drawable.GradientDrawable().apply {
+                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                cornerRadius = 18f * resources.displayMetrics.density
+            }
+        }
+
+        val ratioBlurView = BlurView(this).apply {
+            setupWith(wallpaperBlurTarget)
+                .setBlurRadius(3f)
+                .setOverlayColor(Color.TRANSPARENT)
+        }
+
+        ratioCardWrapper.addView(
+            ratioBlurView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        ratioCardWrapper.addView(
             ratioCard,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        content.addView(
+            ratioCardWrapper,
             cardParams()
         )
+        
 
         val trendTitle = sectionTitle(
             "SPENDING TREND"
