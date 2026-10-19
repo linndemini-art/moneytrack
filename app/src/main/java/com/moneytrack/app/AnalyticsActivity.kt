@@ -279,7 +279,7 @@ breakdownCard.elevation = 8f * density
 
 val breakdownBlurView = BlurView(this).apply {
     setupWith(wallpaperBlurTarget)
-        .setBlurRadius(2f)
+        .setBlurRadius(3f)
         .setOverlayColor(Color.TRANSPARENT)
 }
 
