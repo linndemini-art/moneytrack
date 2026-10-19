@@ -79,7 +79,7 @@ class LoansDebtsActivity : Activity() {
 
         header.addView(
             backButton,
-            LinearLayout.LayoutParams(dp(48), dp(48))4
+            LinearLayout.LayoutParams(dp(48), dp(48))
         )
 
         val title = TextView(this)
