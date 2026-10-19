@@ -1989,7 +1989,24 @@ private fun renameSavedExpenseCategories(
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
                 setPadding(16, 15, 12, 15)
-                background = roundedBackground(cardColor, 16f)
+                val density = resources.displayMetrics.density
+
+background = GradientDrawable().apply {
+    shape = GradientDrawable.RECTANGLE
+    cornerRadius = 16f * density
+
+    // Same glass color and transparency
+    setColor(Color.argb(64, 150, 155, 165))
+
+    // Same semi-transparent border
+    setStroke(
+        density.toInt().coerceAtLeast(1),
+        Color.argb(110, 220, 225, 235)
+    )
+}
+
+// Same raised glass effect
+elevation = 8f * density
             }
 
             val accent = View(this).apply {
