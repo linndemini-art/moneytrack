@@ -2100,16 +2100,17 @@ elevation = 8f * density
             )
 
             
+            
             swipeLayout.setDeleteWidth(deleteWidth)
             swipeLayout.setOnSwipeDelete {
                 deleteExpense(index)
             }
             expensesContainer.addView(swipeLayout, params)
-            
-            
+        }
+    }
 
-    
     private inner class SwipeDeleteLayout(context: Context) : FrameLayout(context) {
+        
         private var downX = 0f
         private var downY = 0f
         private var deleteWidth = 0
