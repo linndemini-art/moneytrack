@@ -737,34 +737,10 @@ expensesCardWrapper.addView(
     )
 )
 
-val remainingWrapper = FrameLayout(this).apply {
-    clipToOutline = true
-    background = roundedBackground(Color.TRANSPARENT, 16f)
-}
-
-val remainingBlur = BlurView(this).apply {
-    setupWith(wallpaperBlurTarget)
-        .setBlurRadius(4f)
-        .setOverlayColor(Color.TRANSPARENT)
-}
-
-remainingWrapper.addView(
-    remainingBlur,
-    FrameLayout.LayoutParams(
-        FrameLayout.LayoutParams.MATCH_PARENT,
-        FrameLayout.LayoutParams.MATCH_PARENT
-    )
+overviewRow.addView(
+    expensesCardWrapper,
+    weightParams()
 )
-
-remainingWrapper.addView(
-    remainingCard,
-    FrameLayout.LayoutParams(
-        FrameLayout.LayoutParams.MATCH_PARENT,
-        FrameLayout.LayoutParams.WRAP_CONTENT
-    )
-)
-
-overviewRow.addView(remainingWrapper, remainingParams)
 
         val remainingCard = createSmallCard()
 
@@ -785,8 +761,35 @@ overviewRow.addView(remainingWrapper, remainingParams)
         val remainingParams = weightParams()
         remainingParams.setMargins(10, 0, 0, 0)
 
-        overviewRow.addView(
+                val remainingWrapper = FrameLayout(this).apply {
+            clipToOutline = true
+            background = roundedBackground(Color.TRANSPARENT, 16f)
+        }
+
+        val remainingBlur = BlurView(this).apply {
+            setupWith(wallpaperBlurTarget)
+                .setBlurRadius(4f)
+                .setOverlayColor(Color.TRANSPARENT)
+        }
+
+        remainingWrapper.addView(
+            remainingBlur,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        remainingWrapper.addView(
             remainingCard,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        overviewRow.addView(
+            remainingWrapper,
             remainingParams
         )
 
