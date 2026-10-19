@@ -45,3 +45,7 @@ android {
         jvmTarget = "17"
     }
 }
+
+dependencies {
+    implementation("com.github.Dimezis:BlurView:version-3.2.0")
+}
