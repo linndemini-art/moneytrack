@@ -828,10 +828,25 @@ clearIncomeButton.setOnClickListener {
         val manageCategoriesButton = Button(this).apply {
             text = "Manage Categories"
             setTextColor(white)
-            background = roundedBackground(
-                surfaceColor,
-                12f
-            )
+            
+            val density = resources.displayMetrics.density
+
+background = GradientDrawable().apply {
+    shape = GradientDrawable.RECTANGLE
+    cornerRadius = 12f * density
+
+    // Same glass color and transparency
+    setColor(Color.argb(64, 150, 155, 165))
+
+    // Same semi-transparent border
+    setStroke(
+        density.toInt().coerceAtLeast(1),
+        Color.argb(110, 220, 225, 235)
+    )
+}
+
+// Same raised glass effect
+elevation = 8f * density
             
             setOnClickListener {
                 val editableCategories = categories
