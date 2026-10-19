@@ -660,7 +660,7 @@ content.addView(
 
         val monthBlurView = BlurView(this).apply {
             setupWith(wallpaperBlurTarget)
-                .setBlurRadius(2f)
+                .setBlurRadius(4f)
                 .setOverlayColor(Color.TRANSPARENT)
         }
 
@@ -710,10 +710,61 @@ content.addView(
 
         expensesCard.addView(monthlyText)
 
-        overviewRow.addView(
-            expensesCard,
-            weightParams()
-        )
+        val expensesCardWrapper = FrameLayout(this).apply {
+    clipToOutline = true
+    background = roundedBackground(Color.TRANSPARENT, 16f)
+}
+
+val expensesBlurView = BlurView(this).apply {
+    setupWith(wallpaperBlurTarget)
+        .setBlurRadius(4f)
+        .setOverlayColor(Color.TRANSPARENT)
+}
+
+expensesCardWrapper.addView(
+    expensesBlurView,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
+
+expensesCardWrapper.addView(
+    expensesCard,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.WRAP_CONTENT
+    )
+)
+
+val remainingWrapper = FrameLayout(this).apply {
+    clipToOutline = true
+    background = roundedBackground(Color.TRANSPARENT, 16f)
+}
+
+val remainingBlur = BlurView(this).apply {
+    setupWith(wallpaperBlurTarget)
+        .setBlurRadius(4f)
+        .setOverlayColor(Color.TRANSPARENT)
+}
+
+remainingWrapper.addView(
+    remainingBlur,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
+
+remainingWrapper.addView(
+    remainingCard,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.WRAP_CONTENT
+    )
+)
+
+overviewRow.addView(remainingWrapper, remainingParams)
 
         val remainingCard = createSmallCard()
 
@@ -1016,10 +1067,37 @@ else -> {
             }
         }
 
-        addCard.addView(
-            manageCategoriesButton,
-            buttonParams()
-        )
+        val manageCategoriesWrapper = FrameLayout(this).apply {
+    clipToOutline = true
+    background = roundedBackground(Color.TRANSPARENT, 12f)
+}
+
+val manageCategoriesBlur = BlurView(this).apply {
+    setupWith(wallpaperBlurTarget)
+        .setBlurRadius(4f)
+        .setOverlayColor(Color.TRANSPARENT)
+}
+
+manageCategoriesWrapper.addView(
+    manageCategoriesBlur,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
+
+manageCategoriesWrapper.addView(
+    manageCategoriesButton,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.WRAP_CONTENT
+    )
+)
+
+addCard.addView(
+    manageCategoriesWrapper,
+    buttonParams()
+)
 
                 val actionRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -2152,10 +2230,31 @@ elevation = 8f * density
                 )
             )
 
-            swipeLayout.addView(
-                expenseCard,
-                FrameLayout.LayoutParams(-1, -2)
-            )
+            val expenseWrapper = FrameLayout(this).apply {
+    clipToOutline = true
+    background = roundedBackground(Color.TRANSPARENT, 16f)
+}
+
+val expenseBlur = BlurView(this).apply {
+    setupWith(wallpaperBlurTarget)
+        .setBlurRadius(4f)
+        .setOverlayColor(Color.TRANSPARENT)
+}
+
+expenseWrapper.addView(
+    expenseBlur,
+    FrameLayout.LayoutParams(-1, -1)
+)
+
+expenseWrapper.addView(
+    expenseCard,
+    FrameLayout.LayoutParams(-1, -2)
+)
+
+swipeLayout.addView(
+    expenseWrapper,
+    FrameLayout.LayoutParams(-1, -2)
+)
 
             
             
