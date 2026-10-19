@@ -44,6 +44,8 @@ import java.util.Locale
 
 class MainActivity : Activity() {
 
+    private lateinit var wallpaperBlurTarget: BlurTarget
+
     companion object {
         private const val REQUEST_EXPORT_BACKUP = 1001
         private const val REQUEST_IMPORT_BACKUP = 1002
@@ -246,8 +248,8 @@ val padding = strokeWidth / 2f
         setBackgroundColor(Color.TRANSPARENT)
     }
 
-    val wallpaperBlurTarget = BlurTarget(this).apply {
-        val wallpaper = ImageView(this@MainActivity).apply {
+    wallpaperBlurTarget = BlurTarget(this).apply {
+    val wallpaper = ImageView(this@MainActivity).apply {
             setImageResource(R.drawable.moneytrack_background)
             scaleType = ImageView.ScaleType.CENTER_CROP
         }
