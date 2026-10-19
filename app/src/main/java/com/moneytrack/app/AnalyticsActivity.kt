@@ -567,21 +567,7 @@ content.addView(
             savingsCardWrapper,
             savingsParams
         )
-        
-
-        val savingsParams = statCardParams()
-
-        savingsParams.setMargins(
-            dp(10),
-            0,
-            0,
-            0
-        )
-
-        statsRow.addView(
-            savingsCard,
-            savingsParams
-        )
+    
 
         content.addView(
             statsRow,
