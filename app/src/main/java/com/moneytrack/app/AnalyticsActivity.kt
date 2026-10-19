@@ -190,7 +190,31 @@ class AnalyticsActivity : Activity() {
             sectionTitleParams()
         )
 
-        val breakdownCard = createCard()
+        
+val breakdownCard = createCard()
+
+val density = resources.displayMetrics.density
+
+breakdownCard.setPadding(14, 14, 14, 14)
+
+breakdownCard.background =
+    android.graphics.drawable.GradientDrawable().apply {
+        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+        cornerRadius = 18f * density
+
+        // Same translucent gray glass as MainActivity
+        setColor(Color.argb(64, 150, 155, 165))
+
+        // Same semi-transparent outline
+        setStroke(
+            density.toInt().coerceAtLeast(1),
+            Color.argb(110, 220, 225, 235)
+        )
+    }
+
+// Same raised effect as MainActivity
+breakdownCard.elevation = 8f * density
+        
 
         val categoryTotals = loadCategoryTotals()
 
