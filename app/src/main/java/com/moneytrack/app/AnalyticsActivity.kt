@@ -76,13 +76,25 @@ class AnalyticsActivity : Activity() {
 
     private fun buildInterface() {
 
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(backgroundColor)
+                val root = FrameLayout(this).apply {
+            setBackgroundColor(Color.TRANSPARENT)
         }
 
+        val wallpaper = ImageView(this).apply {
+            setImageResource(R.drawable.moneytrack_background)
+            scaleType = ImageView.ScaleType.CENTER_CROP
+        }
+
+        root.addView(
+            wallpaper,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
         val scrollView = ScrollView(this).apply {
-            setBackgroundColor(backgroundColor)
+            setBackgroundColor(Color.TRANSPARENT)
             isFillViewport = true
             overScrollMode = ScrollView.OVER_SCROLL_NEVER
         }
