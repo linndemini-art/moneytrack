@@ -79,7 +79,7 @@ class LoansDebtsActivity : Activity() {
 
         header.addView(
             backButton,
-            LinearLayout.LayoutParams(dp(48), dp(48))
+            LinearLayout.LayoutParams(dp(48), dp(48))4
         )
 
         val title = TextView(this)
@@ -315,10 +315,21 @@ lentTab.background = createLiquidGlassBackground(
             dp(14)
         )
 
-        card.background = roundedBackground(
-            cardColor,
-            dp(14).toFloat()
-        )
+        
+card.background = GradientDrawable().apply {
+    shape = GradientDrawable.RECTANGLE
+    cornerRadius = dp(18).toFloat()
+
+    setColor(Color.argb(64, 150, 155, 165))
+
+    setStroke(
+        dp(1),
+        Color.argb(110, 220, 225, 235)
+    )
+}
+
+card.elevation = dp(8).toFloat()
+
 
         val name = TextView(this)
         name.text = entry.name
