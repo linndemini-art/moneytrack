@@ -895,10 +895,42 @@ yearlyBreakdownCard.addView(
 
 updateYearlyBreakdown()
 
-content.addView(
+
+val yearlyBreakdownWrapper = FrameLayout(this).apply {
+    clipToOutline = true
+    background = android.graphics.drawable.GradientDrawable().apply {
+        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+        cornerRadius = 18f * resources.displayMetrics.density
+    }
+}
+
+val yearlyBreakdownBlurView = BlurView(this).apply {
+    setupWith(wallpaperBlurTarget)
+        .setBlurRadius(3f)
+        .setOverlayColor(Color.TRANSPARENT)
+}
+
+yearlyBreakdownWrapper.addView(
+    yearlyBreakdownBlurView,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
+
+yearlyBreakdownWrapper.addView(
     yearlyBreakdownCard,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.WRAP_CONTENT
+    )
+)
+
+content.addView(
+    yearlyBreakdownWrapper,
     cardParams()
-) 
+)
+
 
         scrollView.addView(content)
 
