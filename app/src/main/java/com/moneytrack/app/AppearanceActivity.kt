@@ -205,6 +205,22 @@ class AppearanceActivity : Activity() {
             )
         )
 
+        wallpaperBlurTarget = BlurTarget(this).apply {
+    val wallpaperImage = ImageView(this@AppearanceActivity).apply {
+        setImageResource(R.drawable.moneytrack_background)
+        scaleType = ImageView.ScaleType.CENTER_CROP
+        contentDescription = null
+    }
+
+    addView(
+        wallpaperImage,
+        FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        )
+    )
+        }
+
         addTheme(
             "Blue",
             AppearanceManager.BLUE
