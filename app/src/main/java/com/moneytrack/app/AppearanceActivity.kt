@@ -289,6 +289,13 @@ class AppearanceActivity : Activity() {
 
 
 val screenRoot = FrameLayout(this)
+screenRoot.addView(
+    wallpaperBlurTarget,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
 
 screenRoot.addView(
     scrollView,
