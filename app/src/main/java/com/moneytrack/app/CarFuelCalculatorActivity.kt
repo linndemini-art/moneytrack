@@ -174,19 +174,6 @@ screenRoot.addView(
             gravity = Gravity.CENTER_VERTICAL
         }
 
-        val inputsIcon = TextView(this).apply {
-            text = "🚗"
-            textSize = 17f
-        }
-
-        inputsHeader.addView(
-            inputsIcon,
-            LinearLayout.LayoutParams(
-                28,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-        )
-
         val inputsTitle = TextView(this).apply {
             text = "INPUTS"
             textSize = 12f
