@@ -2,6 +2,10 @@ package com.moneytrack.app
 
 import android.app.Activity
 import android.graphics.Color
+import android.app.Activity
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -42,15 +46,30 @@ class CarFuelCalculatorActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val wallpaperContainer = FrameLayout(this)
+
+        val wallpaper = ImageView(this).apply {
+            setImageResource(R.drawable.moneytrack_background)
+            scaleType = ImageView.ScaleType.CENTER_CROP
+        }
+
+        wallpaperContainer.addView(
+            wallpaper,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
         val scrollView = ScrollView(this).apply {
-            setBackgroundColor(backgroundColor)
+            setBackgroundColor(Color.TRANSPARENT)
             isFillViewport = true
         }
 
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(70, 70, 24, 24)
-            setBackgroundColor(backgroundColor)
+            setBackgroundColor(Color.TRANSPARENT)
         }
 
         scrollView.addView(
