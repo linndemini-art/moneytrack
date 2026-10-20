@@ -448,6 +448,17 @@ screenRoot.addView(
                 marginStart = 6
             }
         )
+
+        
+        root.addView(
+            fuelPriceRow,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin = 12
+            }
+        )
         
 
         // CONSUMPTION CARD
