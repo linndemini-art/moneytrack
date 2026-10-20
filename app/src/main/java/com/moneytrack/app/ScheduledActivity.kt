@@ -987,6 +987,7 @@ val progressValue = calculateProgress(
                 bottomMargin = dpToPx(10)
             }
         )
+    }
 
         private fun calculateRemainingDays(
         dateString: String
