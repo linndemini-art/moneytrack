@@ -1,11 +1,11 @@
 package com.moneytrack.app
 
 import android.app.Activity
+import android.graphics.Color
 import android.widget.FrameLayout
 import android.widget.ImageView
 import eightbitlab.com.blurview.BlurTarget
 import eightbitlab.com.blurview.BlurView
-import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -276,6 +276,11 @@ class CarFuelCalculatorActivity : Activity() {
                 arrayOf("Diesel", "Petrol")
             )
         }
+                        this@CarFuelCalculatorActivity,
+                android.R.layout.simple_spinner_dropdown_item,
+                arrayOf("Diesel", "Petrol")
+            )
+        }
 
         fuelCard.addView(
             fuelSpinner,
@@ -337,9 +342,78 @@ class CarFuelCalculatorActivity : Activity() {
         root.addView(
             fuelPriceRow,
             LinearLayout.LayoutParams(
-                ViewGroup
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin = 12
+            }
+        )
 
-                        // ------------------------------------------------------------
+        // ------------------------------------------------------------
+        // CONSUMPTION — SEPARATE, LARGER CARD
+        // ------------------------------------------------------------
+
+        val consumptionCard = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(20, 24, 20, 24)
+            background = roundedBackground(
+                Color.argb(64, 150, 155, 165),
+                18f
+            )
+
+            minimumHeight = 125
+        }
+
+        consumptionCard.addView(
+            createFieldLabel("CONSUMPTION")
+        )
+
+        val consumptionField = createInputWithUnit(
+            initialValue = "6.5",
+            unit = "L/100km"
+        )
+
+        consumptionInput = consumptionField.first
+
+        consumptionCard.addView(
+            consumptionField.second
+        )
+
+        root.addView(
+            createGlassCard(consumptionCard, wallpaperContainer),
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin = 20
+            }
+        )
+
+        // ------------------------------------------------------------
+        // TRIP ESTIMATE HEADER
+        // ------------------------------------------------------------
+
+        val estimateHeader = TextView(this).apply {
+            text = "TRIP ESTIMATE"
+            textSize = 12f
+            setTextColor(muted)
+            typeface = Typeface.DEFAULT_BOLD
+            letterSpacing = 0.12f
+        }
+
+        root.addView(
+            estimateHeader,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin = 10
+            }
+        )
+
+        // ------------------------------------------------------------
+        // ESTIMATED COST — UNCHANGED
+        // ------------------------------------------------------------
 
         val resultsCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -474,6 +548,7 @@ class CarFuelCalculatorActivity : Activity() {
         costColumn.addView(
             costLabel
         )
+                )
 
         costPer100Value = TextView(this).apply {
             text = "€9.43"
@@ -544,6 +619,46 @@ class CarFuelCalculatorActivity : Activity() {
         updateResults()
     }
 
+    private fun createGlassCard(
+        content: LinearLayout,
+        blurTarget: BlurTarget
+    ): FrameLayout {
+        val wrapper = FrameLayout(this).apply {
+            clipToOutline = true
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = 18f
+                setColor(Color.TRANSPARENT)
+                setStroke(1, Color.argb(110, 220, 225, 235))
+            }
+            elevation = 2f
+        }
+
+        val blurView = BlurView(this).apply {
+            setupWith(blurTarget)
+                .setBlurRadius(3f)
+                .setOverlayColor(Color.TRANSPARENT)
+        }
+
+        wrapper.addView(
+            blurView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        wrapper.addView(
+            content,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        return wrapper
+    }
+
     private fun createFieldLabel(text: String): TextView {
         return TextView(this).apply {
             this.text = text
@@ -607,46 +722,6 @@ class CarFuelCalculatorActivity : Activity() {
         )
 
         return Pair(input, container)
-    }
-
-    private fun createGlassCard(
-        content: LinearLayout,
-        blurTarget: BlurTarget
-    ): FrameLayout {
-        val wrapper = FrameLayout(this).apply {
-            clipToOutline = true
-            background = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                cornerRadius = 18f
-                setColor(Color.TRANSPARENT)
-                setStroke(1, Color.argb(110, 220, 225, 235))
-            }
-            elevation = 2f
-        }
-
-        val blurView = BlurView(this).apply {
-            setupWith(blurTarget)
-                .setBlurRadius(3f)
-                .setOverlayColor(Color.TRANSPARENT)
-        }
-
-        wrapper.addView(
-            blurView,
-            FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
-        )
-
-        wrapper.addView(
-            content,
-            FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT
-            )
-        )
-
-        return wrapper
     }
 
     private fun roundedBackground(
@@ -742,4 +817,4 @@ class CarFuelCalculatorActivity : Activity() {
             s: android.text.Editable?
         ) = Unit
     }
-                }
+}
