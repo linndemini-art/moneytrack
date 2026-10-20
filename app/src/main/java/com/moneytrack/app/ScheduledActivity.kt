@@ -800,7 +800,16 @@ current.add(
     )
             }
 
-                    val cardWrapper = FrameLayout(this).apply {
+                                setOnClickListener {
+                showEditDialog(
+                    index,
+                    name,
+                    date
+                )
+            }
+        }
+
+        val cardWrapper = FrameLayout(this).apply {
             clipToOutline = true
             background = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
