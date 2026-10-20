@@ -1258,7 +1258,7 @@ val progressValue = calculateProgress(
             val card = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
                 setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16))
-                background = roundedBackground(cardColor, 16f)
+                background = roundedBackground(Color.TRANSPARENT, 16f)
             }
             val heading = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
