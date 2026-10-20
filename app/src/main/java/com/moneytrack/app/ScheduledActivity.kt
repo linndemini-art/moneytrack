@@ -1387,7 +1387,9 @@ val progressValue = calculateProgress(
             }
                         savingsContainer.addView(cardWrapper, LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply { bottomMargin = dpToPx(12) })
+            )            ).apply { bottomMargin = dpToPx(12) })
+        }
+    }
 
     private fun formatMoney(value: Double): String =
         String.format(Locale.GERMANY, "%,.2f", value)
