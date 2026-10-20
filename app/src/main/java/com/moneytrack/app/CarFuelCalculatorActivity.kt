@@ -1,8 +1,6 @@
 package com.moneytrack.app
 
 import android.app.Activity
-import android.graphics.Color
-import android.app.Activity
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.graphics.Color
