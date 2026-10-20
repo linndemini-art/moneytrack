@@ -800,14 +800,41 @@ current.add(
     )
             }
 
-            setOnClickListener {
-                showEditDialog(
-                    index,
-                    name,
-                    date
+                    val cardWrapper = FrameLayout(this).apply {
+            clipToOutline = true
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = dpToPx(16).toFloat()
+                setColor(Color.TRANSPARENT)
+                setStroke(
+                    dpToPx(1),
+                    Color.argb(110, 220, 225, 235)
                 )
             }
+            elevation = dpToPx(2).toFloat()
         }
+
+        val blurView = BlurView(this).apply {
+            setupWith(cardBlurTarget)
+                .setBlurRadius(3f)
+                .setOverlayColor(Color.TRANSPARENT)
+        }
+
+        cardWrapper.addView(
+            blurView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        cardWrapper.addView(
+            itemContainer,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
 
         val topRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -942,8 +969,8 @@ val progressValue = calculateProgress(
             }
         )
 
-        listContainer.addView(
-            itemContainer,
+                listContainer.addView(
+            cardWrapper,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -951,7 +978,6 @@ val progressValue = calculateProgress(
                 bottomMargin = dpToPx(10)
             }
         )
-    }
 
         private fun calculateRemainingDays(
         dateString: String
