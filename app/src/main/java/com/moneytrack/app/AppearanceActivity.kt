@@ -294,6 +294,8 @@ screenRoot.addView(
 
 setContentView(screenRoot)
 
+    }
+
     private fun addTheme(
         name: String,
         themeName: String
