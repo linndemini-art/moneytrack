@@ -297,14 +297,41 @@ screenRoot.addView(
             gravity = Gravity.TOP
         }
 
+        
+        
         // Fuel Type Card
+        val fuelCardWrapper = FrameLayout(this).apply {
+            clipToOutline = true
+            background = roundedBackground(
+                Color.TRANSPARENT,
+                18f
+            )
+        }
+
+        val fuelBlurView = BlurView(this).apply {
+            setupWith(cardBlurTarget)
+                .setBlurRadius(3f)
+                .setOverlayColor(Color.TRANSPARENT)
+        }
+
+        fuelCardWrapper.addView(
+            fuelBlurView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
         val fuelCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(20, 24, 20, 24)
-            background = roundedBackground(
-                Color.rgb(15, 31, 54),
-                18f
-            )
+
+            background = android.graphics.drawable.GradientDrawable().apply {
+                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                cornerRadius = 18f
+                setColor(Color.argb(64, 150, 155, 165))
+                setStroke(1, Color.argb(110, 220, 225, 235))
+            }
 
             minimumHeight = 125
         }
@@ -331,8 +358,16 @@ screenRoot.addView(
             )
         )
 
-        fuelPriceRow.addView(
+        fuelCardWrapper.addView(
             fuelCard,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        fuelPriceRow.addView(
+            fuelCardWrapper,
             LinearLayout.LayoutParams(
                 0,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -341,15 +376,41 @@ screenRoot.addView(
                 marginEnd = 6
             }
         )
+        
 
         // Price Card
+        val priceCardWrapper = FrameLayout(this).apply {
+            clipToOutline = true
+            background = roundedBackground(
+                Color.TRANSPARENT,
+                18f
+            )
+        }
+
+        val priceBlurView = BlurView(this).apply {
+            setupWith(cardBlurTarget)
+                .setBlurRadius(3f)
+                .setOverlayColor(Color.TRANSPARENT)
+        }
+
+        priceCardWrapper.addView(
+            priceBlurView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
         val priceCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(20, 24, 20, 24)
-            background = roundedBackground(
-                Color.rgb(15, 31, 54),
-                18f
-            )
+
+            background = android.graphics.drawable.GradientDrawable().apply {
+                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                cornerRadius = 18f
+                setColor(Color.argb(64, 150, 155, 165))
+                setStroke(1, Color.argb(110, 220, 225, 235))
+            }
 
             minimumHeight = 125
         }
@@ -369,8 +430,16 @@ screenRoot.addView(
             priceField.second
         )
 
-        fuelPriceRow.addView(
+        priceCardWrapper.addView(
             priceCard,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        fuelPriceRow.addView(
+            priceCardWrapper,
             LinearLayout.LayoutParams(
                 0,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -379,28 +448,41 @@ screenRoot.addView(
                 marginStart = 6
             }
         )
+        
 
-        root.addView(
-            fuelPriceRow,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                bottomMargin = 12
-            }
+        // CONSUMPTION CARD
+        val consumptionCardWrapper = FrameLayout(this).apply {
+            clipToOutline = true
+            background = roundedBackground(
+                Color.TRANSPARENT,
+                18f
+            )
+        }
+
+        val consumptionBlurView = BlurView(this).apply {
+            setupWith(cardBlurTarget)
+                .setBlurRadius(3f)
+                .setOverlayColor(Color.TRANSPARENT)
+        }
+
+        consumptionCardWrapper.addView(
+            consumptionBlurView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
         )
-
-        // ------------------------------------------------------------
-        // CONSUMPTION — SEPARATE, LARGER CARD
-        // ------------------------------------------------------------
 
         val consumptionCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(20, 24, 20, 24)
-            background = roundedBackground(
-                Color.rgb(15, 31, 54),
-                18f
-            )
+
+            background = android.graphics.drawable.GradientDrawable().apply {
+                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                cornerRadius = 18f
+                setColor(Color.argb(64, 150, 155, 165))
+                setStroke(1, Color.argb(110, 220, 225, 235))
+            }
 
             minimumHeight = 125
         }
@@ -420,8 +502,16 @@ screenRoot.addView(
             consumptionField.second
         )
 
-        root.addView(
+        consumptionCardWrapper.addView(
             consumptionCard,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        root.addView(
+            consumptionCardWrapper,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -429,6 +519,7 @@ screenRoot.addView(
                 bottomMargin = 20
             }
         )
+        
 
         // ------------------------------------------------------------
         // TRIP ESTIMATE HEADER
