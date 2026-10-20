@@ -4,6 +4,8 @@ import android.app.Activity
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.graphics.Color
+import eightbitlab.com.blurview.BlurTarget
+import eightbitlab.com.blurview.BlurView
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -21,6 +23,7 @@ import android.widget.TextView
 import java.util.Locale
 
 class CarFuelCalculatorActivity : Activity() {
+    private lateinit var cardBlurTarget: BlurTarget
 
     private val white = Color.WHITE
     private val muted = Color.rgb(160, 174, 194)
@@ -44,20 +47,30 @@ class CarFuelCalculatorActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val wallpaperContainer = FrameLayout(this)
+        val screenRoot = FrameLayout(this)
 
-        val wallpaper = ImageView(this).apply {
-            setImageResource(R.drawable.moneytrack_background)
-            scaleType = ImageView.ScaleType.CENTER_CROP
-        }
+cardBlurTarget = BlurTarget(this).apply {
+    val wallpaper = ImageView(this@CarFuelCalculatorActivity).apply {
+        setImageResource(R.drawable.moneytrack_background)
+        scaleType = ImageView.ScaleType.CENTER_CROP
+    }
 
-        wallpaperContainer.addView(
-            wallpaper,
-            FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
+    addView(
+        wallpaper,
+        FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
         )
+    )
+}
+
+screenRoot.addView(
+    cardBlurTarget,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
 
         val scrollView = ScrollView(this).apply {
             setBackgroundColor(Color.TRANSPARENT)
@@ -204,13 +217,39 @@ class CarFuelCalculatorActivity : Activity() {
         // DISTANCE — SEPARATE, LARGER CARD
         // ------------------------------------------------------------
 
+        
+        val distanceCardWrapper = FrameLayout(this).apply {
+            clipToOutline = true
+            background = roundedBackground(
+                Color.TRANSPARENT,
+                18f
+            )
+        }
+
+        val distanceBlurView = BlurView(this).apply {
+            setupWith(cardBlurTarget)
+                .setBlurRadius(3f)
+                .setOverlayColor(Color.TRANSPARENT)
+        }
+
+        distanceCardWrapper.addView(
+            distanceBlurView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
         val distanceCard = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(20, 24, 20, 24)
-            background = roundedBackground(
-                Color.rgb(15, 31, 54),
-                18f
-            )
+
+            background = android.graphics.drawable.GradientDrawable().apply {
+                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                cornerRadius = 18f
+                setColor(Color.argb(64, 150, 155, 165))
+                setStroke(1, Color.argb(110, 220, 225, 235))
+            }
 
             minimumHeight = 125
         }
@@ -230,8 +269,16 @@ class CarFuelCalculatorActivity : Activity() {
             distanceField.second
         )
 
-        root.addView(
+        distanceCardWrapper.addView(
             distanceCard,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        root.addView(
+            distanceCardWrapper,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -239,6 +286,7 @@ class CarFuelCalculatorActivity : Activity() {
                 bottomMargin = 12
             }
         )
+        
 
         // ------------------------------------------------------------
         // FUEL TYPE + PRICE — TWO SEPARATE, LARGER CARDS
@@ -582,16 +630,15 @@ class CarFuelCalculatorActivity : Activity() {
             }
         )
 
-        wallpaperContainer.addView(
-    scrollView,
-    FrameLayout.LayoutParams(
-        FrameLayout.LayoutParams.MATCH_PARENT,
-        FrameLayout.LayoutParams.MATCH_PARENT
-    )
-)
+                screenRoot.addView(
+            scrollView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
 
-setContentView(wallpaperContainer)
-
+        setContentView(screenRoot)
         val updateCalculation = {
             updateResults()
         }
