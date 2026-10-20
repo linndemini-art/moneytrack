@@ -7,6 +7,8 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -61,18 +63,16 @@ class AppearanceActivity : Activity() {
 
         val root = LinearLayout(this).apply {
 
-            orientation = LinearLayout.VERTICAL
+    orientation = LinearLayout.VERTICAL
 
-            setBackgroundColor(
-                backgroundColor
-            )
+    setBackgroundColor(Color.TRANSPARENT)
 
-            setPadding(
-                dp(16),
-                dp(20),
-                dp(16),
-                dp(24)
-            )
+    setPadding(
+        dp(16),
+        dp(20),
+        dp(16),
+        dp(24)
+    )
         }
 
         val header = LinearLayout(this).apply {
@@ -262,13 +262,37 @@ class AppearanceActivity : Activity() {
 
 
         val scrollView = ScrollView(this).apply {
-            addView(root)
-        }
+    isFillViewport = true
+    setBackgroundColor(Color.TRANSPARENT)
+    overScrollMode = View.OVER_SCROLL_NEVER
+    addView(root)
+}
 
-        setContentView(
-            scrollView
-        )
-    }
+val screenRoot = FrameLayout(this)
+
+val wallpaper = ImageView(this).apply {
+    setImageResource(R.drawable.moneytrack_background)
+    scaleType = ImageView.ScaleType.CENTER_CROP
+    contentDescription = null
+}
+
+screenRoot.addView(
+    wallpaper,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
+
+screenRoot.addView(
+    scrollView,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
+
+setContentView(screenRoot)
 
     private fun addTheme(
         name: String,
