@@ -101,11 +101,33 @@ class ScheduledActivity : Activity() {
     }
 
         private fun buildScreen() {
+                val screenRoot = FrameLayout(this)
+
+        cardBlurTarget = BlurTarget(this).apply {
+            setBackgroundColor(backgroundColor)
+        }
+
+        screenRoot.addView(
+            cardBlurTarget,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(24, 92, 24, 24)
-            setBackgroundColor(backgroundColor)
+            setBackgroundColor(Color.TRANSPARENT)
         }
+
+        screenRoot.addView(
+            root,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
         val topRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -204,7 +226,7 @@ val tabs = LinearLayout(this).apply {
         root.addView(actionButton, LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
         ))
-        setContentView(root)
+                setContentView(screenRoot)
     }
 
     private fun createTab(label: String): TextView = TextView(this).apply {
