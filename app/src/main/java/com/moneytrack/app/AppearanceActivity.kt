@@ -10,10 +10,13 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import eightbitlab.com.blurview.BlurTarget
+import eightbitlab.com.blurview.BlurView
 import android.widget.ScrollView
 import android.widget.TextView
 
 class AppearanceActivity : Activity() {
+    private lateinit var wallpaperBlurTarget: BlurTarget
 
     private val backgroundColor = Color.rgb(
         7,
@@ -271,21 +274,24 @@ class AppearanceActivity : Activity() {
 val screenRoot = FrameLayout(this)
 
 val wallpaper = ImageView(this).apply {
-    setImageResource(R.drawable.moneytrack_background)
-    scaleType = ImageView.ScaleType.CENTER_CROP
-    contentDescription = null
+wallpaperBlurTarget = BlurTarget(this).apply {
+    val wallpaperImage = ImageView(this@AppearanceActivity).apply {
+        setImageResource(R.drawable.moneytrack_background)
+        scaleType = ImageView.ScaleType.CENTER_CROP
+        contentDescription = null
+    }
+
+    addView(
+        wallpaperImage,
+        FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        )
+    )
 }
 
 screenRoot.addView(
-    wallpaper,
-    FrameLayout.LayoutParams(
-        FrameLayout.LayoutParams.MATCH_PARENT,
-        FrameLayout.LayoutParams.MATCH_PARENT
-    )
-)
-
-screenRoot.addView(
-    scrollView,
+    wallpaperBlurTarget,
     FrameLayout.LayoutParams(
         FrameLayout.LayoutParams.MATCH_PARENT,
         FrameLayout.LayoutParams.MATCH_PARENT
@@ -323,10 +329,10 @@ setContentView(screenRoot)
                 )
 
                 background =
-                    roundedBackground(
-                        cardColor,
-                        dp(16).toFloat()
-                    )
+    roundedBackground(
+        Color.argb(64, 150, 155, 165),
+        dp(16).toFloat()
+    )
 
                 isClickable = true
 
@@ -434,17 +440,47 @@ setContentView(screenRoot)
                 selectedText
             )
 
-        themesContainer.addView(
-            themeCard,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                dp(76)
-            ).apply {
+        val themeCardWrapper = FrameLayout(this).apply {
+    background = roundedBackground(
+        Color.TRANSPARENT,
+        dp(16).toFloat()
+    )
+    clipToOutline = true
+}
 
-                bottomMargin =
-                    dp(10)
-            }
-        )
+val themeBlurView = BlurView(this).apply {
+    setupWith(wallpaperBlurTarget)
+        .setBlurRadius(3f)
+        .setOverlayColor(Color.TRANSPARENT)
+}
+
+themeCardWrapper.addView(
+    themeBlurView,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
+
+themeCardWrapper.addView(
+    themeCard,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
+
+themeCardWrapper.tag = themeCard.tag
+
+themesContainer.addView(
+    themeCardWrapper,
+    LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        dp(76)
+    ).apply {
+        bottomMargin = dp(10)
+    }
+)
     }
 
     private fun refreshSelection() {
