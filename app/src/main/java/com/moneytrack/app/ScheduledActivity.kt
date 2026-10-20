@@ -1385,9 +1385,9 @@ val progressValue = calculateProgress(
                     setTextColor(muted)
                 })
             }
-                        savingsContainer.addView(cardWrapper, LinearLayout.LayoutParams(
+                                    savingsContainer.addView(cardWrapper, LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
-            )            ).apply { bottomMargin = dpToPx(12) })
+            ).apply { bottomMargin = dpToPx(12) })
         }
     }
 
