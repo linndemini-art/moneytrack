@@ -582,7 +582,15 @@ class CarFuelCalculatorActivity : Activity() {
             }
         )
 
-        setContentView(scrollView)
+        wallpaperContainer.addView(
+    scrollView,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
+
+setContentView(wallpaperContainer)
 
         val updateCalculation = {
             updateResults()
