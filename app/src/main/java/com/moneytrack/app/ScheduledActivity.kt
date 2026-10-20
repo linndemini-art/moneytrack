@@ -103,9 +103,20 @@ class ScheduledActivity : Activity() {
         private fun buildScreen() {
                 val screenRoot = FrameLayout(this)
 
-        cardBlurTarget = BlurTarget(this).apply {
-            setBackgroundColor(backgroundColor)
-        }
+                cardBlurTarget = BlurTarget(this).apply {
+            val wallpaper = ImageView(this@ScheduledActivity).apply {
+                setImageResource(R.drawable.moneytrack_background)
+                scaleType = ImageView.ScaleType.CENTER_CROP
+            }
+
+            addView(
+                wallpaper,
+                FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT
+                )
+            )
+                }
 
         screenRoot.addView(
             cardBlurTarget,
