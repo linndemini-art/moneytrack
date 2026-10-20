@@ -1255,11 +1255,19 @@ val progressValue = calculateProgress(
         }
         val accent = AppearanceManager.getAccentColor(this)
         goals.forEach { goal ->
-            val card = LinearLayout(this).apply {
+                        val card = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
                 setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16))
-                background = roundedBackground(Color.TRANSPARENT, 16f)
-            }
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    cornerRadius = dpToPx(16).toFloat()
+                    setColor(Color.argb(64, 150, 155, 165))
+                    setStroke(
+                        dpToPx(1),
+                        Color.argb(110, 220, 225, 235)
+                    )
+                }
+                        }
 
                         val cardWrapper = FrameLayout(this).apply {
                 clipToOutline = true
