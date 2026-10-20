@@ -100,15 +100,12 @@ class ScheduledActivity : Activity() {
         }
     }
 
-    val blurTarget = BlurTarget(this).apply {
-    setBackgroundColor(backgroundColor)
-}
-
-val root = LinearLayout(this).apply {
-    orientation = LinearLayout.VERTICAL
-    setPadding(24, 92, 24, 24)
-    setBackgroundColor(backgroundColor)
-}
+        private fun buildScreen() {
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(24, 92, 24, 24)
+            setBackgroundColor(backgroundColor)
+        }
         val topRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
