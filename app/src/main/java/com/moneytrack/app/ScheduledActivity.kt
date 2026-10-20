@@ -20,6 +20,10 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.FrameLayout
+import android.widget.ImageView
+import eightbitlab.com.blurview.BlurTarget
+import eightbitlab.com.blurview.BlurView
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -42,6 +46,7 @@ class ScheduledActivity : Activity() {
     private val savingsKey = "savings_goals_json"
 
     private lateinit var listContainer: LinearLayout
+    private lateinit var cardBlurTarget: BlurTarget
     private lateinit var savingsContainer: LinearLayout
     private lateinit var scheduledScrollView: ScrollView
     private lateinit var savingsScrollView: ScrollView
@@ -95,12 +100,15 @@ class ScheduledActivity : Activity() {
         }
     }
 
-    private fun buildScreen() {
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(24, 92, 24, 24)
-            setBackgroundColor(backgroundColor)
-        }
+    val blurTarget = BlurTarget(this).apply {
+    setBackgroundColor(backgroundColor)
+}
+
+val root = LinearLayout(this).apply {
+    orientation = LinearLayout.VERTICAL
+    setPadding(24, 92, 24, 24)
+    setBackgroundColor(backgroundColor)
+}
         val topRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -763,10 +771,15 @@ current.add(
                 dpToPx(16),
                 dpToPx(16)
             )
-            background = roundedBackground(
-                cardColor,
-                16f
-            )
+            background = GradientDrawable().apply {
+    shape = GradientDrawable.RECTANGLE
+    cornerRadius = dpToPx(16).toFloat()
+    setColor(Color.argb(64, 150, 155, 165))
+    setStroke(
+        dpToPx(1),
+        Color.argb(110, 220, 225, 235)
+    )
+            }
 
             setOnClickListener {
                 showEditDialog(
