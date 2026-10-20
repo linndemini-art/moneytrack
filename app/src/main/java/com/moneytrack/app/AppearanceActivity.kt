@@ -271,9 +271,9 @@ class AppearanceActivity : Activity() {
     addView(root)
 }
 
+
 val screenRoot = FrameLayout(this)
 
-val wallpaper = ImageView(this).apply {
 wallpaperBlurTarget = BlurTarget(this).apply {
     val wallpaperImage = ImageView(this@AppearanceActivity).apply {
         setImageResource(R.drawable.moneytrack_background)
@@ -298,7 +298,16 @@ screenRoot.addView(
     )
 )
 
+screenRoot.addView(
+    scrollView,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
+
 setContentView(screenRoot)
+
 
     }
 
