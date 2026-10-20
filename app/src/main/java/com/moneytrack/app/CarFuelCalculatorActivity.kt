@@ -276,12 +276,7 @@ class CarFuelCalculatorActivity : Activity() {
                 arrayOf("Diesel", "Petrol")
             )
         }
-                        this@CarFuelCalculatorActivity,
-                android.R.layout.simple_spinner_dropdown_item,
-                arrayOf("Diesel", "Petrol")
-            )
-        }
-
+                        
         fuelCard.addView(
             fuelSpinner,
             LinearLayout.LayoutParams(
