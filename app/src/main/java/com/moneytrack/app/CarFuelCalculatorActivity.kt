@@ -543,7 +543,6 @@ class CarFuelCalculatorActivity : Activity() {
         costColumn.addView(
             costLabel
         )
-                )
 
         costPer100Value = TextView(this).apply {
             text = "€9.43"
