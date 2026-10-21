@@ -565,7 +565,32 @@ savingsTab.background =
             }
         }
 
-        dialog.show()
+                dialog.show()
+
+        dialog.window?.setBackgroundDrawable(
+            GradientDrawable().apply {
+                setColor(Color.rgb(20, 22, 29))
+                cornerRadius = dpToPx(18).toFloat()
+            }
+        )
+
+        val titleId = resources.getIdentifier(
+            "alertTitle",
+            "id",
+            "android"
+        )
+
+        dialog.findViewById<TextView>(
+            titleId
+        )?.setTextColor(white)
+
+        dialog.getButton(
+            AlertDialog.BUTTON_POSITIVE
+        ).setTextColor(white)
+
+        dialog.getButton(
+            AlertDialog.BUTTON_NEGATIVE
+        ).setTextColor(white)
     }
 
     private fun showEditDialog(
