@@ -617,8 +617,14 @@ card.elevation = dp(8).toFloat()
         amountInput.setTextColor(whiteColor)
         amountInput.setHintTextColor(mutedColor)
 
+                val titleId = resources.getIdentifier(
+            "alertTitle",
+            "id",
+            "android"
+        )
+
         dialog.findViewById<TextView>(
-            android.R.id.alertTitle
+            titleId
         )?.setTextColor(whiteColor)
 
         dialog.getButton(AlertDialog.BUTTON_POSITIVE)
