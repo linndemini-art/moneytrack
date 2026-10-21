@@ -1804,6 +1804,7 @@ FrameLayout.LayoutParams.MATCH_PARENT
             .replace(",", ".").toDoubleOrNull()
         val category = categorySpinner.selectedItem?.toString() ?: "Other"
 
+        
         if (amount == null || amount <= 0) {
             Toast.makeText(
                 this, "Please enter a valid amount.", Toast.LENGTH_SHORT
@@ -1811,7 +1812,19 @@ FrameLayout.LayoutParams.MATCH_PARENT
             return false
         }
 
+        val totalExpenses = expenses.sumOf { it.amount }
+        val availableBalance = previousMonthsBalance() + income - totalExpenses
+        if (amount > availableBalance + 0.000001) {
+            Toast.makeText(
+                this,
+                "Insufficient balance. You have ${money(availableBalance)} available.",
+                Toast.LENGTH_LONG
+            ).show()
+            return false
+        }
+
         val now = Calendar.getInstance().time
+        
         val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH)
         val timeFormat = SimpleDateFormat("HH:mm", Locale.ENGLISH)
 
@@ -1841,9 +1854,11 @@ FrameLayout.LayoutParams.MATCH_PARENT
         refreshExpenses()
     }
 
+    
     private fun updateTotals() {
         val totalExpenses = expenses.sumOf { it.amount }
-        val remaining = income - totalExpenses
+        val availableBalance = previousMonthsBalance() + income
+        val remaining = availableBalance - totalExpenses
 
         monthlyText.text = money(totalExpenses)
         remainingText.text = money(remaining)
@@ -1854,13 +1869,43 @@ FrameLayout.LayoutParams.MATCH_PARENT
         )
     }
 
+    private fun previousMonthsBalance(): Double {
+        val currentKey = currentMonthKey()
+        var balance = 0.0
+
+        val savedMonths = prefs.all.keys.mapNotNull { key ->
+            val match = Regex("^(?:income|expenses)_(\\d{4}-\\d{2})$").matchEntire(key)
+            match?.groupValues?.get(1)
+        }.distinct().filter { it < currentKey }.sorted()
+
+        for (monthKey in savedMonths) {
+            val storedIncome = prefs.getString("income_$monthKey", "0")
+                ?.toDoubleOrNull() ?: 0.0
+            balance += storedIncome
+
+            val storedExpenses = prefs.getString("expenses_$monthKey", null)
+            if (!storedExpenses.isNullOrEmpty()) {
+                try {
+                    val array = JSONArray(storedExpenses)
+                    for (index in 0 until array.length()) {
+                        balance -= array.optJSONObject(index)?.optDouble("amount", 0.0) ?: 0.0
+                    }
+                } catch (_: Exception) {
+                    // Ignore malformed historical expense data rather than crashing the screen.
+                }
+            }
+        }
+
+        return balance
+    }
+
     private fun currentMonthKey(): String {
         return String.format(Locale.US, "%04d-%02d", selectedYear, selectedMonth + 1)
     }
 
     private fun incomeKey(): String = "income_${currentMonthKey()}"
     private fun expensesKey(): String = "expenses_${currentMonthKey()}"
-
+    
     private fun saveData() {
         val expensesArray = JSONArray()
         for (expense in expenses) {
