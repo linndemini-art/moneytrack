@@ -278,6 +278,11 @@ class AppearanceActivity : Activity() {
             AppearanceManager.FROSTED_LIGHT
         )
 
+         addTheme(
+            "Cyber Bloom",
+             AppearanceManager.CYBER_BLOOM
+        )
+
 
 
         val scrollView = ScrollView(this).apply {
@@ -694,6 +699,13 @@ themesContainer.addView(
                 startColor = Color.rgb(235, 244, 245),
                 endColor = Color.rgb(181, 198, 224),
                 accentColor = Color.rgb(38, 70, 83)
+             )
+
+             AppearanceManager.CYBER_BLOOM ->
+                AppearanceManager.Theme(
+                startColor = Color.rgb(255, 0, 153),
+                endColor = Color.rgb(73, 50, 64),
+                accentColor = Color.rgb(255, 0, 153)
              )
     
     
