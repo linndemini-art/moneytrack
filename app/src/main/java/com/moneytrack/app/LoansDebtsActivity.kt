@@ -601,7 +601,32 @@ card.elevation = dp(8).toFloat()
                 }
         }
 
+        
         dialog.show()
+
+        dialog.window?.setBackgroundDrawable(
+            android.graphics.drawable.GradientDrawable().apply {
+                setColor(cardColor)
+                cornerRadius = dp(18).toFloat()
+            }
+        )
+
+        nameInput.setTextColor(whiteColor)
+        nameInput.setHintTextColor(mutedColor)
+
+        amountInput.setTextColor(whiteColor)
+        amountInput.setHintTextColor(mutedColor)
+
+        dialog.findViewById<TextView>(
+            android.R.id.alertTitle
+        )?.setTextColor(whiteColor)
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            .setTextColor(whiteColor)
+
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            .setTextColor(whiteColor)
+            
     }
 
     private fun showDatePicker(
