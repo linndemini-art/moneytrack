@@ -745,7 +745,7 @@ overviewRow.addView(
         val remainingCard = createSmallCard()
 
         remainingCard.addView(
-            smallLabel("Remaining")
+            smallLabel("Balance")
         )
 
         remainingText = TextView(this).apply {
