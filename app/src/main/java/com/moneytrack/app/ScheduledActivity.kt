@@ -860,7 +860,7 @@ current.add(
         }
 
         val blurView = BlurView(this).apply {
-            setupWith(cardBlurTarget)
+            setupWith(cardBlurTarget, 4f, false)
                 .setBlurRadius(3f)
                 .setOverlayColor(Color.TRANSPARENT)
         }
@@ -1320,7 +1320,7 @@ val progressValue = calculateProgress(
             }
 
             val blurView = BlurView(this).apply {
-                setupWith(cardBlurTarget)
+                setupWith(cardBlurTarget, 4f, false)
                     .setBlurRadius(3f)
                     .setOverlayColor(Color.TRANSPARENT)
             }
