@@ -551,7 +551,7 @@ content.addView(
         cornerRadius = 18f * density
 
         // Translucent gray glass: 25% opaque
-        setColor(Color.argb(64, 245, 247, 255))
+        setColor(Color.argb(30, 245, 247, 255))
 
         // Thin, semi-transparent outline
         setStroke(
