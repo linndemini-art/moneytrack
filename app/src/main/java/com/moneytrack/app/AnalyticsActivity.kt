@@ -278,7 +278,7 @@ breakdownCard.elevation = 8f * density
 }
 
 val breakdownBlurView = BlurView(this).apply {
-    setupWith(wallpaperBlurTarget)
+    setupWith(wallpaperBlurTarget, 4f, false)
         .setBlurRadius(3f)
         .setOverlayColor(Color.TRANSPARENT)
 }
@@ -346,7 +346,7 @@ content.addView(
         }
 
         val ratioBlurView = BlurView(this).apply {
-            setupWith(wallpaperBlurTarget)
+            setupWith(wallpaperBlurTarget, 4f, false)
                 .setBlurRadius(3f)
                 .setOverlayColor(Color.TRANSPARENT)
         }
@@ -409,7 +409,7 @@ content.addView(
         }
 
         val trendBlurView = BlurView(this).apply {
-            setupWith(wallpaperBlurTarget)
+            setupWith(wallpaperBlurTarget, 4f, false)
                 .setBlurRadius(3f)
                 .setOverlayColor(Color.TRANSPARENT)
         }
@@ -488,7 +488,7 @@ content.addView(
         }
 
         val dailyBlurView = BlurView(this).apply {
-            setupWith(wallpaperBlurTarget)
+            setupWith(wallpaperBlurTarget, 4f, false)
                 .setBlurRadius(3f)
                 .setOverlayColor(Color.TRANSPARENT)
         }
@@ -533,7 +533,7 @@ content.addView(
         }
 
         val savingsBlurView = BlurView(this).apply {
-            setupWith(wallpaperBlurTarget)
+            setupWith(wallpaperBlurTarget, 4f, false)
                 .setBlurRadius(3f)
                 .setOverlayColor(Color.TRANSPARENT)
         }
@@ -720,7 +720,7 @@ content.addView(
         }
 
         val yearlyBlurView = BlurView(this).apply {
-            setupWith(wallpaperBlurTarget)
+            setupWith(wallpaperBlurTarget, 4f, false)
                 .setBlurRadius(3f)
                 .setOverlayColor(Color.TRANSPARENT)
         }
@@ -905,7 +905,7 @@ val yearlyBreakdownWrapper = FrameLayout(this).apply {
 }
 
 val yearlyBreakdownBlurView = BlurView(this).apply {
-    setupWith(wallpaperBlurTarget)
+    setupWith(wallpaperBlurTarget, 4f, false)
         .setBlurRadius(3f)
         .setOverlayColor(Color.TRANSPARENT)
 }
