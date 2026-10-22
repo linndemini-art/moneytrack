@@ -944,9 +944,9 @@ background = GradientDrawable().apply {
 
     // Same semi-transparent border
     setStroke(
-        density.toInt().coerceAtLeast(1),
-        setColor(Color.argb(64, 150, 155, 165))
-    )
+    density.toInt().coerceAtLeast(1),
+    Color.argb(110, 220, 225, 235)
+   )
 }
 
 // Same raised glass effect
