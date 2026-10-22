@@ -716,7 +716,7 @@ content.addView(
 }
 
 val expensesBlurView = BlurView(this).apply {
-    setupWith(wallpaperBlurTarget)
+    setupWith(wallpaperBlurTarget, 4f, false)
         .setBlurRadius(3f)
         .setOverlayColor(Color.TRANSPARENT)
 }
@@ -767,7 +767,7 @@ overviewRow.addView(
         }
 
         val remainingBlur = BlurView(this).apply {
-            setupWith(wallpaperBlurTarget)
+            setupWith(wallpaperBlurTarget, 4f, false)
                 .setBlurRadius(3f)
                 .setOverlayColor(Color.TRANSPARENT)
         }
@@ -1076,7 +1076,7 @@ else -> {
 }
 
 val manageCategoriesBlur = BlurView(this).apply {
-    setupWith(wallpaperBlurTarget)
+    setupWith(wallpaperBlurTarget, 4f, false)
         .setBlurRadius(3f)
         .setOverlayColor(Color.TRANSPARENT)
 }
@@ -2284,7 +2284,7 @@ elevation = 8f * density
 }
 
 val expenseBlur = BlurView(this).apply {
-    setupWith(wallpaperBlurTarget)
+    setupWith(wallpaperBlurTarget, 4f, false) 
         .setBlurRadius(3f)
         .setOverlayColor(Color.TRANSPARENT)
 }
