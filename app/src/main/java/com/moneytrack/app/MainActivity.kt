@@ -717,7 +717,7 @@ content.addView(
 
 val expensesBlurView = BlurView(this).apply {
     setupWith(wallpaperBlurTarget)
-        .setBlurRadius(4f)
+        .setBlurRadius(3f)
         .setOverlayColor(Color.TRANSPARENT)
 }
 
@@ -2180,7 +2180,7 @@ background = GradientDrawable().apply {
     cornerRadius = 16f * density
 
     // Same glass color and transparency
-    setColor(Color.argb(64, 150, 155, 165))
+    setColor(Color.argb(15, 245, 247, 255))
 
     // Same semi-transparent border
     setStroke(
@@ -2285,7 +2285,7 @@ elevation = 8f * density
 
 val expenseBlur = BlurView(this).apply {
     setupWith(wallpaperBlurTarget)
-        .setBlurRadius(4f)
+        .setBlurRadius(3f)
         .setOverlayColor(Color.TRANSPARENT)
 }
 
@@ -2457,7 +2457,7 @@ private fun createSmallCard(): LinearLayout = LinearLayout(this).apply {
         cornerRadius = 16f * density
 
         // Same translucent gray glass as the month menu
-        setColor(Color.argb(64, 150, 155, 165))
+        setColor(Color.argb(15, 245, 247, 255))
 
         // Same thin, semi-transparent outline
         setStroke(
