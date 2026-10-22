@@ -214,7 +214,7 @@ screenRoot.addView(
         }
 
         val distanceBlurView = BlurView(this).apply {
-            setupWith(cardBlurTarget)
+            setupWith(cardBlurTarget, 4f, false)
                 .setBlurRadius(3f)
                 .setOverlayColor(Color.TRANSPARENT)
         }
@@ -296,7 +296,7 @@ screenRoot.addView(
         }
 
         val fuelBlurView = BlurView(this).apply {
-            setupWith(cardBlurTarget)
+            setupWith(cardBlurTarget, 4f, false)
                 .setBlurRadius(3f)
                 .setOverlayColor(Color.TRANSPARENT)
         }
@@ -375,7 +375,7 @@ screenRoot.addView(
         }
 
         val priceBlurView = BlurView(this).apply {
-            setupWith(cardBlurTarget)
+            setupWith(cardBlurTarget, 4f, false)
                 .setBlurRadius(3f)
                 .setOverlayColor(Color.TRANSPARENT)
         }
@@ -458,7 +458,7 @@ screenRoot.addView(
         }
 
         val consumptionBlurView = BlurView(this).apply {
-            setupWith(cardBlurTarget)
+            setupWith(cardBlurTarget, 4f, false)
                 .setBlurRadius(3f)
                 .setOverlayColor(Color.TRANSPARENT)
         }
