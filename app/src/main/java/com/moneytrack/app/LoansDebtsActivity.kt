@@ -454,7 +454,7 @@ card.elevation = dp(8).toFloat()
         }
 
         val blurView = BlurView(this).apply {
-            setupWith(wallpaperBlurTarget)
+            setupWith(wallpaperBlurTarget, 4f, false)
                 .setBlurRadius(3f)
                 .setOverlayColor(Color.TRANSPARENT)
         }
