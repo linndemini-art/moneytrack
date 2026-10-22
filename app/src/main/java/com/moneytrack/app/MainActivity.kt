@@ -660,7 +660,7 @@ content.addView(
 
         val monthBlurView = BlurView(this).apply {
             setupWith(wallpaperBlurTarget)
-                .setBlurRadius(4f)
+                .setBlurRadius(3f)
                 .setOverlayColor(Color.TRANSPARENT)
         }
 
@@ -768,7 +768,7 @@ overviewRow.addView(
 
         val remainingBlur = BlurView(this).apply {
             setupWith(wallpaperBlurTarget)
-                .setBlurRadius(4f)
+                .setBlurRadius(3f)
                 .setOverlayColor(Color.TRANSPARENT)
         }
 
