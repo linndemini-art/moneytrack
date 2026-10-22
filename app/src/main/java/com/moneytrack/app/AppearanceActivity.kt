@@ -343,7 +343,7 @@ setContentView(screenRoot)
 
                 background =
     roundedBackground(
-        Color.argb(64, 150, 155, 165),
+        Color.argb(15, 245, 247, 255),
         dp(16).toFloat()
     )
 
