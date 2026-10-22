@@ -829,7 +829,7 @@ current.add(
             background = GradientDrawable().apply {
     shape = GradientDrawable.RECTANGLE
     cornerRadius = dpToPx(16).toFloat()
-    setColor(Color.argb(64, 150, 155, 165))
+    setColor(Color.argb(15, 245, 247, 255))
     setStroke(
         dpToPx(1),
         Color.argb(110, 220, 225, 235)
@@ -1297,7 +1297,7 @@ val progressValue = calculateProgress(
                 background = GradientDrawable().apply {
                     shape = GradientDrawable.RECTANGLE
                     cornerRadius = dpToPx(16).toFloat()
-                    setColor(Color.argb(64, 150, 155, 165))
+                    setColor(Color.argb(15, 245, 247, 255))
                     setStroke(
                         dpToPx(1),
                         Color.argb(110, 220, 225, 235)
