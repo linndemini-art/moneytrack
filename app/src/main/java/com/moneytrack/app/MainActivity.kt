@@ -945,7 +945,7 @@ background = GradientDrawable().apply {
     // Same semi-transparent border
     setStroke(
         density.toInt().coerceAtLeast(1),
-        Color.argb(110, 220, 225, 235)
+        setColor(Color.argb(64, 150, 155, 165))
     )
 }
 
@@ -1077,7 +1077,7 @@ else -> {
 
 val manageCategoriesBlur = BlurView(this).apply {
     setupWith(wallpaperBlurTarget)
-        .setBlurRadius(4f)
+        .setBlurRadius(3f)
         .setOverlayColor(Color.TRANSPARENT)
 }
 
