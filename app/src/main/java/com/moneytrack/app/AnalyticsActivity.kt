@@ -1021,7 +1021,7 @@ private fun applyGlassCard(card: LinearLayout) {
             shape = android.graphics.drawable.GradientDrawable.RECTANGLE
             cornerRadius = 18f * density
 
-            setColor(Color.argb(64, 150, 155, 165))
+            setColor(Color.argb(15, 245, 247, 255))
 
             setStroke(
                 density.toInt().coerceAtLeast(1),
