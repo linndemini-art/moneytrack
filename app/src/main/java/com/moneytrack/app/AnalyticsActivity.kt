@@ -230,7 +230,7 @@ breakdownCard.background =
         cornerRadius = 18f * density
 
         // Same translucent gray glass as MainActivity
-        setColor(Color.argb(64, 150, 155, 165))
+        setColor(Color.argb(64, 245, 247, 255))
 
         // Same semi-transparent outline
         setStroke(
