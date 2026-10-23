@@ -234,12 +234,8 @@ breakdownCard.background =
 
         // Same semi-transparent outline
         setStroke(
-            density.toInt().coerceAtLeast(1),
-            Color.argb(
-    90,
-    Color.red(AppearanceManager.getAccentColor(this@AnalyticsActivity)),
-Color.green(AppearanceManager.getAccentColor(this@AnalyticsActivity)),
-Color.blue(AppearanceManager.getAccentColor(this@AnalyticsActivity))
+    density.toInt().coerceAtLeast(1),
+    Color.argb(110, 220, 225, 235)
 )
         )
     }
