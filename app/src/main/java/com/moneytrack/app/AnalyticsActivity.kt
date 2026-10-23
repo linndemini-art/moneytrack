@@ -931,8 +931,12 @@ content.addView(
     cardParams()
 )
 
+addYearlyRecords(
+    content,
+    wallpaperBlurTarget
+)
 
-        scrollView.addView(content)
+ scrollView.addView(content)
 
         root.addView(
             scrollView,
