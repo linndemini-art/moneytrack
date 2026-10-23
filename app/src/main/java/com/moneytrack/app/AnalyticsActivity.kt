@@ -237,7 +237,6 @@ breakdownCard.background =
     density.toInt().coerceAtLeast(1),
     Color.argb(110, 220, 225, 235)
 )
-        )
     }
 
 // Same raised effect as MainActivity
