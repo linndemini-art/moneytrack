@@ -216,7 +216,12 @@ root.addView(
             sectionTitleParams()
         )
 
-        
+        val breakdownCard = createCard()
+applyGlassCard(breakdownCard)
+
+val density = resources.displayMetrics.density
+
+breakdownCard.setPadding(14, 14, 14, 14)
 
 breakdownCard.background =
     object : android.graphics.drawable.Drawable() {
