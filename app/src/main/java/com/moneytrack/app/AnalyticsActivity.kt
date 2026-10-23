@@ -236,7 +236,7 @@ breakdownCard.background =
         setStroke(
             (4f *
             density).toInt().coerceAtLeast(4),
-            Color.argb(25, 255, 255, 255)
+            Color.argb(20, 245, 247, 255)
         )
     }
 
