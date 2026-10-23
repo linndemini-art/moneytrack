@@ -2664,8 +2664,10 @@ private fun applyGlassCard(card: LinearLayout) {
             .filter { it.income - it.expenses > 0.0 }
             .maxByOrNull { it.income - it.expenses }
 
-        content.addView(
-            sectionTitle("Yearly Records"),
+                content.addView(
+            sectionTitle("YEARLY RECORDS").apply {
+                textSize = 16f
+            },
             sectionTitleParams()
         )
 
