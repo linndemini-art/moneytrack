@@ -217,26 +217,122 @@ root.addView(
         )
 
         
-val breakdownCard = createCard()
-applyGlassCard(breakdownCard)
-
-val density = resources.displayMetrics.density
-
-breakdownCard.setPadding(14, 14, 14, 14)
 
 breakdownCard.background =
-    android.graphics.drawable.GradientDrawable().apply {
-        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
-        cornerRadius = 18f * density
+    object : android.graphics.drawable.Drawable() {
 
-        // Same translucent gray glass as MainActivity
-        setColor(Color.argb(15, 245, 247, 255))
+        private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        private val effectPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        private val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-        // Same semi-transparent outline
-        setStroke(
-    density.toInt().coerceAtLeast(1),
-    Color.argb(110, 220, 225, 235)
-)
+        private val density = resources.displayMetrics.density
+        private val radius = 18f * density
+
+        override fun draw(canvas: Canvas) {
+            val bounds = bounds
+            if (bounds.isEmpty) return
+
+            val rect = RectF(bounds)
+            val path = android.graphics.Path().apply {
+                addRoundRect(
+                    rect,
+                    radius,
+                    radius,
+                    android.graphics.Path.Direction.CW
+                )
+            }
+
+            val saveCount = canvas.save()
+            canvas.clipPath(path)
+
+            // Preserve the existing translucent glass fill.
+            fillPaint.shader = null
+            fillPaint.style = Paint.Style.FILL
+            fillPaint.color = Color.argb(15, 245, 247, 255)
+            canvas.drawRoundRect(rect, radius, radius, fillPaint)
+
+            val width = rect.width()
+            val height = rect.height()
+            val gradientRadius = max(width, height) * 0.9f
+
+            // Soft highlight from the top-left.
+            effectPaint.style = Paint.Style.FILL
+            effectPaint.shader = android.graphics.RadialGradient(
+                rect.left + width * 0.12f,
+                rect.top + height * 0.08f,
+                gradientRadius,
+                intArrayOf(
+                    Color.argb(45, 255, 255, 255),
+                    Color.TRANSPARENT
+                ),
+                floatArrayOf(0f, 1f),
+                android.graphics.Shader.TileMode.CLAMP
+            )
+            canvas.drawRect(rect, effectPaint)
+
+            // Subtle dimensional shading toward the bottom-right.
+            effectPaint.shader = android.graphics.RadialGradient(
+                rect.right - width * 0.08f,
+                rect.bottom - height * 0.08f,
+                gradientRadius,
+                intArrayOf(
+                    Color.argb(24, 0, 0, 0),
+                    Color.TRANSPARENT
+                ),
+                floatArrayOf(0f, 1f),
+                android.graphics.Shader.TileMode.CLAMP
+            )
+            canvas.drawRect(rect, effectPaint)
+            effectPaint.shader = null
+
+            // Very subtle inner-edge shading.
+            borderPaint.style = Paint.Style.STROKE
+            borderPaint.strokeWidth = density
+            borderPaint.color = Color.argb(18, 0, 0, 0)
+
+            val inset = density
+            canvas.drawRoundRect(
+                RectF(
+                    rect.left + inset,
+                    rect.top + inset,
+                    rect.right - inset,
+                    rect.bottom - inset
+                ),
+                (radius - inset).coerceAtLeast(0f),
+                (radius - inset).coerceAtLeast(0f),
+                borderPaint
+            )
+
+            canvas.restoreToCount(saveCount)
+
+            // Preserve the existing outer border.
+            borderPaint.strokeWidth =
+                density.toInt().coerceAtLeast(1).toFloat()
+            borderPaint.color = Color.argb(110, 220, 225, 235)
+
+            val halfStroke = borderPaint.strokeWidth / 2f
+            canvas.drawRoundRect(
+                RectF(
+                    rect.left + halfStroke,
+                    rect.top + halfStroke,
+                    rect.right - halfStroke,
+                    rect.bottom - halfStroke
+                ),
+                radius,
+                radius,
+                borderPaint
+            )
+        }
+
+        override fun setAlpha(alpha: Int) = Unit
+
+        override fun setColorFilter(
+            colorFilter: android.graphics.ColorFilter?
+        ) = Unit
+
+        @Deprecated("Deprecated in Android")
+        override fun getOpacity(): Int =
+            android.graphics.PixelFormat.TRANSLUCENT
     }
 
 // Same raised effect as MainActivity
