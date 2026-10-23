@@ -936,8 +936,21 @@ content.addView(
 
 addYearlyRecords(
     content,
-    wallpaperBlurTarget
+    wallpaperBlurTarget,
+    breakdownYear
 )
+
+refreshYearlyRecords = { year ->
+    content.removeViews(content.childCount - 3, 3)
+
+    addYearlyRecords(
+        content,
+        wallpaperBlurTarget,
+        year
+    )
+}
+
+refreshYearlyRecords?.invoke(breakdownYear)
 
  scrollView.addView(content)
 
@@ -2639,12 +2652,17 @@ private fun applyGlassCard(card: LinearLayout) {
     }
 
         private fun addYearlyRecords(
-        content: LinearLayout,
-        wallpaperBlurTarget: BlurTarget
-    ) {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val currentMonth = calendar.get(Calendar.MONTH)
+    content: LinearLayout,
+    wallpaperBlurTarget: BlurTarget,
+    year: Int
+) {
+    val calendar = Calendar.getInstance()
+    val currentMonth =
+        if (year == calendar.get(Calendar.YEAR)) {
+            calendar.get(Calendar.MONTH)
+        } else {
+            Calendar.DECEMBER
+        }
 
         val recordedMonths = (0..currentMonth).map { month ->
             loadMonthData(year, month)
