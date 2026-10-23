@@ -2635,6 +2635,256 @@ private fun applyGlassCard(card: LinearLayout) {
         )
     }
 
+        private fun addYearlyRecords(
+        content: LinearLayout,
+        wallpaperBlurTarget: BlurTarget
+    ) {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val currentMonth = calendar.get(Calendar.MONTH)
+
+        val recordedMonths = (0..currentMonth).map { month ->
+            loadMonthData(year, month)
+        }.filter { month ->
+            month.income > 0.0 || month.expenses > 0.0
+        }
+
+        val highestSpending = recordedMonths
+            .filter { it.expenses > 0.0 }
+            .maxByOrNull { it.expenses }
+
+        val lowestSpending = recordedMonths
+            .minByOrNull { it.expenses }
+
+        val highestIncome = recordedMonths
+            .filter { it.income > 0.0 }
+            .maxByOrNull { it.income }
+
+        val highestSaving = recordedMonths
+            .filter { it.income - it.expenses > 0.0 }
+            .maxByOrNull { it.income - it.expenses }
+
+        content.addView(
+            sectionTitle("Yearly Records"),
+            sectionTitleParams()
+        )
+
+        val firstRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+
+        firstRow.addView(
+            createYearlyRecordCard(
+                "Highest Spending",
+                highestSpending?.let { money(it.expenses) } ?: "—",
+                highestSpending?.let {
+                    getMonthLabel(it.year, it.month)
+                } ?: "No expenses yet",
+                wallpaperBlurTarget
+            ),
+            yearlyRecordCardParams(true)
+        )
+
+        firstRow.addView(
+            createYearlyRecordCard(
+                "Lowest Spending",
+                lowestSpending?.let { money(it.expenses) } ?: "—",
+                lowestSpending?.let {
+                    getMonthLabel(it.year, it.month)
+                } ?: "No recorded months",
+                wallpaperBlurTarget
+            ),
+            yearlyRecordCardParams(false)
+        )
+
+        content.addView(
+            firstRow,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin = dp(12)
+            }
+        )
+
+        val secondRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+
+        secondRow.addView(
+            createYearlyRecordCard(
+                "Highest Income",
+                highestIncome?.let { money(it.income) } ?: "—",
+                highestIncome?.let {
+                    getMonthLabel(it.year, it.month)
+                } ?: "No income yet",
+                wallpaperBlurTarget
+            ),
+            yearlyRecordCardParams(true)
+        )
+
+        secondRow.addView(
+            createYearlyRecordCard(
+                "Highest Saving",
+                highestSaving?.let {
+                    money(it.income - it.expenses)
+                } ?: "—",
+                highestSaving?.let {
+                    getMonthLabel(it.year, it.month)
+                } ?: "No positive saving",
+                wallpaperBlurTarget
+            ),
+            yearlyRecordCardParams(false)
+        )
+
+        content.addView(
+            secondRow,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin = dp(4)
+            }
+        )
+    }
+
+    private fun yearlyRecordCardParams(
+        firstCard: Boolean
+    ): LinearLayout.LayoutParams {
+        return LinearLayout.LayoutParams(
+            0,
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            1f
+        ).apply {
+            if (firstCard) {
+                rightMargin = dp(6)
+            } else {
+                leftMargin = dp(6)
+            }
+        }
+    }
+
+    private fun createYearlyRecordCard(
+        label: String,
+        value: String,
+        period: String,
+        wallpaperBlurTarget: BlurTarget
+    ): FrameLayout {
+        val density = resources.displayMetrics.density
+
+        val wrapper = FrameLayout(this).apply {
+            clipToOutline = true
+            background =
+                android.graphics.drawable.GradientDrawable().apply {
+                    shape =
+                        android.graphics.drawable.GradientDrawable.RECTANGLE
+                    cornerRadius = 18f * density
+                }
+        }
+
+        val card = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            minimumHeight = dp(124)
+
+            setPadding(
+                dp(10),
+                dp(14),
+                dp(10),
+                dp(14)
+            )
+
+            applyGlassCard(this)
+
+            val labelView = TextView(this@AnalyticsActivity).apply {
+                text = label
+                textSize = 12f
+                setTextColor(secondary)
+                gravity = Gravity.CENTER
+                maxLines = 2
+                typeface = Typeface.DEFAULT_BOLD
+            }
+
+            addView(
+                labelView,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+            )
+
+            val valueView = TextView(this@AnalyticsActivity).apply {
+                text = value
+                textSize = 18f
+                setTextColor(white)
+                gravity = Gravity.CENTER
+                maxLines = 2
+                typeface = Typeface.DEFAULT_BOLD
+
+                setPadding(
+                    0,
+                    dp(8),
+                    0,
+                    dp(5)
+                )
+            }
+
+            addView(
+                valueView,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+            )
+
+            val periodView = TextView(this@AnalyticsActivity).apply {
+                text = period
+                textSize = 11f
+                setTextColor(secondary)
+                gravity = Gravity.CENTER
+                maxLines = 2
+            }
+
+            addView(
+                periodView,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+            )
+        }
+
+        val blurView = BlurView(this).apply {
+            setupWith(
+                wallpaperBlurTarget,
+                4f,
+                false
+            )
+                .setBlurRadius(3f)
+                .setOverlayColor(Color.TRANSPARENT)
+        }
+
+        wrapper.addView(
+            blurView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        wrapper.addView(
+            card,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        return wrapper
+    }
+
     override fun onBackPressed() {
         finish()
     }
