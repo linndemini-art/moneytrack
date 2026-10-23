@@ -756,6 +756,7 @@ content.addView(
 )
 
 var breakdownYear = selectedYear
+var refreshYearlyRecords: ((Int) -> Unit)? = null
 
 val yearlyBreakdownCard = createCard()
 applyGlassCard(yearlyBreakdownCard)
@@ -861,10 +862,12 @@ fun updateYearlyBreakdown() {
     yearlyBreakdownLegend.removeAllViews()
 
     yearlyBreakdownLegend.addView(
-        createCategoryLegend(
-            totals
-        )
+    createCategoryLegend(
+        totals
     )
+)
+
+refreshYearlyRecords?.invoke(breakdownYear)
 }
 
 breakdownPreviousYear.setOnClickListener {
