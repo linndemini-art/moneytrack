@@ -1546,9 +1546,9 @@ FrameLayout.LayoutParams.MATCH_PARENT
         isHistoryOpen = true
 
         val historyRoot = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(backgroundColor)
-            setPadding(20, 60, 20, 28)
+    orientation = LinearLayout.VERTICAL
+    setBackgroundColor(Color.TRANSPARENT)
+    setPadding(20, 60, 20, 28)
         }
 
         val historyTitle = TextView(this).apply {
@@ -1675,7 +1675,31 @@ FrameLayout.LayoutParams.MATCH_PARENT
             }
         }
 
-        setContentView(historyRoot)
+        val historyScreenRoot = FrameLayout(this)
+
+val historyWallpaper = ImageView(this).apply {
+    setImageResource(R.drawable.moneytrack_background)
+    scaleType = ImageView.ScaleType.CENTER_CROP
+    contentDescription = null
+}
+
+historyScreenRoot.addView(
+    historyWallpaper,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
+
+historyScreenRoot.addView(
+    historyRoot,
+    FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.MATCH_PARENT
+    )
+)
+
+setContentView(historyScreenRoot)
     }
 
     override fun onBackPressed() {
