@@ -234,9 +234,9 @@ breakdownCard.background =
 
         // Same semi-transparent outline
         setStroke(
-            (2f *
-            density).toInt().coerceAtLeast(2),
-            Color.argb(45, 255, 255, 255)
+            (3f *
+            density).toInt().coerceAtLeast(3),
+            Color.argb(30, 255, 255, 255)
         )
     }
 
