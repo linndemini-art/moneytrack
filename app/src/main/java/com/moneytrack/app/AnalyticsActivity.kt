@@ -236,7 +236,7 @@ breakdownCard.background =
         setStroke(
             density.toInt().coerceAtLeast(1),
             Color.argb(
-    25,
+    90,
     Color.red(AppearanceManager.getAccentColor(this@AnalyticsActivity)),
 Color.green(AppearanceManager.getAccentColor(this@AnalyticsActivity)),
 Color.blue(AppearanceManager.getAccentColor(this@AnalyticsActivity))
