@@ -959,7 +959,7 @@ current.add(
         )
 
         val deleteButton = TextView(this).apply {
-            text = "×"
+            text = "delete"
             textSize = 24f
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
@@ -969,9 +969,40 @@ current.add(
 
             setOnClickListener { view ->
 
-                view.isPressed = true
+    view.isPressed = true
 
-                deleteItem(index)
+    AlertDialog.Builder(this@ScheduledActivity)
+        .setTitle("Delete schedule?")
+        .setMessage(
+            "Are you sure you want to delete this scheduled item?"
+        )
+        .setNegativeButton("Cancel", null)
+        .setPositiveButton("Delete") { _, _ ->
+            deleteItem(index)
+        }
+        .show()
+        .apply {
+            window?.setBackgroundDrawable(
+                android.graphics.drawable.ColorDrawable(
+                    Color.rgb(28, 31, 40)
+                )
+            )
+
+            val titleId = resources.getIdentifier(
+                "alertTitle", "id", "android"
+            )
+            findViewById<TextView>(titleId)?.setTextColor(white)
+
+            findViewById<TextView>(
+                android.R.id.message
+            )?.setTextColor(white)
+
+            getButton(AlertDialog.BUTTON_POSITIVE)
+                ?.setTextColor(white)
+
+            getButton(AlertDialog.BUTTON_NEGATIVE)
+                ?.setTextColor(white)
+        }
             }
         }
 
