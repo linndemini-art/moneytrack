@@ -662,16 +662,15 @@ card.elevation = dp(8).toFloat()
         picker.show()
     }
 
+    
     private fun confirmDelete(entry: DebtEntry) {
-
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle("Delete entry?")
             .setMessage(
                 "Delete ${entry.name} (${money(entry.amount)})?"
             )
             .setNegativeButton("Cancel", null)
             .setPositiveButton("Delete") { _, _ ->
-
                 deleteEntry(
                     showingBorrowed,
                     entry.id
@@ -679,8 +678,34 @@ card.elevation = dp(8).toFloat()
 
                 updateList()
             }
-            .show()
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.window?.setBackgroundDrawable(
+                android.graphics.drawable.ColorDrawable(
+                    Color.rgb(28, 31, 40)
+                )
+            )
+
+            val titleId = resources.getIdentifier(
+                "alertTitle", "id", "android"
+            )
+            dialog.findViewById<TextView>(titleId)?.setTextColor(Color.WHITE)
+
+            dialog.findViewById<TextView>(
+                android.R.id.message
+            )?.setTextColor(Color.WHITE)
+
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+                .setTextColor(Color.WHITE)
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setTextColor(Color.rgb(255, 100, 100))
+        }
+
+        dialog.show()
     }
+    
 
     private fun loadEntries(
         borrowed: Boolean
