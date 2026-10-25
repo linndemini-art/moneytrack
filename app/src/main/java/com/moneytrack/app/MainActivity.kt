@@ -1074,7 +1074,11 @@ else -> {
                             ColorDrawable(surfaceColor)
                         )
                         listView.setBackgroundColor(surfaceColor)
-                    } 
+                    val titleId = resources.getIdentifier(
+        "alertTitle", "id", "android"
+    )
+    findViewById<TextView>(titleId)?.setTextColor(white)
+                    }
             }
         }
 
