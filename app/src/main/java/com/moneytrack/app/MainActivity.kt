@@ -2124,42 +2124,57 @@ private fun renameSavedExpenseCategories(
         monthText.text = formatter.format(calendar.time).replaceFirstChar { it.uppercase() }
     }
 
-    private fun showMonthPicker() {
-        val dialogLayout = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(24, 8, 24, 8)
-        }
-
-        val yearPicker = NumberPicker(this).apply {
-            minValue = 2000
-            maxValue = 2100
-            value = selectedYear
-        }
-
-        val monthPicker = NumberPicker(this).apply {
-            minValue = 0
-            maxValue = 11
-            value = selectedMonth
-            displayedValues = arrayOf(
-                "January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"
-            )
-        }
-
-        dialogLayout.addView(yearPicker, LinearLayout.LayoutParams(-1, -2))
-        dialogLayout.addView(monthPicker, LinearLayout.LayoutParams(-1, -2))
-
-        AlertDialog.Builder(this)
-            .setTitle("Select month")
-            .setView(dialogLayout)
-            .setNegativeButton("Cancel", null)
-            .setPositiveButton("OK") { _, _ ->
-                selectedYear = yearPicker.value
-                selectedMonth = monthPicker.value
-                buildInterface()
-            }
-            .show()
+    
+private fun showMonthPicker() {
+    val dialogLayout = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        setPadding(24, 8, 24, 8)
     }
+
+    val yearPicker = NumberPicker(this).apply {
+        minValue = 2000
+        maxValue = 2100
+        value = selectedYear
+    }
+
+    val monthPicker = NumberPicker(this).apply {
+        minValue = 0
+        maxValue = 11
+        value = selectedMonth
+        displayedValues = arrayOf(
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        )
+    }
+
+    // Make the year and month values white.
+    for (picker in listOf(yearPicker, monthPicker)) {
+        for (i in 0 until picker.childCount) {
+            (picker.getChildAt(i) as? EditText)?.setTextColor(white)
+        }
+    }
+
+    dialogLayout.addView(yearPicker, LinearLayout.LayoutParams(-1, -2))
+    dialogLayout.addView(monthPicker, LinearLayout.LayoutParams(-1, -2))
+
+    val dialog = AlertDialog.Builder(this)
+        .setTitle("Select month")
+        .setView(dialogLayout)
+        .setNegativeButton("Cancel", null)
+        .setPositiveButton("OK") { _, _ ->
+            selectedYear = yearPicker.value
+            selectedMonth = monthPicker.value
+            buildInterface()
+        }
+        .create()
+
+    dialog.show()
+
+    // Match the Manage Categories popup background and title.
+    dialog.window?.setBackgroundDrawable(ColorDrawable(surfaceColor))
+    dialog.findViewById<TextView>(android.R.id.title)?.setTextColor(white)
+}
+
 
     private fun refreshExpenses() {
         expensesContainer.removeAllViews()
