@@ -1598,11 +1598,65 @@ val progressValue = calculateProgress(
         layout.addView(noteField, LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
         ).apply { topMargin = dpToPx(10) })
-        val dialog = AlertDialog.Builder(this).setTitle("Add money")
-            .setView(layout).setNegativeButton("Cancel", null)
-            .setPositiveButton("Add money", null).create()
+        
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Add money")
+            .setView(layout)
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Add money", null)
+            .create()
+
         dialog.setOnShowListener {
+            dialog.window?.setBackgroundDrawable(
+                android.graphics.drawable.ColorDrawable(
+                    Color.rgb(28, 31, 40)
+                )
+            )
+
+            val titleId = resources.getIdentifier(
+                "alertTitle", "id", "android"
+            )
+            dialog.findViewById<TextView>(titleId)
+                ?.setTextColor(white)
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setTextColor(white)
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+                .setTextColor(white)
+
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val amount = amountField.text.toString().trim()
+                    .replace(",", ".").toDoubleOrNull()
+
+                if (amount == null || !amount.isFinite() || amount <= 0.0) {
+                    amountField.error = "Enter an amount greater than zero"
+                    return@setOnClickListener
+                }
+
+                val goals = loadSavingsGoals().toMutableList()
+                val index = goals.indexOfFirst { it.id == goalId }
+                if (index < 0) {
+                    dialog.dismiss()
+                    return@setOnClickListener
+                }
+
+                val goal = goals[index]
+                goals[index] = goal.copy(
+                    contributions = goal.contributions + Contribution(
+                        id = UUID.randomUUID().toString(),
+                        amount = amount,
+                        note = noteField.text.toString().trim(),
+                        date = System.currentTimeMillis()
+                    )
+                )
+
+                saveSavingsGoals(goals)
+                dialog.dismiss()
+            }
+        }
+
+        dialog.show()
+        
                 val amount = amountField.text.toString().trim()
                     .replace(",", ".").toDoubleOrNull()
                 if (amount == null || !amount.isFinite() || amount <= 0.0) {
@@ -1625,20 +1679,49 @@ val progressValue = calculateProgress(
         dialog.show()
     }
 
-    private fun showSavingsGoalOptions(goalId: String) {
-        AlertDialog.Builder(this).setTitle("Savings goal")
-            .setItems(arrayOf("Edit goal", "Delete goal")) { _, which ->
-                when (which) {
-                    0 -> showAddSavingsGoalDialog(goalId)
-                    1 -> AlertDialog.Builder(this).setTitle("Delete savings goal?")
-                        .setMessage("This will delete the goal and its contribution history.")
-                        .setNegativeButton("Cancel", null)
-                        .setPositiveButton("Delete") { _, _ ->
-                            saveSavingsGoals(loadSavingsGoals().filterNot { it.id == goalId })
-                        }.show()
-                }
-            }.show()
-    }
+                    
+                               1 -> {
+                        val dialog = AlertDialog.Builder(this)
+                            .setTitle("Delete savings goal?")
+                            .setMessage(
+                                "This will delete the goal and its contribution history."
+                            )
+                            .setNegativeButton("Cancel", null)
+                            .setPositiveButton("Delete") { _, _ ->
+                                saveSavingsGoals(
+                                    loadSavingsGoals().filterNot {
+                                        it.id == goalId
+                                    }
+                                )
+                            }
+                            .create()
+
+                        dialog.setOnShowListener {
+                            dialog.window?.setBackgroundDrawable(
+                                android.graphics.drawable.ColorDrawable(
+                                    Color.rgb(28, 31, 40)
+                                )
+                            )
+
+                            val titleId = resources.getIdentifier(
+                                "alertTitle", "id", "android"
+                            )
+                            dialog.findViewById<TextView>(titleId)
+                                ?.setTextColor(white)
+
+                            dialog.findViewById<TextView>(
+                                android.R.id.message
+                            )?.setTextColor(white)
+
+                            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                                .setTextColor(white)
+                            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+                                .setTextColor(white)
+                        }
+
+                        dialog.show()
+                    }
+                    
 
     private fun isValidDate(
         date: String
