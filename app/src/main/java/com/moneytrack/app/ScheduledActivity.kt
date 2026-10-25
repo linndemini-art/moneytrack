@@ -677,12 +677,50 @@ savingsTab.background =
             }
         )
 
-        val dialog = AlertDialog.Builder(this)
+                val dialog = AlertDialog.Builder(this)
             .setTitle("EDIT SCHEDULED")
             .setView(dialogLayout)
             .setNegativeButton("CANCEL", null)
             .setPositiveButton("SAVE", null)
             .create()
+
+        dialog.setOnShowListener {
+            dialog.window?.setBackgroundDrawable(
+                android.graphics.drawable.ColorDrawable(
+                    Color.rgb(28, 31, 40)
+                )
+            )
+
+            val titleId = resources.getIdentifier(
+                "alertTitle", "id", "android"
+            )
+            dialog.findViewById<TextView>(titleId)
+                ?.setTextColor(white)
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setTextColor(white)
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+                .setTextColor(white)
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener {
+                    val name = nameInput.text.toString().trim()
+                    val date = dateInput.text.toString().trim()
+
+                    if (name.isEmpty() || date.isEmpty()) {
+                        return@setOnClickListener
+                    }
+
+                    if (!isValidDate(date)) {
+                        return@setOnClickListener
+                    }
+
+                    updateItem(index, name, date)
+                    dialog.dismiss()
+                }
+        }
+
+        dialog.show()
 
         dialog.setOnShowListener {
 
