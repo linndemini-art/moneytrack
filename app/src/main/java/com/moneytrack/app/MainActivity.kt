@@ -1741,9 +1741,10 @@ setContentView(historyScreenRoot)
 
         dialog.setOnShowListener {
             dialog.window?.setBackgroundDrawable(ColorDrawable(surfaceColor))
-            dialog.findViewById<TextView>(android.R.id.title)?.setTextColor(white)
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                                ?.setTextColor(white)
+            val titleId = resources.getIdentifier(
+    "alertTitle", "id", "android"
+)
+dialog.findViewById<TextView>(titleId)?.setTextColor(white)
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(white)
 
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener {
@@ -1797,9 +1798,10 @@ setContentView(historyScreenRoot)
 
         dialog.setOnShowListener {
             dialog.window?.setBackgroundDrawable(ColorDrawable(surfaceColor))
-            dialog.findViewById<TextView>(android.R.id.title)?.setTextColor(white)
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                                ?.setTextColor(white)
+            val titleId = resources.getIdentifier(
+    "alertTitle", "id", "android"
+)
+dialog.findViewById<TextView>(titleId)?.setTextColor(white)
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(white)
 
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener {
