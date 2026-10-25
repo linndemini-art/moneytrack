@@ -2183,7 +2183,11 @@ private fun showMonthPicker() {
                     }
                 }
 
-                setTextWhite(picker)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+    picker.setTextColor(white)
+} else {
+    setTextWhite(picker)
+                }
 
                 try {
                     val field = NumberPicker::class.java
