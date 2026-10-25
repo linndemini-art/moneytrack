@@ -960,7 +960,7 @@ current.add(
 
         val deleteButton = TextView(this).apply {
             text = "delete"
-            textSize = 24f
+            textSize = 12f
             setTextColor(white)
             typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER
