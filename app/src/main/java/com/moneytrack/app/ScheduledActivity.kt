@@ -1664,9 +1664,9 @@ val progressValue = calculateProgress(
     }
 
     private fun showSavingsGoalOptions(goalId: String) {
-        AlertDialog.Builder(this)
-            .setTitle("Savings goal")
-            .setItems(arrayOf("Edit goal", "Delete goal")) { _, which ->
+        val optionsDialog = AlertDialog.Builder(this)
+    .setTitle("Savings goal")
+    .setItems(arrayOf("Edit goal", "Delete goal")) { _, which ->
                 when (which) {
                     0 -> showAddSavingsGoalDialog(goalId)
 
@@ -1712,8 +1712,28 @@ val progressValue = calculateProgress(
                         dialog.show()
                     }
                 }
+                        }
+            .create()
+
+        optionsDialog.setOnShowListener {
+            optionsDialog.window?.setBackgroundDrawable(
+                android.graphics.drawable.ColorDrawable(
+                    Color.rgb(28, 31, 40)
+                )
+            )
+
+            val titleId = resources.getIdentifier(
+                "alertTitle", "id", "android"
+            )
+            optionsDialog.findViewById<TextView>(titleId)?.setTextColor(white)
+
+            for (i in 0 until optionsDialog.listView.childCount) {
+                (optionsDialog.listView.getChildAt(i) as? TextView)
+                    ?.setTextColor(white)
             }
-            .show()
+        }
+
+        optionsDialog.show()
     }
     
                     
