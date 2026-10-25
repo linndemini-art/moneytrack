@@ -2125,6 +2125,7 @@ private fun renameSavedExpenseCategories(
     }
 
     
+
 private fun showMonthPicker() {
     val dialogLayout = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
@@ -2142,41 +2143,12 @@ private fun showMonthPicker() {
         maxValue = 11
         value = selectedMonth
         displayedValues = arrayOf(
-            "January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
+            "January", "February", "March", "April",
+            "May", "June", "July", "August",
+            "September", "October", "November", "December"
         )
     }
 
-    
-    // Make all NumberPicker text white, including the wheel values.
-    fun setPickerTextWhite(view: View) {
-        if (view is EditText) {
-            view.setTextColor(white)
-        }
-
-        if (view is ViewGroup) {
-            for (i in 0 until view.childCount) {
-                setPickerTextWhite(view.getChildAt(i))
-            }
-        }
-    }
-
-    for (picker in listOf(yearPicker, monthPicker)) {
-        setPickerTextWhite(picker)
-
-        // The wheel's year/month labels are drawn using this internal Paint.
-        try {
-            val field = NumberPicker::class.java
-                .getDeclaredField("mSelectorWheelPaint")
-            field.isAccessible = true
-            (field.get(picker) as? Paint)?.color = white
-        } catch (_: Exception) {
-            // Keep the dialog usable if this Android version blocks reflection.
-        }
-
-        picker.invalidate()
-    }
-    
     dialogLayout.addView(yearPicker, LinearLayout.LayoutParams(-1, -2))
     dialogLayout.addView(monthPicker, LinearLayout.LayoutParams(-1, -2))
 
@@ -2191,12 +2163,45 @@ private fun showMonthPicker() {
         }
         .create()
 
-    dialog.show()
+    dialog.setOnShowListener {
+        dialog.window?.setBackgroundDrawable(ColorDrawable(surfaceColor))
+        dialog.findViewById<TextView>(android.R.id.title)
+            ?.setTextColor(white)
 
-    // Match the Manage Categories popup background and title.
-    dialog.window?.setBackgroundDrawable(ColorDrawable(surfaceColor))
-    dialog.findViewById<TextView>(android.R.id.title)?.setTextColor(white)
+        // Apply picker colors after the dialog has been shown.
+        for (picker in listOf(yearPicker, monthPicker)) {
+            picker.post {
+                fun setTextWhite(view: View) {
+                    if (view is TextView) {
+                        view.setTextColor(white)
+                    }
+
+                    if (view is ViewGroup) {
+                        for (i in 0 until view.childCount) {
+                            setTextWhite(view.getChildAt(i))
+                        }
+                    }
+                }
+
+                setTextWhite(picker)
+
+                try {
+                    val field = NumberPicker::class.java
+                        .getDeclaredField("mSelectorWheelPaint")
+                    field.isAccessible = true
+                    (field.get(picker) as? Paint)?.color = white
+                } catch (_: Exception) {
+                    // Keep the picker functional if the field is unavailable.
+                }
+
+                picker.invalidate()
+            }
+        }
+    }
+
+    dialog.show()
 }
+
 
 
     private fun refreshExpenses() {
