@@ -1571,11 +1571,13 @@ val progressValue = calculateProgress(
         ).setTextColor(white)
     }
 
+    
     private fun showAddMoneyDialog(goalId: String) {
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dpToPx(24), dpToPx(16), dpToPx(24), dpToPx(8))
         }
+
         val amountField = EditText(this).apply {
             hint = "Amount (€)"
             inputType = android.text.InputType.TYPE_CLASS_NUMBER or
@@ -1586,6 +1588,7 @@ val progressValue = calculateProgress(
             background = roundedBackground(inputColor, 10f)
             setPadding(dpToPx(12), dpToPx(10), dpToPx(12), dpToPx(10))
         }
+
         val noteField = EditText(this).apply {
             hint = "Note (optional)"
             setSingleLine(true)
@@ -1594,11 +1597,15 @@ val progressValue = calculateProgress(
             background = roundedBackground(inputColor, 10f)
             setPadding(dpToPx(12), dpToPx(10), dpToPx(12), dpToPx(10))
         }
+
         layout.addView(amountField)
         layout.addView(noteField, LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
-        ).apply { topMargin = dpToPx(10) })
-        
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply {
+            topMargin = dpToPx(10)
+        })
+
         val dialog = AlertDialog.Builder(this)
             .setTitle("Add money")
             .setView(layout)
@@ -1616,13 +1623,10 @@ val progressValue = calculateProgress(
             val titleId = resources.getIdentifier(
                 "alertTitle", "id", "android"
             )
-            dialog.findViewById<TextView>(titleId)
-                ?.setTextColor(white)
+            dialog.findViewById<TextView>(titleId)?.setTextColor(white)
 
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                .setTextColor(white)
-            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-                .setTextColor(white)
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(white)
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(white)
 
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 val amount = amountField.text.toString().trim()
@@ -1635,6 +1639,7 @@ val progressValue = calculateProgress(
 
                 val goals = loadSavingsGoals().toMutableList()
                 val index = goals.indexOfFirst { it.id == goalId }
+
                 if (index < 0) {
                     dialog.dismiss()
                     return@setOnClickListener
@@ -1656,31 +1661,16 @@ val progressValue = calculateProgress(
         }
 
         dialog.show()
-        
-                val amount = amountField.text.toString().trim()
-                    .replace(",", ".").toDoubleOrNull()
-                if (amount == null || !amount.isFinite() || amount <= 0.0) {
-                    amountField.error = "Enter an amount greater than zero"
-                    return@setOnClickListener
-                }
-                val goals = loadSavingsGoals().toMutableList()
-                val index = goals.indexOfFirst { it.id == goalId }
-                if (index < 0) { dialog.dismiss(); return@setOnClickListener }
-                val goal = goals[index]
-                goals[index] = goal.copy(contributions = goal.contributions + Contribution(
-                    id = UUID.randomUUID().toString(), amount = amount,
-                    note = noteField.text.toString().trim(),
-                    date = System.currentTimeMillis()
-                ))
-                saveSavingsGoals(goals)
-                dialog.dismiss()
-            }
-        }
-        dialog.show()
     }
 
-                    
-                               1 -> {
+    private fun showSavingsGoalOptions(goalId: String) {
+        AlertDialog.Builder(this)
+            .setTitle("Savings goal")
+            .setItems(arrayOf("Edit goal", "Delete goal")) { _, which ->
+                when (which) {
+                    0 -> showAddSavingsGoalDialog(goalId)
+
+                    1 -> {
                         val dialog = AlertDialog.Builder(this)
                             .setTitle("Delete savings goal?")
                             .setMessage(
@@ -1721,6 +1711,11 @@ val progressValue = calculateProgress(
 
                         dialog.show()
                     }
+                }
+            }
+            .show()
+    }
+    
                     
 
     private fun isValidDate(
