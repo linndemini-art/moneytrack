@@ -2165,8 +2165,9 @@ private fun showMonthPicker() {
 
     dialog.setOnShowListener {
         dialog.window?.setBackgroundDrawable(ColorDrawable(surfaceColor))
-        dialog.findViewById<TextView>(android.R.id.title)
-            ?.setTextColor(white)
+        
+        val titleId = resources.getIdentifier("alertTitle", "id", "android")
+dialog.findViewById<TextView>(titleId)?.setTextColor(white)
 
         // Apply picker colors after the dialog has been shown.
         for (picker in listOf(yearPicker, monthPicker)) {
