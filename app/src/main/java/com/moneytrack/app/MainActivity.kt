@@ -2147,13 +2147,36 @@ private fun showMonthPicker() {
         )
     }
 
-    // Make the year and month values white.
-    for (picker in listOf(yearPicker, monthPicker)) {
-        for (i in 0 until picker.childCount) {
-            (picker.getChildAt(i) as? EditText)?.setTextColor(white)
+    
+    // Make all NumberPicker text white, including the wheel values.
+    fun setPickerTextWhite(view: View) {
+        if (view is EditText) {
+            view.setTextColor(white)
+        }
+
+        if (view is ViewGroup) {
+            for (i in 0 until view.childCount) {
+                setPickerTextWhite(view.getChildAt(i))
+            }
         }
     }
 
+    for (picker in listOf(yearPicker, monthPicker)) {
+        setPickerTextWhite(picker)
+
+        // The wheel's year/month labels are drawn using this internal Paint.
+        try {
+            val field = NumberPicker::class.java
+                .getDeclaredField("mSelectorWheelPaint")
+            field.isAccessible = true
+            (field.get(picker) as? Paint)?.color = white
+        } catch (_: Exception) {
+            // Keep the dialog usable if this Android version blocks reflection.
+        }
+
+        picker.invalidate()
+    }
+    
     dialogLayout.addView(yearPicker, LinearLayout.LayoutParams(-1, -2))
     dialogLayout.addView(monthPicker, LinearLayout.LayoutParams(-1, -2))
 
