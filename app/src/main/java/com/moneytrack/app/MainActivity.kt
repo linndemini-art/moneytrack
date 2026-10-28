@@ -2567,6 +2567,166 @@ swipeLayout.addView(
         }
     }
 
+    
+    private fun refreshIncomes() {
+        expensesContainer.removeAllViews()
+
+        if (incomeEntries.isEmpty()) {
+            val emptyCard = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.CENTER
+                setPadding(20, 22, 20, 22)
+                background = roundedBackground(cardColor, 16f)
+            }
+
+            val emptyTitle = TextView(this).apply {
+                text = "No incomes this month"
+                textSize = 15f
+                setTextColor(white)
+                typeface = Typeface.DEFAULT_BOLD
+                gravity = Gravity.CENTER
+            }
+
+            val emptySubtitle = TextView(this).apply {
+                text = "Your income records will appear here"
+                textSize = 12f
+                setTextColor(muted)
+                gravity = Gravity.CENTER
+                setPadding(0, 5, 0, 0)
+            }
+
+            emptyCard.addView(emptyTitle)
+            emptyCard.addView(emptySubtitle)
+            expensesContainer.addView(
+                emptyCard,
+                LinearLayout.LayoutParams(-1, -2)
+            )
+            return
+        }
+
+        for (index in incomeEntries.indices.reversed()) {
+            val entry = incomeEntries[index]
+            val density = resources.displayMetrics.density
+
+            val incomeCard = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(16, 15, 12, 15)
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    cornerRadius = 16f * density
+                    setColor(Color.argb(15, 245, 247, 255))
+                    setStroke(
+                        density.toInt().coerceAtLeast(1),
+                        Color.argb(110, 220, 225, 235)
+                    )
+                }
+                elevation = 8f * density
+            }
+
+            val accent = View(this).apply {
+                setBackgroundColor(appearanceTheme.accentColor)
+            }
+            incomeCard.addView(accent, LinearLayout.LayoutParams(3, 48))
+
+            val details = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(12, 0, 8, 0)
+            }
+
+            val sourceText = TextView(this).apply {
+                text = entry.source
+                textSize = 16f
+                setTextColor(white)
+                typeface = Typeface.DEFAULT_BOLD
+            }
+            details.addView(sourceText)
+
+            if (entry.date.isNotEmpty() || entry.time.isNotEmpty()) {
+                val timestamp = TextView(this).apply {
+                    text = listOf(entry.date, entry.time)
+                        .filter { it.isNotEmpty() }
+                        .joinToString(" • ")
+                    textSize = 11f
+                    setTextColor(muted)
+                    setPadding(0, 4, 0, 0)
+                }
+                details.addView(timestamp)
+            }
+
+            incomeCard.addView(
+                details,
+                LinearLayout.LayoutParams(0, -2, 1f)
+            )
+
+            val amountText = TextView(this).apply {
+                text = money(entry.amount)
+                textSize = 16f
+                setTextColor(white)
+                typeface = Typeface.DEFAULT_BOLD
+                gravity = Gravity.END
+            }
+            incomeCard.addView(amountText, LinearLayout.LayoutParams(-2, -2))
+
+            val params = LinearLayout.LayoutParams(-1, -2)
+            params.setMargins(0, 0, 0, 10)
+
+            val deleteWidth = (92 * density).toInt()
+            val swipeLayout = SwipeDeleteLayout(this).apply {
+                clipChildren = true
+                clipToPadding = true
+            }
+
+            swipeLayout.addView(
+                TextView(this).apply {
+                    text = "Delete"
+                    textSize = 13f
+                    setTextColor(white)
+                    gravity = Gravity.CENTER
+                    typeface = Typeface.DEFAULT_BOLD
+                    background = roundedBackground(Color.rgb(190, 50, 55), 16f)
+                    setOnClickListener { deleteIncome(index) }
+                },
+                FrameLayout.LayoutParams(
+                    deleteWidth,
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    Gravity.END
+                )
+            )
+
+            val incomeWrapper = FrameLayout(this).apply {
+                clipToOutline = true
+                background = roundedBackground(Color.TRANSPARENT, 16f)
+            }
+
+            val incomeBlur = BlurView(this).apply {
+                setupWith(wallpaperBlurTarget, 4f, false)
+                    .setBlurRadius(3f)
+                    .setOverlayColor(Color.TRANSPARENT)
+            }
+
+            incomeWrapper.addView(
+                incomeBlur,
+                FrameLayout.LayoutParams(-1, -1)
+            )
+            incomeWrapper.addView(
+                incomeCard,
+                FrameLayout.LayoutParams(-1, -2)
+            )
+            swipeLayout.addView(
+                incomeWrapper,
+                FrameLayout.LayoutParams(-1, -2)
+            )
+
+            swipeLayout.setDeleteWidth(deleteWidth)
+            swipeLayout.setOnSwipeDelete {
+                deleteIncome(index)
+            }
+            expensesContainer.addView(swipeLayout, params)
+        }
+    }
+    
+
     private inner class SwipeDeleteLayout(context: Context) : FrameLayout(context) {
         
         private var downX = 0f
