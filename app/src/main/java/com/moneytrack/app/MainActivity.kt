@@ -1172,16 +1172,16 @@ addCard.addView(
 
             
         val historyButtonHeight =
-            (28 * resources.displayMetrics.density).toInt()
+            (34 * resources.displayMetrics.density).toInt()
 
-        recentExpensesButton.textSize = 11f
-        recentIncomesButton.textSize = 11f
+        recentExpensesButton.textSize = 13f
+        recentIncomesButton.textSize = 13f
 
         recentExpensesButton.minHeight = historyButtonHeight
         recentIncomesButton.minHeight = historyButtonHeight
 
         val historyButtonPadding =
-            (6 * resources.displayMetrics.density).toInt()
+            (10 * resources.displayMetrics.density).toInt()
 
         recentExpensesButton.setPadding(
             historyButtonPadding, 0, historyButtonPadding, 0
