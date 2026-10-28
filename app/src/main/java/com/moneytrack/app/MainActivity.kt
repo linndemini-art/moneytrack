@@ -2163,9 +2163,35 @@ private fun renameSavedExpenseCategories(
         prefs.edit().putString(categoriesPreferenceKey, savedArray.toString()).apply()
     }
 
+    
     private fun loadData() {
         income = prefs.getString(incomeKey(), "0")?.toDoubleOrNull() ?: 0.0
+
+        incomeEntries.clear()
+        val storedIncomeEntries =
+            prefs.getString("incomeEntries_${currentMonthKey()}", null)
+
+        if (!storedIncomeEntries.isNullOrEmpty()) {
+            try {
+                val array = JSONArray(storedIncomeEntries)
+                for (index in 0 until array.length()) {
+                    val item = array.getJSONObject(index)
+                    incomeEntries.add(
+                        IncomeEntry(
+                            source = item.optString("source", "Unspecified source"),
+                            amount = item.optDouble("amount", 0.0),
+                            date = item.optString("date", ""),
+                            time = item.optString("time", "")
+                        )
+                    )
+                }
+            } catch (_: Exception) {
+                incomeEntries.clear()
+            }
+        }
+
         expenses.clear()
+        
 
         val storedExpenses = prefs.getString(expensesKey(), null)
         if (!storedExpenses.isNullOrEmpty()) {
