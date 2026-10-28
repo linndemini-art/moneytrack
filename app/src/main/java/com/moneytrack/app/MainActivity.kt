@@ -1150,22 +1150,54 @@ addCard.addView(
 
         content.addView(addCard)
 
-        val recentTitle = sectionTitle(
-            "RECENT EXPENSES",
-            white
+        
+        val historyButtonRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+        }
+
+        val recentExpensesButton =
+            createLiquidGlassButton("Recent Expenses")
+
+        val recentIncomesButton =
+            createLiquidGlassButton("Recent Incomes")
+
+        val accentColor =
+            AppearanceManager.getAccentColor(this@MainActivity)
+
+        recentExpensesButton.background =
+            createLiquidGlassBackground(accentColor, true, 14)
+
+        recentIncomesButton.background =
+            createLiquidGlassBackground(accentColor, false, 14)
+
+        recentExpensesButton.isClickable = false
+        recentExpensesButton.isFocusable = false
+        recentIncomesButton.isClickable = false
+        recentIncomesButton.isFocusable = false
+
+        historyButtonRow.addView(
+            recentExpensesButton,
+            LinearLayout.LayoutParams(0, -2, 1f).apply {
+                setMargins(0, 0, 5, 0)
+            }
         )
 
-        val recentTitleParams = LinearLayout.LayoutParams(
+        historyButtonRow.addView(
+            recentIncomesButton,
+            LinearLayout.LayoutParams(0, -2, 1f).apply {
+                setMargins(5, 0, 0, 0)
+            }
+        )
+
+        val historyButtonParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
 
-        recentTitleParams.setMargins(2, 24, 0, 10)
+        historyButtonParams.setMargins(0, 24, 0, 10)
 
-        content.addView(
-            recentTitle,
-            recentTitleParams
-        )
+        content.addView(historyButtonRow, historyButtonParams)
+        
 
         expensesContainer = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
