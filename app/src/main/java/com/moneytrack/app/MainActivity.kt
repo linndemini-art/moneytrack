@@ -98,6 +98,13 @@ class MainActivity : Activity() {
         val time: String = ""
     )
 
+    data class IncomeEntry(
+        val source: String,
+        val amount: Double,
+        val date: String = "",
+        val time: String = ""
+    )
+
     private val defaultCategories = arrayOf(
         "Housing",
         "Utilities",
