@@ -1773,7 +1773,13 @@ setContentView(historyScreenRoot)
     }
 
     
+    
     private fun showAddIncomeDialog() {
+        val sourceInput = createInput(
+            "Income source",
+            InputType.TYPE_CLASS_TEXT
+        )
+
         val input = createInput(
             "Enter income amount",
             InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
@@ -1782,8 +1788,10 @@ setContentView(historyScreenRoot)
         val dialogContent = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(20, 8, 20, 8)
+            addView(sourceInput, inputParams())
             addView(input, inputParams())
         }
+        
 
         val dialog = AlertDialog.Builder(this)
             .setTitle("Add Income")
