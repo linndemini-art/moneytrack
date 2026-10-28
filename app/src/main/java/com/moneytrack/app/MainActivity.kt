@@ -1817,9 +1817,12 @@ setContentView(historyScreenRoot)
 dialog.findViewById<TextView>(titleId)?.setTextColor(white)
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(white)
 
+            
+            
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener {
-                if (saveIncome(input)) dialog.dismiss()
+                if (saveIncome(sourceInput, input)) dialog.dismiss()
             }
+            
         }
 
         dialog.show()
@@ -1909,7 +1912,10 @@ dialog.findViewById<TextView>(titleId)?.setTextColor(white)
         dialog.show()
     }
 
-    private fun saveIncome(input: EditText): Boolean {
+    
+    private fun saveIncome(sourceInput: EditText, input: EditText): Boolean {
+        val source = sourceInput.text.toString().trim()
+            .ifEmpty { "Unspecified source" }
         val value = input.text.toString().replace(",", ".").toDoubleOrNull()
 
         if (value == null || value < 0) {
@@ -1919,12 +1925,26 @@ dialog.findViewById<TextView>(titleId)?.setTextColor(white)
             return false
         }
 
+        val now = Calendar.getInstance().time
+        val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH)
+        val timeFormat = SimpleDateFormat("HH:mm", Locale.ENGLISH)
+
         income += value
+        incomeEntries.add(
+            IncomeEntry(
+                source = source,
+                amount = value,
+                date = dateFormat.format(now),
+                time = timeFormat.format(now)
+            )
+        )
+
         saveData()
         updateTotals()
         Toast.makeText(this, "Income saved.", Toast.LENGTH_SHORT).show()
         return true
     }
+    
 
     private fun addExpense(
         descriptionInput: EditText,
