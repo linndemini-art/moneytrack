@@ -1142,18 +1142,18 @@ addCard.addView(
         }
 
         actionRow.addView(
-            addIncomeButton,
-            LinearLayout.LayoutParams(0, -2, 1f).apply {
-                setMargins(0, 8, 5, 0)
-            }
-        )
+    addExpenseButton,
+    LinearLayout.LayoutParams(0, -2, 1f).apply {
+        setMargins(0, 8, 5, 0)
+    }
+)
 
-        actionRow.addView(
-            addExpenseButton,
-            LinearLayout.LayoutParams(0, -2, 1f).apply {
-                setMargins(5, 8, 0, 0)
-            }
-        )
+actionRow.addView(
+    addIncomeButton,
+    LinearLayout.LayoutParams(0, -2, 1f).apply {
+        setMargins(5, 8, 0, 0)
+    }
+)
 
         addCard.addView(actionRow)
 
