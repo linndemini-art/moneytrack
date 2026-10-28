@@ -1170,6 +1170,27 @@ addCard.addView(
         recentIncomesButton.background =
             createLiquidGlassBackground(accentColor, false, 14)
 
+            
+        val historyButtonHeight =
+            (28 * resources.displayMetrics.density).toInt()
+
+        recentExpensesButton.textSize = 11f
+        recentIncomesButton.textSize = 11f
+
+        recentExpensesButton.minHeight = historyButtonHeight
+        recentIncomesButton.minHeight = historyButtonHeight
+
+        val historyButtonPadding =
+            (6 * resources.displayMetrics.density).toInt()
+
+        recentExpensesButton.setPadding(
+            historyButtonPadding, 0, historyButtonPadding, 0
+        )
+        recentIncomesButton.setPadding(
+            historyButtonPadding, 0, historyButtonPadding, 0
+        )
+        
+
         recentExpensesButton.isClickable = false
         recentExpensesButton.isFocusable = false
         recentIncomesButton.isClickable = false
