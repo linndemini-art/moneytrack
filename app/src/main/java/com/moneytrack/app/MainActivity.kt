@@ -2008,7 +2008,19 @@ dialog.findViewById<TextView>(titleId)?.setTextColor(white)
     }
 
     
-    private fun updateTotals() {
+    private fun deleteIncome(index: Int) {
+        if (index < 0 || index >= incomeEntries.size) return
+
+        val removedIncome = incomeEntries.removeAt(index)
+        income -= removedIncome.amount
+
+        saveData()
+        updateTotals()
+        refreshIncomes()
+    }
+
+    
+        private fun updateTotals() {
         val totalExpenses = expenses.sumOf { it.amount }
         val availableBalance = previousMonthsBalance() + income
         val remaining = availableBalance - totalExpenses
