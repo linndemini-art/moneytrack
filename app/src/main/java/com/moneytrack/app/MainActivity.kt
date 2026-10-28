@@ -1781,13 +1781,38 @@ dialog.findViewById<TextView>(titleId)?.setTextColor(white)
             InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         )
 
-        val dialogContent = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(20, 8, 20, 8)
-            addView(dialogSpinner, spinnerParams())
-            addView(descriptionField, inputParams())
-            addView(amountField, inputParams())
-        }
+        val categorySelector = FrameLayout(this).apply {
+    val density = resources.displayMetrics.density
+
+    addView(
+        dialogSpinner,
+        FrameLayout.LayoutParams(-1, -2)
+    )
+
+    addView(
+        TextView(this@MainActivity).apply {
+            text = "☰"
+            textSize = 20f
+            setTextColor(white)
+            gravity = Gravity.CENTER
+            isClickable = false
+            setPadding(0, 0, (12 * density).toInt(), 0)
+        },
+        FrameLayout.LayoutParams(
+            (40 * density).toInt(),
+            -1,
+            Gravity.END or Gravity.CENTER_VERTICAL
+        )
+    )
+}
+
+val dialogContent = LinearLayout(this).apply {
+    orientation = LinearLayout.VERTICAL
+    setPadding(20, 8, 20, 8)
+    addView(categorySelector, spinnerParams())
+    addView(descriptionField, inputParams())
+    addView(amountField, inputParams())
+}
 
         val dialog = AlertDialog.Builder(this)
             .setTitle("Add Expense")
