@@ -1200,10 +1200,23 @@ addCard.addView(
         )
         
 
-        recentExpensesButton.isClickable = false
-        recentExpensesButton.isFocusable = false
-        recentIncomesButton.isClickable = false
-        recentIncomesButton.isFocusable = false
+        
+        recentExpensesButton.setOnClickListener {
+            recentExpensesButton.background =
+                createLiquidGlassBackground(accentColor, true, 14)
+            recentIncomesButton.background =
+                createLiquidGlassBackground(accentColor, false, 14)
+            refreshExpenses()
+        }
+
+        recentIncomesButton.setOnClickListener {
+            recentExpensesButton.background =
+                createLiquidGlassBackground(accentColor, false, 14)
+            recentIncomesButton.background =
+                createLiquidGlassBackground(accentColor, true, 14)
+            refreshIncomes()
+        }
+        
 
         historyButtonRow.addView(
             recentExpensesButton,
