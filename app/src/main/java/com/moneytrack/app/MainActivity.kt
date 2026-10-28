@@ -71,6 +71,8 @@ class MainActivity : Activity() {
 
     private var income = 0.0
     private val expenses = mutableListOf<Expense>()
+    private val incomeEntries = mutableListOf<IncomeEntry>()
+    
 
     private val prefs by lazy {
         getSharedPreferences(
