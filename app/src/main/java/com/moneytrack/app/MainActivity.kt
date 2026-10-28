@@ -2039,6 +2039,7 @@ dialog.findViewById<TextView>(titleId)?.setTextColor(white)
     private fun incomeKey(): String = "income_${currentMonthKey()}"
     private fun expensesKey(): String = "expenses_${currentMonthKey()}"
     
+    
     private fun saveData() {
         val expensesArray = JSONArray()
         for (expense in expenses) {
@@ -2052,11 +2053,24 @@ dialog.findViewById<TextView>(titleId)?.setTextColor(white)
             expensesArray.put(item)
         }
 
+        val incomeEntriesArray = JSONArray()
+        for (entry in incomeEntries) {
+            val item = JSONObject().apply {
+                put("source", entry.source)
+                put("amount", entry.amount)
+                put("date", entry.date)
+                put("time", entry.time)
+            }
+            incomeEntriesArray.put(item)
+        }
+
         prefs.edit()
             .putString(incomeKey(), income.toString())
             .putString(expensesKey(), expensesArray.toString())
+            .putString("incomeEntries_${currentMonthKey()}", incomeEntriesArray.toString())
             .apply()
     }
+    
 
     private fun loadCategories() {
     val storedCategories = prefs.getString(categoriesPreferenceKey, null)
