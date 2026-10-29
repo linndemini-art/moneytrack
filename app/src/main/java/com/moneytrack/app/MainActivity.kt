@@ -2890,7 +2890,14 @@ private fun createSmallCard(): LinearLayout = LinearLayout(this).apply {
         cornerRadius = 16f * density
 
         // Same translucent gray glass as the month menu
-        setColor(Color.argb(15, 245, 247, 255))
+        setColor(
+    Color.argb(
+        60,
+        Color.red(AppearanceManager.getAccentColor(this@MainActivity)),
+        Color.green(AppearanceManager.getAccentColor(this@MainActivity)),
+        Color.blue(AppearanceManager.getAccentColor(this@MainActivity))
+    )
+)
 
         // Same thin, semi-transparent outline
         setStroke(
