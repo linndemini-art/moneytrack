@@ -964,7 +964,14 @@ background = GradientDrawable().apply {
     cornerRadius = 12f * density
 
     // Same glass color and transparency
-    setColor(Color.argb(64, 150, 155, 165))
+    setColor(
+    Color.argb(
+        60,
+        Color.red(AppearanceManager.getAccentColor(this@MainActivity)),
+        Color.green(AppearanceManager.getAccentColor(this@MainActivity)),
+        Color.blue(AppearanceManager.getAccentColor(this@MainActivity))
+    )
+)
 
     // Same semi-transparent border
     setStroke(
@@ -2453,7 +2460,14 @@ background = GradientDrawable().apply {
     cornerRadius = 16f * density
 
     // Same glass color and transparency
-    setColor(Color.argb(15, 245, 247, 255))
+    setColor(
+    Color.argb(
+        60,
+        Color.red(AppearanceManager.getAccentColor(this@MainActivity)),
+        Color.green(AppearanceManager.getAccentColor(this@MainActivity)),
+        Color.blue(AppearanceManager.getAccentColor(this@MainActivity))
+    )
+)
 
     // Same semi-transparent border
     setStroke(
@@ -2635,7 +2649,12 @@ swipeLayout.addView(
                 background = GradientDrawable().apply {
                     shape = GradientDrawable.RECTANGLE
                     cornerRadius = 16f * density
-                    setColor(Color.argb(15, 245, 247, 255))
+                    setColor( Color.argb( 60,
+        Color.red(AppearanceManager.getAccentColor(this@MainActivity)),
+        Color.green(AppearanceManager.getAccentColor(this@MainActivity)),
+        Color.blue(AppearanceManager.getAccentColor(this@MainActivity))
+    )
+)
                     setStroke(
                         density.toInt().coerceAtLeast(1),
                         Color.argb(110, 220, 225, 235)
