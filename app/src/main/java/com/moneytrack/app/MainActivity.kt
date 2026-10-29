@@ -560,7 +560,14 @@ content.addView(
         cornerRadius = 18f * density
 
         // Translucent gray glass: 25% opaque
-        setColor(Color.argb(15, 245, 247, 255))
+        setColor(
+    Color.argb(
+        15,
+        Color.red(AppearanceManager.getAccentColor(this@MainActivity)),
+        Color.green(AppearanceManager.getAccentColor(this@MainActivity)),
+        Color.blue(AppearanceManager.getAccentColor(this@MainActivity))
+    )
+)
 
         // Thin, semi-transparent outline
         setStroke(
