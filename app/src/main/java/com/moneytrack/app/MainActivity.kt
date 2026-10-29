@@ -562,7 +562,7 @@ content.addView(
         // Translucent gray glass: 25% opaque
         setColor(
     Color.argb(
-        50,
+        60,
         Color.red(AppearanceManager.getAccentColor(this@MainActivity)),
         Color.green(AppearanceManager.getAccentColor(this@MainActivity)),
         Color.blue(AppearanceManager.getAccentColor(this@MainActivity))
