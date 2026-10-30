@@ -2514,6 +2514,28 @@ private fun showSearchScreen() {
         setPadding(0, 16, 0, 8)
     }
 
+        refreshSearchResults("")
+
+    searchInput.addTextChangedListener(object : TextWatcher {
+        override fun beforeTextChanged(
+            s: CharSequence?,
+            start: Int,
+            count: Int,
+            after: Int
+        ) {}
+
+        override fun onTextChanged(
+            s: CharSequence?,
+            start: Int,
+            before: Int,
+            count: Int
+        ) {
+            refreshSearchResults(s?.toString().orEmpty())
+        }
+
+        override fun afterTextChanged(s: Editable?) {}
+    })
+
     resultsScroll.addView(
         searchResultsContainer,
         ScrollView.LayoutParams(-1, -2)
@@ -2530,6 +2552,176 @@ private fun showSearchScreen() {
     )
 
     setContentView(screenRoot)
+}
+
+private fun refreshSearchResults(query: String) {
+    searchResultsContainer.removeAllViews()
+
+    val search = query.trim()
+
+    val results = mutableListOf<Triple<Long, Boolean, Int>>()
+
+    expenses.forEachIndexed { index, expense ->
+        val matches = search.isEmpty() ||
+            expense.description.contains(search, ignoreCase = true) ||
+            expense.category.contains(search, ignoreCase = true) ||
+            money(expense.amount).contains(search, ignoreCase = true) ||
+            expense.amount.toString().contains(search, ignoreCase = true)
+
+        if (matches) {
+            val timestamp = runCatching {
+                SimpleDateFormat(
+                    "dd MMM yyyy HH:mm",
+                    Locale.ENGLISH
+                ).parse("${expense.date} ${expense.time}")?.time
+            }.getOrNull() ?: 0L
+
+            results.add(Triple(timestamp, false, index))
+        }
+    }
+
+    incomeEntries.forEachIndexed { index, entry ->
+        val matches = search.isEmpty() ||
+            entry.source.contains(search, ignoreCase = true) ||
+            money(entry.amount).contains(search, ignoreCase = true) ||
+            entry.amount.toString().contains(search, ignoreCase = true)
+
+        if (matches) {
+            val timestamp = runCatching {
+                SimpleDateFormat(
+                    "dd MMM yyyy HH:mm",
+                    Locale.ENGLISH
+                ).parse("${entry.date} ${entry.time}")?.time
+            }.getOrNull() ?: 0L
+
+            results.add(Triple(timestamp, true, index))
+        }
+    }
+
+    if (results.isEmpty()) {
+        val emptyText = TextView(this).apply {
+            text = if (search.isEmpty()) {
+                "No transactions this month"
+            } else {
+                "No matching transactions"
+            }
+            textSize = 14f
+            setTextColor(muted)
+            gravity = Gravity.CENTER
+            setPadding(16, 32, 16, 32)
+        }
+
+        searchResultsContainer.addView(
+            emptyText,
+            LinearLayout.LayoutParams(-1, -2)
+        )
+        return
+    }
+
+    for ((_, isIncome, index) in results.sortedByDescending { it.first }) {
+        val title: String
+        val subtitle: String
+        val date: String
+        val amount: Double
+
+        if (isIncome) {
+            val entry = incomeEntries[index]
+            title = entry.source
+            subtitle = "INCOME"
+            date = listOf(entry.date, entry.time)
+                .filter { it.isNotEmpty() }
+                .joinToString(" • ")
+            amount = entry.amount
+        } else {
+            val expense = expenses[index]
+            title = expense.description
+            subtitle = expense.category
+            date = listOf(expense.date, expense.time)
+                .filter { it.isNotEmpty() }
+                .joinToString(" • ")
+            amount = expense.amount
+        }
+
+        val density = resources.displayMetrics.density
+
+        val card = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(16, 15, 12, 15)
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = 16f * density
+                setColor(Color.argb(15, 245, 247, 255))
+                setStroke(
+                    density.toInt().coerceAtLeast(1),
+                    Color.argb(110, 220, 225, 235)
+                )
+            }
+            elevation = 8f * density
+        }
+
+        val accent = View(this).apply {
+            setBackgroundColor(
+                if (isIncome) appearanceTheme.accentColor
+                else Color.rgb(255, 95, 95)
+            )
+        }
+        card.addView(accent, LinearLayout.LayoutParams(3, 48))
+
+        val details = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(12, 0, 8, 0)
+        }
+
+        val titleText = TextView(this).apply {
+            text = title
+            textSize = 16f
+            setTextColor(white)
+            typeface = Typeface.DEFAULT_BOLD
+        }
+
+        val subtitleText = TextView(this).apply {
+            text = subtitle
+            textSize = 12f
+            setTextColor(white)
+            setPadding(0, 4, 0, 0)
+        }
+
+        details.addView(titleText)
+        details.addView(subtitleText)
+
+        if (date.isNotEmpty()) {
+            val dateText = TextView(this).apply {
+                text = date
+                textSize = 11f
+                setTextColor(muted)
+                setPadding(0, 4, 0, 0)
+            }
+            details.addView(dateText)
+        }
+
+        card.addView(
+            details,
+            LinearLayout.LayoutParams(0, -2, 1f)
+        )
+
+        val amountText = TextView(this).apply {
+            text = "${if (isIncome) "+" else "−"}${money(amount)}"
+            textSize = 15f
+            setTextColor(
+                if (isIncome) appearanceTheme.accentColor
+                else Color.rgb(255, 95, 95)
+            )
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.END
+        }
+
+        card.addView(amountText)
+
+        val params = LinearLayout.LayoutParams(-1, -2)
+        params.setMargins(0, 0, 0, 10)
+        searchResultsContainer.addView(card, params)
+    }
 }
 
 
