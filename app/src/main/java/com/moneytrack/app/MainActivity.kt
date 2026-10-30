@@ -656,7 +656,7 @@ content.addView(
             setPadding(16, 12, 16, 12)
             background = roundedBackground(
                 Color.argb(20, 245, 247, 255),
-                20f
+                50f
             )
             setOnClickListener {
                 showSearchScreen()
