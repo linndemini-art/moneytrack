@@ -654,10 +654,17 @@ content.addView(
             typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER
             setPadding(16, 12, 16, 12)
-            background = roundedBackground(
-                Color.argb(20, 245, 247, 255),
-                50f
-            )
+            val accentColor = AppearanceManager.getAccentColor(this@MainActivity)
+
+background = roundedBackground(
+    Color.argb(
+        204,
+        Color.red(accentColor),
+        Color.green(accentColor),
+        Color.blue(accentColor)
+    ),
+    50f
+)
             setOnClickListener {
                 showSearchScreen()
             }
