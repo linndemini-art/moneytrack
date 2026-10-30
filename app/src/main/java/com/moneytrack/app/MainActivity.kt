@@ -39,6 +39,8 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import android.text.TextWatcher
+import android.text.Editable
 import java.util.Calendar
 import java.util.Locale
 
@@ -68,6 +70,7 @@ class MainActivity : Activity() {
 
     private var isMenuOpen = false
     private var isHistoryOpen = false
+    private var isSearchOpen = false
 
     private var income = 0.0
     private val expenses = mutableListOf<Expense>()
