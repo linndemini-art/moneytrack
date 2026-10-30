@@ -655,8 +655,8 @@ content.addView(
             gravity = Gravity.CENTER
             setPadding(16, 12, 16, 12)
             background = roundedBackground(
-                Color.argb(25, 245, 247, 255),
-                12f
+                Color.argb(20, 245, 247, 255),
+                20f
             )
             setOnClickListener {
                 showSearchScreen()
