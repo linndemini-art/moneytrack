@@ -56,6 +56,7 @@ class MainActivity : Activity() {
     private lateinit var categorySpinner: Spinner
     private lateinit var categoryAdapter: ArrayAdapter<String>
     private lateinit var expensesContainer: LinearLayout
+    private lateinit var searchResultsContainer: LinearLayout
 
     private lateinit var monthlyText: TextView
     private lateinit var remainingText: TextView
@@ -1813,6 +1814,11 @@ setContentView(historyScreenRoot)
             closeMenu()
             return
         }
+                if (isSearchOpen) {
+            isSearchOpen = false
+            buildInterface()
+            return
+        }
         if (isHistoryOpen) {
             isHistoryOpen = false
             buildInterface()
@@ -2420,9 +2426,114 @@ dialog.findViewById<TextView>(titleId)?.setTextColor(white)
     dialog.show()
 }
 
+private fun showSearchScreen() {
+    isSearchOpen = true
+
+    val screenRoot = FrameLayout(this)
+
+    val wallpaper = ImageView(this).apply {
+        setImageResource(R.drawable.moneytrack_background)
+        scaleType = ImageView.ScaleType.CENTER_CROP
+        contentDescription = null
+    }
+
+    screenRoot.addView(
+        wallpaper,
+        FrameLayout.LayoutParams(-1, -1)
+    )
+
+    val content = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        setPadding(20, 50, 20, 24)
+    }
+
+    val monthName = SimpleDateFormat(
+        "MMMM yyyy",
+        Locale.ENGLISH
+    ).format(
+        Calendar.getInstance().apply {
+            set(selectedYear, selectedMonth, 1)
+        }.time
+    )
+
+    val header = TextView(this).apply {
+        text = "‹  SEARCH"
+        textSize = 23f
+        setTextColor(white)
+        typeface = Typeface.DEFAULT_BOLD
+        setPadding(0, 0, 0, 6)
+        setOnClickListener {
+            isSearchOpen = false
+            buildInterface()
+        }
+    }
+
+    content.addView(
+        header,
+        LinearLayout.LayoutParams(-1, -2)
+    )
+
+    val monthLabel = TextView(this).apply {
+        text = monthName
+        textSize = 13f
+        setTextColor(muted)
+        setPadding(2, 0, 0, 18)
+    }
+
+    content.addView(
+        monthLabel,
+        LinearLayout.LayoutParams(-1, -2)
+    )
+
+    val searchInput = EditText(this).apply {
+        hint = "Search transactions..."
+        textSize = 15f
+        setTextColor(white)
+        setHintTextColor(muted)
+        singleLine = true
+        inputType = InputType.TYPE_CLASS_TEXT
+        setPadding(16, 12, 16, 12)
+        background = roundedBackground(
+            Color.argb(35, 245, 247, 255),
+            12f
+        )
+    }
+
+    content.addView(
+        searchInput,
+        LinearLayout.LayoutParams(-1, -2)
+    )
+
+    val resultsScroll = ScrollView(this).apply {
+        isFillViewport = true
+        overScrollMode = ScrollView.OVER_SCROLL_NEVER
+    }
+
+    searchResultsContainer = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        setPadding(0, 16, 0, 8)
+    }
+
+    resultsScroll.addView(
+        searchResultsContainer,
+        ScrollView.LayoutParams(-1, -2)
+    )
+
+    content.addView(
+        resultsScroll,
+        LinearLayout.LayoutParams(-1, 0, 1f)
+    )
+
+    screenRoot.addView(
+        content,
+        FrameLayout.LayoutParams(-1, -1)
+    )
+
+    setContentView(screenRoot)
+}
 
 
-    private fun refreshExpenses() {
+private fun refreshExpenses() {
         expensesContainer.removeAllViews()
 
         if (expenses.isEmpty()) {
