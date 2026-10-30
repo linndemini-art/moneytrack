@@ -646,6 +646,30 @@ content.addView(
 
         monthCard.addView(monthDescription)
 
+                val searchButton = TextView(this).apply {
+            text = "⌕  Search transactions"
+            textSize = 14f
+            setTextColor(white)
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            setPadding(16, 12, 16, 12)
+            background = roundedBackground(
+                Color.argb(25, 245, 247, 255),
+                12f
+            )
+            setOnClickListener {
+                showSearchScreen()
+            }
+        }
+
+        val searchButtonParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        searchButtonParams.setMargins(0, 12, 0, 0)
+
+        monthCard.addView(searchButton, searchButtonParams)
+
         val monthCardParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
