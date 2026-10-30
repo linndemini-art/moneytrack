@@ -2461,7 +2461,7 @@ private fun showSearchScreen() {
         textSize = 23f
         setTextColor(white)
         typeface = Typeface.DEFAULT_BOLD
-        setPadding(12, 12, 0, 6)
+        setPadding(24, 24, 0, 6)
         setOnClickListener {
             isSearchOpen = false
             buildInterface()
