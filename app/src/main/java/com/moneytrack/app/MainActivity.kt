@@ -2490,7 +2490,7 @@ private fun showSearchScreen() {
         textSize = 15f
         setTextColor(white)
         setHintTextColor(muted)
-        singleLine = true
+        setSingleLine(true)
         inputType = InputType.TYPE_CLASS_TEXT
         setPadding(16, 12, 16, 12)
         background = roundedBackground(
@@ -2538,7 +2538,7 @@ private fun showSearchScreen() {
 
     resultsScroll.addView(
         searchResultsContainer,
-        ScrollView.LayoutParams(-1, -2)
+        ViewGroup.LayoutParams(-1, -2)
     )
 
     content.addView(
