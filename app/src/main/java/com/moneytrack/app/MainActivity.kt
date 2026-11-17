@@ -469,20 +469,17 @@ val padding = strokeWidth / 2f
 
         bankCard.addView(cardBottomRow)
 
-        val density = resources.displayMetrics.density
-val isTablet = resources.configuration.smallestScreenWidthDp >= 600
+        val screenWidth = resources.displayMetrics.widthPixels
+val screenHeight = resources.displayMetrics.heightPixels
 
-val cardWidth = if (isTablet) {
-    (440 * density).toInt()
-} else {
-    LinearLayout.LayoutParams.MATCH_PARENT
-}
+val cardWidth = (screenWidth * 0.96f).toInt()
+val cardHeight = (screenHeight * 0.25f).toInt()
 
 content.addView(
     bankCard,
     LinearLayout.LayoutParams(
         cardWidth,
-        (190 * density).toInt()
+        cardHeight
     ).apply {
         gravity = Gravity.CENTER_HORIZONTAL
     }
