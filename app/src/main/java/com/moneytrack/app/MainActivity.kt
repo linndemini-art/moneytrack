@@ -472,8 +472,8 @@ val padding = strokeWidth / 2f
         val screenWidth = resources.displayMetrics.widthPixels
 val screenHeight = resources.displayMetrics.heightPixels
 
-val cardWidth = (screenWidth * 0.96f).toInt()
-val cardHeight = (screenHeight * 0.25f).toInt()
+val cardWidth = (screenWidth * 0.97f).toInt()
+val cardHeight = (screenHeight * 0.22f).toInt()
 
 content.addView(
     bankCard,
