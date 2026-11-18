@@ -3298,34 +3298,25 @@ private fun createSmallCard(): LinearLayout = LinearLayout(this).apply {
             )
         }
 
-    private fun createLiquidGlassBackground(
+        private fun createLiquidGlassBackground(
         color: Int,
         selected: Boolean,
         radiusDp: Int
     ): LayerDrawable {
-        val density = resources.displayMetrics.density
-        fun dp(value: Int): Int = (value * density).toInt()
+        val radius = radiusDp * resources.displayMetrics.density
 
-private fun createLiquidGlassBackground(
-    color: Int,
-    selected: Boolean,
-    radiusDp: Int
-): LayerDrawable {
-    val density = resources.displayMetrics.density
-    val radius = radiusDp * density
+        val background = GradientDrawable(
+            GradientDrawable.Orientation.TL_BR,
+            intArrayOf(
+                appearanceTheme.startColor,
+                appearanceTheme.endColor
+            )
+        ).apply {
+            cornerRadius = radius
+        }
 
-    val background = GradientDrawable(
-        GradientDrawable.Orientation.TL_BR,
-        intArrayOf(
-            appearanceTheme.startColor,
-            appearanceTheme.endColor
-        )
-    ).apply {
-        cornerRadius = radius
-    }
-
-    return LayerDrawable(arrayOf(background))
-}
+        return LayerDrawable(arrayOf(background))
+        }
 
     private fun inputParams(): LinearLayout.LayoutParams = LinearLayout.LayoutParams(-1, -2).apply {
         setMargins(0, 0, 0, 10)
