@@ -653,15 +653,14 @@ content.addView(
             setPadding(16, 12, 16, 12)
             val accentColor = AppearanceManager.getAccentColor(this@MainActivity)
 
-background = roundedBackground(
-    Color.argb(
-        204,
-        Color.red(accentColor),
-        Color.green(accentColor),
-        Color.blue(accentColor)
-    ),
+
+                    
+background = gradientBackground(
+    appearanceTheme.startColor,
+    appearanceTheme.endColor,
     50f
 )
+
             setOnClickListener {
                 showSearchScreen()
             }
