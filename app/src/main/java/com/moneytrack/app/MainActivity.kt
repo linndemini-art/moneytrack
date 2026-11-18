@@ -3311,20 +3311,21 @@ private fun createSmallCard(): LinearLayout = LinearLayout(this).apply {
         val surface = GradientDrawable(
     GradientDrawable.Orientation.TL_BR,
     intArrayOf(
-        Color.argb(
-            if (selected) 245 else 205,
-            Color.red(appearanceTheme.startColor),
-            Color.green(appearanceTheme.startColor),
-            Color.blue(appearanceTheme.startColor)
-        ),
-        Color.argb(
-            if (selected) 220 else 175,
-            Color.red(appearanceTheme.endColor),
-            Color.green(appearanceTheme.endColor),
-            Color.blue(appearanceTheme.endColor)
-        )
+        appearanceTheme.startColor,
+        appearanceTheme.endColor
     )
 ).apply {
+    cornerRadius = radius
+    setStroke(
+        dp(1),
+        Color.argb(
+            if (selected) 235 else 145,
+            Color.red(color),
+            Color.green(color),
+            Color.blue(color)
+        )
+    )
+        }
             cornerRadius = radius
             setStroke(
                 dp(1),
