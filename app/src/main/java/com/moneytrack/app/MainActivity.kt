@@ -3326,17 +3326,7 @@ private fun createSmallCard(): LinearLayout = LinearLayout(this).apply {
         )
     )
         }
-            cornerRadius = radius
-            setStroke(
-                dp(1),
-                Color.argb(
-                    if (selected) 235 else 145,
-                    Color.red(color),
-                    Color.green(color),
-                    Color.blue(color)
-                )
-            )
-        }
+    
 
         val depth = GradientDrawable(
             GradientDrawable.Orientation.TL_BR,
