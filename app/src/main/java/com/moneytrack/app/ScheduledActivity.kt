@@ -1745,6 +1745,8 @@ val progressValue = calculateProgress(
         private val density =
             resources.displayMetrics.density
 
+        private val theme = AppearanceManager.getTheme(context)
+
         private val trackPaint =
             Paint(Paint.ANTI_ALIAS_FLAG).apply {
                 color = trackColor
@@ -1842,8 +1844,8 @@ val progressValue = calculateProgress(
                 0f,
                 width,
                 0f,
-                fillColor,
-                fillColor,
+                theme.startColor,
+                theme.endColor,
                 Shader.TileMode.CLAMP
             )
 
