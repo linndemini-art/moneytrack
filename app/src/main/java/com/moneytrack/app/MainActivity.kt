@@ -3309,7 +3309,7 @@ private fun createSmallCard(): LinearLayout = LinearLayout(this).apply {
         val radius = dp(radiusDp).toFloat()
 
         val surface = GradientDrawable(
-            GradientDrawable.Orientation.TOP_BOTTOM,
+            GradientDrawable.Orientation.TL_BR,
             intArrayOf(
                 Color.argb(
                     if (selected) 245 else 205,
@@ -3338,7 +3338,7 @@ private fun createSmallCard(): LinearLayout = LinearLayout(this).apply {
         }
 
         val depth = GradientDrawable(
-            GradientDrawable.Orientation.TOP_BOTTOM,
+            GradientDrawable.Orientation.TL_BR,
             intArrayOf(
                 Color.TRANSPARENT,
                 Color.argb(35, 0, 0, 0),
@@ -3349,7 +3349,7 @@ private fun createSmallCard(): LinearLayout = LinearLayout(this).apply {
         }
 
         val reflection = GradientDrawable(
-            GradientDrawable.Orientation.TOP_BOTTOM,
+            GradientDrawable.Orientation.TL_BR,
             intArrayOf(
                 Color.argb(if (selected) 80 else 55, 255, 255, 255),
                 Color.argb(25, 255, 255, 255),
@@ -3361,7 +3361,7 @@ private fun createSmallCard(): LinearLayout = LinearLayout(this).apply {
         }
 
         val rim = GradientDrawable(
-            GradientDrawable.Orientation.TOP_BOTTOM,
+            GradientDrawable.Orientation.TL_BR,
             intArrayOf(
                 Color.argb(if (selected) 110 else 65, 255, 255, 255),
                 Color.TRANSPARENT,
