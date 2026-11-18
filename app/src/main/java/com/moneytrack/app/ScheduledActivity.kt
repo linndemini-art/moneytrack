@@ -326,16 +326,6 @@ private fun createGlassTabBackground(
     }
 }
 
-
-
-
-private fun createLiquidGlassTabBackground(
-    selected: Boolean
-): LayerDrawable {
-    val theme = AppearanceManager.getTheme(this)
-    val accent = theme.accentColor
-    val radius = dpToPx(12).toFloat()
-
 private fun createLiquidGlassTabBackground(
     selected: Boolean
 ): LayerDrawable {
