@@ -336,86 +336,25 @@ private fun createLiquidGlassTabBackground(
     val accent = theme.accentColor
     val radius = dpToPx(12).toFloat()
 
-    // Main surface: same opacity values as Debt & Loan.
-    val surface = GradientDrawable(
-    GradientDrawable.Orientation.TOP_BOTTOM,
-    intArrayOf(
-        Color.argb(
-            if (selected) 245 else 205,
-            Color.red(accent),
-            Color.green(accent),
-            Color.blue(accent)
-        ),
-        Color.argb(
-            if (selected) 220 else 175,
-            Color.red(accent),
-            Color.green(accent),
-            Color.blue(accent)
-        )
-    )
-).apply {
-        cornerRadius = radius
-        setStroke(
-            dpToPx(1),
-            Color.argb(
-                if (selected) 235 else 145,
-                Color.red(accent),
-                Color.green(accent),
-                Color.blue(accent)
-            )
-        )
-    }
+private fun createLiquidGlassTabBackground(
+    selected: Boolean
+): LayerDrawable {
+    val theme = AppearanceManager.getTheme(this)
+    val radius = dpToPx(12).toFloat()
 
-    // Dark lower shading: same values as Debt & Loan.
-    val shadow = GradientDrawable(
-        GradientDrawable.Orientation.TOP_BOTTOM,
+    val background = GradientDrawable(
+        GradientDrawable.Orientation.TL_BR,
         intArrayOf(
-            Color.TRANSPARENT,
-            Color.argb(35, 0, 0, 0),
-            Color.argb(if (selected) 95 else 115, 0, 0, 0)
+            theme.startColor,
+            theme.endColor
         )
     ).apply {
         cornerRadius = radius
     }
 
-    // Glossy reflection: same values as Debt & Loan.
-    val reflection = GradientDrawable(
-        GradientDrawable.Orientation.TOP_BOTTOM,
-        intArrayOf(
-            Color.argb(if (selected) 80 else 55, 255, 255, 255),
-            Color.argb(25, 255, 255, 255),
-            Color.TRANSPARENT,
-            Color.TRANSPARENT
-        )
-    ).apply {
-        cornerRadius = radius
-    }
-
-    // Inner rim: same values as Debt & Loan.
-    val innerRim = GradientDrawable(
-        GradientDrawable.Orientation.TOP_BOTTOM,
-        intArrayOf(
-            Color.argb(if (selected) 110 else 65, 255, 255, 255),
-            Color.TRANSPARENT,
-            Color.TRANSPARENT,
-            Color.argb(65, 0, 0, 0)
-        )
-    ).apply {
-        cornerRadius = radius
-        setStroke(
-            dpToPx(1),
-            Color.argb(if (selected) 75 else 40, 255, 255, 255)
-        )
-    }
-
-    return LayerDrawable(
-        arrayOf(surface, shadow, reflection, innerRim)
-    ).apply {
-        setLayerInset(1, dpToPx(1), dpToPx(1), dpToPx(1), dpToPx(1))
-        setLayerInset(2, dpToPx(1), dpToPx(1), dpToPx(1), dpToPx(1))
-        setLayerInset(3, dpToPx(1), dpToPx(1), dpToPx(1), dpToPx(1))
-    }
+    return LayerDrawable(arrayOf(background))
 }
+
 
 
 
