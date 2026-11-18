@@ -3306,75 +3306,26 @@ private fun createSmallCard(): LinearLayout = LinearLayout(this).apply {
         val density = resources.displayMetrics.density
         fun dp(value: Int): Int = (value * density).toInt()
 
-        val radius = dp(radiusDp).toFloat()
+private fun createLiquidGlassBackground(
+    color: Int,
+    selected: Boolean,
+    radiusDp: Int
+): LayerDrawable {
+    val density = resources.displayMetrics.density
+    val radius = radiusDp * density
 
-        val surface = GradientDrawable(
-    GradientDrawable.Orientation.TL_BR,
-    intArrayOf(
-        appearanceTheme.startColor,
-        appearanceTheme.endColor
-    )
-).apply {
-    cornerRadius = radius
-    setStroke(
-        dp(1),
-        Color.argb(
-            if (selected) 235 else 145,
-            Color.red(color),
-            Color.green(color),
-            Color.blue(color)
+    val background = GradientDrawable(
+        GradientDrawable.Orientation.TL_BR,
+        intArrayOf(
+            appearanceTheme.startColor,
+            appearanceTheme.endColor
         )
-    )
-        }
-    
-
-        val depth = GradientDrawable(
-            GradientDrawable.Orientation.TL_BR,
-            intArrayOf(
-                Color.TRANSPARENT,
-                Color.argb(35, 0, 0, 0),
-                Color.argb(if (selected) 95 else 115, 0, 0, 0)
-            )
-        ).apply {
-            cornerRadius = radius
-        }
-
-        val reflection = GradientDrawable(
-            GradientDrawable.Orientation.TL_BR,
-            intArrayOf(
-                Color.argb(if (selected) 80 else 55, 255, 255, 255),
-                Color.argb(25, 255, 255, 255),
-                Color.TRANSPARENT,
-                Color.TRANSPARENT
-            )
-        ).apply {
-            cornerRadius = radius
-        }
-
-        val rim = GradientDrawable(
-            GradientDrawable.Orientation.TL_BR,
-            intArrayOf(
-                Color.argb(if (selected) 110 else 65, 255, 255, 255),
-                Color.TRANSPARENT,
-                Color.TRANSPARENT,
-                Color.argb(65, 0, 0, 0)
-            )
-        ).apply {
-            cornerRadius = radius
-            setStroke(
-                dp(1),
-                Color.argb(if (selected) 75 else 40, 255, 255, 255)
-            )
-        }
-
-        return LayerDrawable(
-            arrayOf(surface, depth, reflection, rim)
-        ).apply {
-            setLayerInset(1, dp(1), dp(1), dp(1), dp(1))
-            setLayerInset(2, dp(1), dp(1), dp(1), dp(1))
-            setLayerInset(3, dp(1), dp(1), dp(1), dp(1))
-        }
+    ).apply {
+        cornerRadius = radius
     }
+
+    return LayerDrawable(arrayOf(background))
+}
 
     private fun inputParams(): LinearLayout.LayoutParams = LinearLayout.LayoutParams(-1, -2).apply {
         setMargins(0, 0, 0, 10)
